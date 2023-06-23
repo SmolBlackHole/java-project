@@ -8,7 +8,7 @@ public class Player {
     boolean isConnected = true;
     String playerName;
     Player nextPlayer;
-    private static Player lastPlayer;
+    public static Player lastPlayer;
 
     // yourTurn -> Variable notwendig?
     // maxSpieler -> Game
@@ -29,7 +29,7 @@ public class Player {
 
 
     // Getter & Setter
-    private void setNextPlayer(Player player){
+    public void setNextPlayer(Player player){
         this.nextPlayer = player;
     }
 
@@ -44,22 +44,6 @@ public class Player {
     public String getName() {
         return playerName;
     }
-
-
-    // Liste Reihenfolge
-
-    public static void main(String[] args) {
-        // Testdaten
-        Player player1 = new Player("1", "Erster");
-        Player player2 = new Player("2", "Zweiter");
-        Player player3 = new Player("3", "Dritter");
-
-
-        boolean isGameStarting = true;
-        if (isGameStarting) {
-            while(lastPlayer != null){
-                
-            }
-        }
-    }
+    // Klasse Player wird ausschließlich von Klasse Game genutzt und aufgerufen
+    //  public static void main(String[] args) {    }
 }

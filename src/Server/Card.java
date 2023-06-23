@@ -17,6 +17,10 @@ public class Card {
 
     private static ArrayList<String> kartenstapel = new ArrayList<String>();
 
+    public ArrayList<String> getKartenStapel (){
+        return kartenstapel;
+    }
+
     private static void createStack() {
 
         for (int i = 0; i < 32; i++) {
