@@ -7,17 +7,23 @@ import java.util.Random;
 
 public class Card {
 
-    private static String[] currentPosition = {
+    private static String[] currentPosition;
+
+    private static ArrayList<String> kartenstapel = new ArrayList<String>();
+
+    public Card () {
+        this.currentPosition = new String [] {
                 "H7", "H8", "H9", "HX", "HB", "HD", "HK", "HA",
                 "C7", "C8", "C9", "CX", "CB", "CD", "CK", "CA",
                 "P7", "P8", "P9", "PX", "PB", "PD", "PK", "PA",
                 "K7", "K8", "K9", "KX", "KB", "KD", "KK", "KA"
         };
-
-
-    private static ArrayList<String> kartenstapel = new ArrayList<String>();
+        createStack();
+        mixCards();
+    }
 
     public ArrayList<String> getKartenStapel (){
+
         return kartenstapel;
     }
 
@@ -31,8 +37,7 @@ public class Card {
     static Random random = new Random();
 
     public static void main(String[] args) {
-        createStack();
-        mixCards();
+
     }
 
 

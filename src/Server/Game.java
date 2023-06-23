@@ -8,7 +8,7 @@ public class Game {
     static Player firstPlayer;
     static Player currentPlayer;
     static Turn reihenfolge = new Turn();
-    static Card card;
+    static Card card = new Card();
     static ArrayList<String> kartenstapel = new ArrayList<String>();
 
 
@@ -17,12 +17,14 @@ public class Game {
     // Karten an jeden Spieler austeilen
     private static void dealCards() {
         int count = 0;
+        System.out.println(card.getKartenStapel());
         kartenstapel = card.getKartenStapel();
         currentPlayer = firstPlayer;
         for (int i = 0; i<5 ; i++) {
             while (count < 5) {
                 currentPlayer.addCard(kartenstapel.get(count));
                 System.out.println(currentPlayer + " " + kartenstapel.get(count));
+                count++;
             }
             count = 0;
             currentPlayer = currentPlayer.getNextPlayer();

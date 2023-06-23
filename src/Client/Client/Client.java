@@ -1,9 +1,12 @@
+package Client.Client;
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Scanner;
 
 public class Client {
 
@@ -28,10 +31,13 @@ public class Client {
 
     // Methode, die das Eingabefeld ausließt und den Inhalt absendet
     public static void sendMessage() {
-//        try {
+        try {
             // hier wird geprüft, ob noch eine Verbindung besteht
             if (socket.isConnected()) {
-                String messageToSend = scanner;
+                System.out.println("dieses statement wird erreicht");
+                Scanner messagescanner = new Scanner(System.in);
+                String messageToSend = messagescanner.nextLine();
+                System.out.println("Echo: " + messageToSend);
 
                 // hier wird der Nachricht die aktuelle Uhrzeit beigefügt
                 String time = new SimpleDateFormat("HH:mm").format(Calendar.getInstance().getTime());
@@ -58,6 +64,7 @@ public class Client {
                     // wenn eine Nachricht empfangen wird, wird diese in die Chatarea eingefügt
                     try {
                         msgFromGroupChat = bufferedReader.readLine();
+                        System.out.println(msgFromGroupChat);
 
 
                         // dient dazu, einen Zeilenumbruch nach jeder Nachricht zu machen
@@ -106,9 +113,9 @@ public class Client {
     // die Main Methode: sie startet die LoginGui
     public static void main(String[] args) throws IOException {
 
-        Client.username = "Test";
+        Client.username = "Test2";
         Client.ip = "localhost";
-        Client.port = 25566;
+        Client.port = 25565;
         Client.start();
 
 
