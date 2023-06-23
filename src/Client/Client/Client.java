@@ -30,19 +30,19 @@ public class Client {
     public static void sendMessage() {
 //        try {
             // hier wird geprüft, ob noch eine Verbindung besteht
-//            if (socket.isConnected()) {
-//                String messageToSend = ChatGui.inputText.getText();
-//
-//                // hier wird der Nachricht die aktuelle Uhrzeit beigefügt
-//                String time = new SimpleDateFormat("HH:mm").format(Calendar.getInstance().getTime());
-//                bufferedWriter.write("|" + time + "|" + username + ": " + messageToSend);
-//                bufferedWriter.newLine();
-//                bufferedWriter.flush();
-//            }
+            if (socket.isConnected()) {
+                String messageToSend = scanner;
 
-//        } catch (IOException e) {
-//            close(socket, bufferedWriter, bufferedReader);
-//        }
+                // hier wird der Nachricht die aktuelle Uhrzeit beigefügt
+                String time = new SimpleDateFormat("HH:mm").format(Calendar.getInstance().getTime());
+                bufferedWriter.write("|" + time + "|" + username + ": " + messageToSend);
+                bufferedWriter.newLine();
+                bufferedWriter.flush();
+            }
+
+        } catch (IOException e) {
+            close(socket, bufferedWriter, bufferedReader);
+        }
     }
 
     // Methode, die auf Nachrichten wartet, und diese bearbeitet
@@ -52,28 +52,19 @@ public class Client {
         new Thread(new Runnable() {
             @Override
             public void run() {
-//                String msgFromGroupChat;
-//                while (socket.isConnected()) {
-//
-//                    // checkt, ob noch eine Verbindung besteht und ändert Statuslabel
-//                    if (socket.isClosed()) {
-//                        ChatGui.online.setText("Offline");
-//                        ChatGui.online.setForeground(Color.red);
-//                    } else {
-//                        ChatGui.online.setText("Online");
-//                        ChatGui.online.setForeground(Color.green);
-//                    }
-//
-//                    // wenn eine Nachricht empfangen wird, wird diese in die Chatarea eingefügt
-//                    try {
-//                        msgFromGroupChat = bufferedReader.readLine();
-//
-//
-//                        // dient dazu, einen Zeilenumbruch nach jeder Nachricht zu machen
-//                    } catch (IOException e) {
-//                        close(socket, bufferedWriter, bufferedReader);
-//                    }
-//                }
+                String msgFromGroupChat;
+                while (socket.isConnected()) {
+
+                    // wenn eine Nachricht empfangen wird, wird diese in die Chatarea eingefügt
+                    try {
+                        msgFromGroupChat = bufferedReader.readLine();
+
+
+                        // dient dazu, einen Zeilenumbruch nach jeder Nachricht zu machen
+                    } catch (IOException e) {
+                        close(socket, bufferedWriter, bufferedReader);
+                    }
+                }
             }
             // startet den Thread
         }).start();
@@ -117,7 +108,7 @@ public class Client {
 
         Client.username = "Test";
         Client.ip = "localhost";
-        Client.port = 25565;
+        Client.port = 25566;
         Client.start();
 
 

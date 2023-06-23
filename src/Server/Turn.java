@@ -6,10 +6,14 @@ public class Turn {
     static Player prevPlayer;
     // int playerCount;
 
+    public Turn(){
+    }
+
     public static void createPlayer (String playerIP, String playerName){
         Player player = new Player(playerIP, playerName);
         if (firstPlayer == null) {
             firstPlayer = player;
+            System.out.println(firstPlayer.getName());
         }
     }
 

@@ -56,7 +56,6 @@ public class ClientHandler implements Runnable {
 
     // Methode, die jedem Client die empfangene Nachricht zurücksendet: wird benutzt, damit jeder Client die Nachricht des jeweils anderen lesen kann
     public void broadcast(String messageToSend) {
-        chat.add(messageToSend);
 
         for (ClientHandler clientHandler : clientHandlers) {
             try {

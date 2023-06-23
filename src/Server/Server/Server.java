@@ -1,6 +1,7 @@
 package Server.Server;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
@@ -17,10 +18,11 @@ public class Server {
         try {
             while (!serverSocket.isClosed()) {
 
-                // hier werden die Verbindungsanfragen von Clients akzeptiert
+                // hier werden die Verbindungsanfragen von Clients akzeptiert25566
+
                 Socket socket = serverSocket.accept();
-                System.out.println(ClientHandler.clientHandlers.toArray());
                 ClientHandler clientHandler = new ClientHandler(socket);
+                System.out.println((((InetSocketAddress) socket.getRemoteSocketAddress()).getAddress()).toString().replace("/",""));
 
                 System.out.println("Ein wilder Chatbesucher ist erschienen");
                 // um diesen Prozess durchgehend im Hintergrund laufen zu lassen, benutzen wir hier einen Thread
