@@ -3,7 +3,7 @@ package Server;
 import java.util.ArrayList;
 
 public class Player {
-    ArrayList<Card> kartenstapel = new ArrayList<Card>();
+    ArrayList<String> kartenstapel = new ArrayList<String>();
     String playerIP;
     boolean isConnected = true;
     String playerName;
@@ -43,6 +43,10 @@ public class Player {
 
     public String getName() {
         return playerName;
+    }
+
+    public void addCard(String card){
+        kartenstapel.add(card);
     }
     // Klasse Player wird ausschließlich von Klasse Game genutzt und aufgerufen
     //  public static void main(String[] args) {    }

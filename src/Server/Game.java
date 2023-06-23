@@ -5,6 +5,7 @@ public class Game {
     int maxPlayer = 4;
     int numberOfPlayers;
     int cardsPerPlayer = 5;
+    static Turn reihenfolge;
     static Player firstPlayer;
     static Player currentPlayer;
     Card card;
@@ -14,42 +15,27 @@ public class Game {
 
 
     // Karten an jeden Spieler austeilen
-    private void dealCards(){
+    private void dealCards() {
+        int count = 0;
         kartenstapel = card.getKartenStapel();
-        
-    }
-
-    //testzwecke
-
-    // zum Erzeugen von neuen Spielern verwenden. firstPlayer wichtig wenn alle Spieler eingegeben wurden
-    public static void test(){
-        createPlayer("1", "Annabella");
-        createPlayer("2", "Berta");
-        createPlayer("3", "Cäsar");
-        createPlayer("4", "Delta");
-        connectFirstAndLast();
-        System.out.println(firstPlayer.getName() + " " + currentPlayer.getName());
-        System.out.println(firstPlayer.getNextPlayer().getName());
-    }
-    public static void createPlayer(String playerIP,  String playerName){
-        Player player = new Player(playerIP, playerName);
-        if(player.getLastPlayer() == player){
-            firstPlayer = player;
+        currentPlayer = firstPlayer;
+        for (int i = 0; i < numberOfPlayers; i++) {
+            while (count < 5) {
+                currentPlayer.addCard(kartenstapel.get(count));
+            }
+            count = 0;
+            currentPlayer = currentPlayer.getNextPlayer();
         }
     }
 
-    public static void main(String[] args) {
-        test();
-    }
-
-    // direkt nach Spielbeginn aufrufen, um Reihenfolgenschleife in Player zu schließen
-    static public void connectFirstAndLast(){
-        Player tempPlayer = firstPlayer;
-        while(tempPlayer.getNextPlayer() != null){
-            tempPlayer = tempPlayer.getNextPlayer();
+        public static void createPlayer (String playerIP, String playerName){
+            reihenfolge.createPlayer(playerIP, playerName);
         }
-        tempPlayer.setNextPlayer(firstPlayer);
-        currentPlayer = tempPlayer;
-    }
+
+        public static void main (String[]args){
+
+        }
+
 
 }
+

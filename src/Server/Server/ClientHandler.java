@@ -26,6 +26,7 @@ public class ClientHandler implements Runnable {
             String time = new SimpleDateFormat("HH:mm").format(Calendar.getInstance().getTime());
             clientHandlers.add(this);
 
+
             // hier wird die broadcast Methode aufgerufen, um den Chatbeitritt anzukündigen
             broadcast("|Server" + username + " Ist dem Spiel beigetreten");
 
@@ -56,6 +57,7 @@ public class ClientHandler implements Runnable {
     // Methode, die jedem Client die empfangene Nachricht zurücksendet: wird benutzt, damit jeder Client die Nachricht des jeweils anderen lesen kann
     public void broadcast(String messageToSend) {
         chat.add(messageToSend);
+
         for (ClientHandler clientHandler : clientHandlers) {
             try {
                 clientHandler.bufferedWriter.write(messageToSend);
