@@ -1,3 +1,5 @@
+package Server.Server;
+
 import java.io.*;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
@@ -13,7 +15,6 @@ public class ClientHandler implements Runnable {
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;
     private String username;
-    private String date;
 
     // hier werden die BufferedReader und BufferedWriter erstellt; diese benutzen wir, um Nachrichten auslesen und abzuschicken zu können
     public ClientHandler(Socket socket) {
@@ -26,7 +27,7 @@ public class ClientHandler implements Runnable {
             clientHandlers.add(this);
 
             // hier wird die broadcast Methode aufgerufen, um den Chatbeitritt anzukündigen
-            broadcast("|Server" + username + " Ist dem Chat beigetreten");
+            broadcast("|Server" + username + " Ist dem Spiel beigetreten");
 
 
         } catch (IOException e) {
@@ -41,25 +42,6 @@ public class ClientHandler implements Runnable {
 
 
         while (socket.isConnected()) {
-            String currentDate = new SimpleDateFormat("dd.MM.yyyy").format(Calendar.getInstance().getTime());
-
-            // hier wird bei jeder Datumsänderung das aktuelle Datum an alle Clients gesendet
-            if (!Objects.equals(date, currentDate)) {
-                if (!chat.contains("-----|" + currentDate + "|-----")) {
-
-                    chat.add("-----|" + currentDate + "|-----");
-                    try {
-                        bufferedWriter.write("-----|" + currentDate + "|-----");
-                        bufferedWriter.newLine();
-                        bufferedWriter.flush();
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-                date = currentDate;
-
-            }
-
             // soballd ein Client eine Nachricht sendet, wird diese hier empfangen und mit der Methode broadcast an alle Clients versendet
             try {
                 messageFromClient = bufferedReader.readLine();
@@ -70,7 +52,6 @@ public class ClientHandler implements Runnable {
             }
         }
     }
-
 
     // Methode, die jedem Client die empfangene Nachricht zurücksendet: wird benutzt, damit jeder Client die Nachricht des jeweils anderen lesen kann
     public void broadcast(String messageToSend) {
@@ -91,7 +72,6 @@ public class ClientHandler implements Runnable {
 
     // sobald ein Client seine Verbindung trennt, wird dies allen Clients mitgeteilt
     public void removeClientHandler() {
-        safeChat();
         clientHandlers.remove(this);
         String time = new SimpleDateFormat("HH:mm").format(Calendar.getInstance().getTime());
         broadcast("|Server" + username + " hat den Chat verlassen!");
@@ -101,9 +81,7 @@ public class ClientHandler implements Runnable {
     // Methode, um den Server zu schließen
     public void close(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {
         removeClientHandler();
-        safeChat();
         try {
-            safeChat();
             if (bufferedReader != null) {
                 bufferedReader.close();
             }

@@ -57,8 +57,6 @@ public class Server {
         ServerSocket serverSocket = new ServerSocket(port);
         Server.Server.Server server = new Server.Server.Server(serverSocket);
 
-
-        ClientHandler.getChat();
         server.startServer();
 
     }
