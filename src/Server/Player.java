@@ -7,6 +7,7 @@ public class Player {
     boolean isConnected;
     String playerName;
     Player platzhalter = new Player ("1", true, "Platzhalter", null);
+    Player le
     // yourTurn -> Variable notwendig?
     // maxSpieler -> Server.java
 
