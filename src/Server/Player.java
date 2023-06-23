@@ -6,5 +6,7 @@ public class Player {
     String playerID;
     boolean isConnected;
     String playerName;
+    boolean yourTurn;
+    
 
 }
