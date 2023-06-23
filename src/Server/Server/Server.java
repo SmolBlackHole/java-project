@@ -46,18 +46,18 @@ public class Server {
     }
 
 
-    public static void main(String[] args) throws IOException {
-
-        // hier wird vor dem Starten um eine Porteingabe gebeten
-        Scanner portscanner = new Scanner(System.in);
-        System.out.println("Port Eingeben");
-        int port = Integer.parseInt(portscanner.nextLine());
-
-        // hier wird ein neuer Socket erstellt
-        ServerSocket serverSocket = new ServerSocket(port);
-        Server.Server.Server server = new Server.Server.Server(serverSocket);
-
-        server.startServer();
-
-    }
+//    public static void main(String[] args) throws IOException {
+//
+//        // hier wird vor dem Starten um eine Porteingabe gebeten
+//        Scanner portscanner = new Scanner(System.in);
+//        System.out.println("Port Eingeben");
+//        int port = Integer.parseInt(portscanner.nextLine());
+//
+//        // hier wird ein neuer Socket erstellt
+//        ServerSocket serverSocket = new ServerSocket(port);
+//        Server.Server.Server server = new Server.Server.Server(serverSocket);
+//
+//        server.startServer();
+//
+//    }
 }

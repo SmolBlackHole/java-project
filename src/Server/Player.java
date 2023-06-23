@@ -9,6 +9,7 @@ public class Player {
     String playerName;
     Player nextPlayer;
     private static Player lastPlayer;
+
     // yourTurn -> Variable notwendig?
     // maxSpieler -> Game
 
@@ -56,8 +57,9 @@ public class Player {
 
         boolean isGameStarting = true;
         if (isGameStarting) {
-            Player firstPlayer = Player.getLastPlayer().getNextPlayer();
-            System.out.println("First player: " + firstPlayer.getName());
+            while(lastPlayer != null){
+                
+            }
         }
     }
 }

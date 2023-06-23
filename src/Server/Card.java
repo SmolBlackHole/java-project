@@ -16,18 +16,19 @@ public class Card {
 
 
     private static ArrayList<String> kartenstapel = new ArrayList<String>();
-    private static void test() {
-        for (int i = 0; i > 32; i++) {
-            kartenstapel.add("leer");
+
+    private static void createStack() {
+
+        for (int i = 0; i < 32; i++) {
+            kartenstapel.add(null);
         }
     }
 
     static Random random = new Random();
 
     public static void main(String[] args) {
-        test();
+        createStack();
         mixCards();
-        System.out.println(kartenstapel);
     }
 
 
@@ -41,7 +42,9 @@ public class Card {
                     break;
                 }
             }
+
         }
+        System.out.println(kartenstapel);
     }
 
 
