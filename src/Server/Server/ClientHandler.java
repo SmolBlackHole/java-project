@@ -24,11 +24,12 @@ public class ClientHandler implements Runnable {
             this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             this.username = bufferedReader.readLine();
-            String time = new SimpleDateFormat("HH:mm").format(Calendar.getInstance().getTime());
             clientHandlers.add(this);
 
-
+            String time = new SimpleDateFormat("HH:mm").format(Calendar.getInstance().getTime());
             // hier wird die broadcast Methode aufgerufen, um den Chatbeitritt anzukündigen
+            broadcast(username);
+            broadcast("Sexy");
             broadcast("|Server" + username + " Ist dem Spiel beigetreten");
 
 

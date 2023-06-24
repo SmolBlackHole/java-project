@@ -3,7 +3,7 @@ package Server;
 import java.util.ArrayList;
 public class Game {
     int maxPlayer = 4;
-    int numberOfPlayers;
+    static int numberOfPlayers = 4;
     int cardsPerPlayer = 5;
     static Player firstPlayer;
     static Player currentPlayer;
@@ -20,13 +20,13 @@ public class Game {
         System.out.println(card.getKartenStapel());
         kartenstapel = card.getKartenStapel();
         currentPlayer = firstPlayer;
-        for (int i = 0; i<5 ; i++) {
-            while (count < 5) {
+        System.out.println("Statement wird erreicht");
+        for (int i = 0; i < numberOfPlayers ; i++) {
+            while (count < 5*(i+1)) {
                 currentPlayer.addCard(kartenstapel.get(count));
-                System.out.println(currentPlayer + " " + kartenstapel.get(count));
+                System.out.println(currentPlayer.getName() + " " + kartenstapel.get(count));
                 count++;
             }
-            count = 0;
             currentPlayer = currentPlayer.getNextPlayer();
         }
     }
@@ -42,6 +42,7 @@ public class Game {
             createPlayer("4", "Delta");
             System.out.println(reihenfolge);
             firstPlayer = reihenfolge.getFirstPlayer();
+            System.out.println("Test");
             dealCards();
         }
 
