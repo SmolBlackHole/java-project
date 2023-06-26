@@ -1,7 +1,5 @@
 package Client.Client;
 
-import javax.swing.*;
-import java.awt.*;
 import java.io.*;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
@@ -24,6 +22,10 @@ public class Client {
             this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             this.username = username;
 
+            bufferedWriter.write(username);
+            bufferedWriter.newLine();
+            bufferedWriter.flush();
+
         } catch (IOException e) {
             close(socket, bufferedWriter, bufferedReader);
         }
@@ -31,30 +33,32 @@ public class Client {
 
     // Methode, die das Eingabefeld ausließt und den Inhalt absendet
     public static void sendMessage() {
-        try {
-            // hier wird geprüft, ob noch eine Verbindung besteht
-            if (socket.isConnected()) {
-                System.out.println("dieses statement wird erreicht");
-                Scanner messagescanner = new Scanner(System.in);
-                String messageToSend = messagescanner.nextLine();
-                System.out.println("Echo: " + messageToSend);
 
-                // hier wird der Nachricht die aktuelle Uhrzeit beigefügt
-                String time = new SimpleDateFormat("HH:mm").format(Calendar.getInstance().getTime());
-//                bufferedWriter.write("|" + time + "|" + username + ": " + messageToSend);
-//                bufferedWriter.newLine();
-//                bufferedWriter.flush();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (socket.isConnected()) {
+                    try {
+                        Scanner messagescanner = new Scanner(System.in);
+                        String messageToSend = messagescanner.nextLine();
+                        // hier wird der Nachricht die aktuelle Uhrzeit beigefügt
+                        String time = new SimpleDateFormat("HH:mm").format(Calendar.getInstance().getTime());
+                        bufferedWriter.write("|" + time + "|" + username + ": " + messageToSend);
+                        bufferedWriter.newLine();
+                        bufferedWriter.flush();
+
+                    } catch (IOException e) {
+                        close(socket, bufferedWriter, bufferedReader);
+                    }
+                }
             }
-
-//        } catch (IOException e) {
-//            close(socket, bufferedWriter, bufferedReader);
-//        }
+            // startet den Thread
+        }).start();
     }
 
     // Methode, die auf Nachrichten wartet, und diese bearbeitet
     public void listenForMessage() {
 
-        // hier wird ein Thread erstellt; diesen brauchen wir, um ununterbrochen auf eingehende Nachrichten zu warten
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -66,8 +70,6 @@ public class Client {
                         msgFromGroupChat = bufferedReader.readLine();
                         System.out.println(msgFromGroupChat);
 
-
-                        // dient dazu, einen Zeilenumbruch nach jeder Nachricht zu machen
                     } catch (IOException e) {
                         close(socket, bufferedWriter, bufferedReader);
                     }
@@ -90,6 +92,7 @@ public class Client {
             if (socket != null) {
                 socket.close();
             }
+            System.out.println("Der Server Ist Geschlossen");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -99,7 +102,8 @@ public class Client {
     public static void start() throws IOException {
         if (username != null) {
 
-            // hier wird ein Socket erstellt; dieser dient dem Nachrichtenaustausch zwischen Server und Client
+            // hier wird ein Socket erstellt; dieser dient dem Nachrichtenaustausch zwischen
+            // Server und Client
             Socket socket = new Socket(ip, port);
             Client client = new Client(socket, username);
             client.listenForMessage();
@@ -107,18 +111,13 @@ public class Client {
         }
     }
 
-
-
-
     // die Main Methode: sie startet die LoginGui
     public static void main(String[] args) throws IOException {
 
-        Client.username = "Test1";
+        Client.username = "LOL";
         Client.ip = "localhost";
         Client.port = 25565;
         Client.start();
-
-
 
     }
 }

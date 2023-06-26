@@ -1,19 +1,24 @@
 package Server.Server;
 
+import java.awt.List;
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
+import Server.Game;
 
 public class Server {
     private ServerSocket serverSocket;
+    private Game game;
 
     public Server(ServerSocket serverSocket) {
         this.serverSocket = serverSocket;
     }
 
-    // Methode, die, solange der Socket nicht geschlossen ist, ständig auf Verbindungsanfragen wartet
+    // Methode, die, solange der Socket nicht geschlossen ist, ständig auf
+    // Verbindungsanfragen wartet
     public void startServer() {
         try {
             while (!serverSocket.isClosed()) {
@@ -22,20 +27,17 @@ public class Server {
 
                 Socket socket = serverSocket.accept();
                 ClientHandler clientHandler = new ClientHandler(socket);
-                System.out.println((((InetSocketAddress) socket.getRemoteSocketAddress()).getAddress()).toString().replace("/",""));
-
                 System.out.println("Ein wilder Chatbesucher ist erschienen");
-                // um diesen Prozess durchgehend im Hintergrund laufen zu lassen, benutzen wir hier einen Thread
+                game.createPlayer(clientHandler.getIP(), clientHandler.getUsername(), clientHandler);
+                // um diesen Prozess durchgehend im Hintergrund laufen zu lassen, benutzen wir
+                // hier einen Thread
                 Thread thread = new Thread(clientHandler);
                 thread.start();
             }
-        }catch (IOException ignored){
+        } catch (IOException ignored) {
 
         }
     }
-
-
-
 
     public void closeServerSocket() {
         try {
@@ -47,6 +49,12 @@ public class Server {
         }
     }
 
+    public void CreateList(ClientHandler clientHandler) {
+        ArrayList<Object> informations = new ArrayList<>();
+        // boolean istDran = game.istDran(clientHandler.getUsername());
+        informations.add(game.getAllKeyObjects());
+        // informations.add(istDran);
+    }
 
     public static void main(String[] args) throws IOException {
 

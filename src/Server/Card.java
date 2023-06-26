@@ -1,9 +1,7 @@
 package Server;
 
-
 import java.util.ArrayList;
 import java.util.Random;
-
 
 public class Card {
 
@@ -11,8 +9,8 @@ public class Card {
 
     private static ArrayList<String> kartenstapel = new ArrayList<String>();
 
-    public Card () {
-        this.currentPosition = new String [] {
+    public Card() {
+        this.currentPosition = new String[] {
                 "H7", "H8", "H9", "HX", "HB", "HD", "HK", "HA",
                 "C7", "C8", "C9", "CX", "CB", "CD", "CK", "CA",
                 "P7", "P8", "P9", "PX", "PB", "PD", "PK", "PA",
@@ -22,7 +20,7 @@ public class Card {
         mixCards();
     }
 
-    public ArrayList<String> getKartenStapel (){
+    public ArrayList<String> getKartenStapel() {
 
         return kartenstapel;
     }
@@ -40,8 +38,7 @@ public class Card {
 
     }
 
-
-    private static void mixCards(){
+    private static void mixCards() {
         for (int i = 0; i < 32; i++) {
             int rand;
             while (true) {
@@ -56,26 +53,21 @@ public class Card {
         System.out.println(kartenstapel);
     }
 
+}
 
-    }
-
-
-//    private String[] newPosition = new String[32];
-//    Random random = new Random();
+// private String[] newPosition = new String[32];
+// Random random = new Random();
 //
 //
-//    private void mixCards(){
-//        for (int i = 0; i < 32; i++) {
-//            int rand;
-//            while (true) {
-//                rand = random.nextInt(32);
-//                if (newPosition[rand] == null) {
-//                    newPosition[rand] = currentPosition[i];
-//                    break;
-//                }
-//            }
-//        }
-//    }
-
-
-
+// private void mixCards(){
+// for (int i = 0; i < 32; i++) {
+// int rand;
+// while (true) {
+// rand = random.nextInt(32);
+// if (newPosition[rand] == null) {
+// newPosition[rand] = currentPosition[i];
+// break;
+// }
+// }
+// }
+// }

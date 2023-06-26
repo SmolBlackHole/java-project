@@ -1,13 +1,10 @@
 package Server.Server;
 
-import Client.Client.Client;
-
+import java.awt.List;
 import java.io.*;
+import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Objects;
 
 public class ClientHandler implements Runnable {
 
@@ -15,27 +12,37 @@ public class ClientHandler implements Runnable {
     private Socket socket;
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;
+    private ObjectOutputStream objectOutputStream;
     private String username;
 
-    // hier werden die BufferedReader und BufferedWriter erstellt; diese benutzen wir, um Nachrichten auslesen und abzuschicken zu können
+    // hier werden die BufferedReader und BufferedWriter erstellt; diese benutzen
+    // wir, um Nachrichten auslesen und abzuschicken zu können
     public ClientHandler(Socket socket) {
         try {
             this.socket = socket;
+            OutputStream outputStream = socket.getOutputStream();
             this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             this.username = bufferedReader.readLine();
+            this.objectOutputStream = new ObjectOutputStream(outputStream);
             clientHandlers.add(this);
 
-            String time = new SimpleDateFormat("HH:mm").format(Calendar.getInstance().getTime());
             // hier wird die broadcast Methode aufgerufen, um den Chatbeitritt anzukündigen
-            broadcast(username);
-            broadcast("Sexy");
-            broadcast("|Server" + username + " Ist dem Spiel beigetreten");
 
+            broadcast("|Server| " + username + " Ist dem Spiel beigetreten");
 
         } catch (IOException e) {
             close(socket, bufferedReader, bufferedWriter);
         }
+    }
+
+    public String getIP() {
+        String ip = (((InetSocketAddress) socket.getRemoteSocketAddress()).getAddress()).toString().replace("/", "");
+        return ip;
+    }
+
+    public String getUsername() {
+        return this.username;
     }
 
     @Override
@@ -43,9 +50,9 @@ public class ClientHandler implements Runnable {
 
         String messageFromClient;
 
-
         while (socket.isConnected()) {
-            // soballd ein Client eine Nachricht sendet, wird diese hier empfangen und mit der Methode broadcast an alle Clients versendet
+            // soballd ein Client eine Nachricht sendet, wird diese hier empfangen und mit
+            // der Methode broadcast an alle Clients versendet
             try {
                 messageFromClient = bufferedReader.readLine();
                 broadcast(messageFromClient);
@@ -56,7 +63,8 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    // Methode, die jedem Client die empfangene Nachricht zurücksendet: wird benutzt, damit jeder Client die Nachricht des jeweils anderen lesen kann
+    // Methode, die jedem Client die empfangene Nachricht zurücksendet: wird
+    // benutzt, damit jeder Client die Nachricht des jeweils anderen lesen kann
     public void broadcast(String messageToSend) {
 
         for (ClientHandler clientHandler : clientHandlers) {
@@ -72,14 +80,21 @@ public class ClientHandler implements Runnable {
 
     }
 
-
     // sobald ein Client seine Verbindung trennt, wird dies allen Clients mitgeteilt
     public void removeClientHandler() {
         clientHandlers.remove(this);
-        String time = new SimpleDateFormat("HH:mm").format(Calendar.getInstance().getTime());
-        broadcast("|Server" + username + " hat den Chat verlassen!");
+        broadcast("|Server| " + username + " hat das Spiel verlassen!");
     }
 
+    /*
+     * public void sendObjects(Objects) {
+     * 
+     * objectOutputStream.writeObject(Objects);
+     * 
+     * 
+     * 
+     * }
+     */
 
     // Methode, um den Server zu schließen
     public void close(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {
@@ -101,4 +116,3 @@ public class ClientHandler implements Runnable {
         }
     }
 }
-
