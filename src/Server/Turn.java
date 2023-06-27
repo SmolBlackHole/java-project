@@ -73,4 +73,12 @@ public class Turn {
         return firstPlayer;
     }
 
+    public Player getPlayerObject(Server.Server.ClientHandler clientHandler) {
+        Player temp = firstPlayer;
+        while (clientHandler != temp.getPlayerID()) {
+            temp = temp.nextPlayer;
+        }
+        return temp;
+    }
+
 }

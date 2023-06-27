@@ -8,12 +8,12 @@ import java.util.ArrayList;
 
 public class ClientHandler implements Runnable {
 
-    public static ArrayList<ClientHandler> clientHandlers = new ArrayList<>();
     private Socket socket;
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;
     private ObjectOutputStream objectOutputStream;
     private String username;
+    public static ArrayList<ClientHandler> clientHandlers = new ArrayList<>();
 
     // hier werden die BufferedReader und BufferedWriter erstellt; diese benutzen
     // wir, um Nachrichten auslesen und abzuschicken zu können

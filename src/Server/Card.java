@@ -1,73 +1,55 @@
 package Server;
 
 import java.util.ArrayList;
-import java.util.Random;
+import java.util.Collections;
 
 public class Card {
 
-    private static String[] currentPosition;
+    private static ArrayList<String> cardDeck = new ArrayList<String>();
 
-    private static ArrayList<String> kartenstapel = new ArrayList<String>();
+    public static void mixCards() {
+        cardDeck.add("H7");
+        cardDeck.add("H8");
+        cardDeck.add("H9");
+        cardDeck.add("HX");
+        cardDeck.add("HB");
+        cardDeck.add("HD");
+        cardDeck.add("HK");
+        cardDeck.add("HA");
 
-    public Card() {
-        this.currentPosition = new String[] {
-                "H7", "H8", "H9", "HX", "HB", "HD", "HK", "HA",
-                "C7", "C8", "C9", "CX", "CB", "CD", "CK", "CA",
-                "P7", "P8", "P9", "PX", "PB", "PD", "PK", "PA",
-                "K7", "K8", "K9", "KX", "KB", "KD", "KK", "KA"
-        };
-        createStack();
-        mixCards();
+        cardDeck.add("C7");
+        cardDeck.add("C8");
+        cardDeck.add("C9");
+        cardDeck.add("CX");
+        cardDeck.add("CB");
+        cardDeck.add("CD");
+        cardDeck.add("CK");
+        cardDeck.add("CA");
+
+        cardDeck.add("P7");
+        cardDeck.add("P8");
+        cardDeck.add("P9");
+        cardDeck.add("PX");
+        cardDeck.add("PB");
+        cardDeck.add("PD");
+        cardDeck.add("PK");
+        cardDeck.add("PA");
+
+        cardDeck.add("K7");
+        cardDeck.add("K8");
+        cardDeck.add("K9");
+        cardDeck.add("KX");
+        cardDeck.add("KB");
+        cardDeck.add("KD");
+        cardDeck.add("KK");
+        cardDeck.add("KA");
+
+        Collections.shuffle(cardDeck);
     }
 
-    public ArrayList<String> getKartenStapel() {
-
-        return kartenstapel;
-    }
-
-    private static void createStack() {
-
-        for (int i = 0; i < 32; i++) {
-            kartenstapel.add(null);
-        }
-    }
-
-    static Random random = new Random();
-
-    public static void main(String[] args) {
-
-    }
-
-    private static void mixCards() {
-        for (int i = 0; i < 32; i++) {
-            int rand;
-            while (true) {
-                rand = random.nextInt(32);
-                if (kartenstapel.get(rand) == null) {
-                    kartenstapel.set(rand, currentPosition[i]);
-                    break;
-                }
-            }
-
-        }
-        System.out.println(kartenstapel);
+    // Getter & Setter
+    public static ArrayList<String> getCardDeck() {
+        return cardDeck;
     }
 
 }
-
-// private String[] newPosition = new String[32];
-// Random random = new Random();
-//
-//
-// private void mixCards(){
-// for (int i = 0; i < 32; i++) {
-// int rand;
-// while (true) {
-// rand = random.nextInt(32);
-// if (newPosition[rand] == null) {
-// newPosition[rand] = currentPosition[i];
-// break;
-// }
-// }
-// }
-// }

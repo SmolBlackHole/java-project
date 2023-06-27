@@ -3,7 +3,8 @@ package Server;
 import java.util.ArrayList;
 
 public class Player {
-    ArrayList<String> kartenstapel = new ArrayList<String>();
+    /* ArrayList<String> handCards = new ArrayList<String>(); */
+    ArrayList<String> playerCards;
     Object[] keyObjects;
     String playerIP;
     boolean isConnected = true;
@@ -17,9 +18,10 @@ public class Player {
         this.playerIP = playerIP;
         this.playerName = playerName;
         this.playerID = playerID;
-        this.keyObjects = new Object[2];
-        keyObjects[0] = playerName;
-        keyObjects[1] = kartenstapel.size();
+
+        // Array der eigenen Karten
+        this.playerCards = new ArrayList<String>();
+
         // nextPlayer
         this.nextPlayer = null;
 
@@ -32,12 +34,17 @@ public class Player {
 
     // Getter & Setter
 
-    public ArrayList<String> getKartenstapel() {
-        return this.kartenstapel;
-    }
-
-    public void setKartenstapel(ArrayList<String> kartenstapel) {
-        this.kartenstapel = kartenstapel;
+    /*
+     * public ArrayList<String> getHandCards() {
+     * return this.handCards;
+     * }
+     * 
+     * public void sethandCards(ArrayList<String> handCards) {
+     * this.handCards = handCards;
+     * }
+     */
+    public ArrayList<String> getPlayerCards() {
+        return playerCards;
     }
 
     public String getPlayerIP() {
@@ -84,11 +91,16 @@ public class Player {
         this.playerID = playerID;
     }
 
-    public void addCard(String card) {
-        kartenstapel.add(card);
-    }
+    /*
+     * public void addCard(String card) {
+     * handCards.add(card);
+     * }
+     */
 
     public Object[] getKeyObjects() {
+        this.keyObjects = new Object[2];
+        keyObjects[0] = playerName;
+        keyObjects[1] = playerCards.size();
         return this.keyObjects;
     }
 
