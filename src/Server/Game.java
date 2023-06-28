@@ -96,18 +96,24 @@ public class Game {
 
     // Karten ziehen
     private void drawCard() {
-        currentPlayer.playerCards.add(getCardDeck().get(0));
-        getCardDeck().remove(0);
+        for (int i = 0; i < drawCards; i++) {
+            currentPlayer.playerCards.add(getCardDeck().get(getCardDeck().size() - 1));
+            getCardDeck().remove(getCardDeck().get(getCardDeck().size() - 1));
+        }
+        drawCards = 0;
+
+        if (showTopCard().contains("7")){
+            play();
+        }
     }
+
 
     private void checkForWinner() {
         if (currentPlayer.getPlayerCards().isEmpty()) {
             winner = currentPlayer.getPlayerName();
             System.out.println("Gewinner ist: " + winner);
-        } else {
-            currentPlayer = currentPlayer.nextPlayer;
-        }
-    }
+        } 
+        
 
     // TEST /////////////////////////////////////
     static Scanner scanner = new Scanner(System.in);
@@ -131,35 +137,25 @@ public class Game {
             checkForWinner();
 
             specialCards(showTopCard());
+            currentPlayer = currentPlayer.nextPlayer;
 
         }
     }
 
-    // in Arbeit /////////////////////////////////////////////////////////
-    int i = 0;
-
+    
     private void specialCards(String playerCard) {
         // 2 Karten ziehen
 
         if (showTopCard().contains("7")) {
             if (playerCard.contains("7")) {
                 currentPlayer.playerCards.remove(playerCard);
-                i += 2;
-                System.out.println("i: " + i);
-
-                // TODO muss später noch verbessert werden
-            } else if (!currentPlayer.getPlayerCards().contains("7")) {
-                for (; i < i + 2; i++) {
-                    currentPlayer.playerCards.add(getCardDeck().get(getCardDeck().size() - 1));
-                    getCardDeck().remove(getCardDeck().get(getCardDeck().size() - 1));
-                    i = 0;
-                }
+                drawCards += 2;
             }
 
             // 4 Ziehen
         } else if (playerCard.equals("PK")) {
-            for (int i = 0; i < 4; i++) {
-                currentPlayer.playerCards.add(getCardDeck().get(getCardDeck().size() - 1));
+            for (int i = 0; i <= 4; i++) {
+                currentPlayer.nextPlayer.playerCards.add(getCardDeck().get(getCardDeck().size() - 1));
                 getCardDeck().remove(getCardDeck().get(getCardDeck().size() - 1));
             }
 
@@ -169,6 +165,7 @@ public class Game {
         }
 
     }
+
 
     public static void createPlayer(String playerIP, String playerName, Server.Server.ClientHandler playerID) {
         reihenfolge.createPlayer(playerIP, playerName, playerID);
