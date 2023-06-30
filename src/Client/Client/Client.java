@@ -3,7 +3,10 @@ package Client.Client;
 import java.io.*;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class Client {
@@ -14,10 +17,14 @@ public class Client {
     public static String username;
     public static String ip;
     public static int port;
+    private ObjectInputStream objectInputStream;
 
     public Client(Socket socket, String username) {
         try {
             this.socket = socket;
+            InputStream inputStream = socket.getInputStream();
+            this.objectInputStream = new ObjectInputStream(inputStream);
+
             this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             this.username = username;
@@ -64,13 +71,38 @@ public class Client {
             public void run() {
                 String msgFromGroupChat;
                 while (socket.isConnected()) {
+                    System.out.println("Test2");
 
                     // wenn eine Nachricht empfangen wird, wird diese in die Chatarea eingefügt
                     try {
+                        System.out.println("Test");
                         msgFromGroupChat = bufferedReader.readLine();
                         System.out.println(msgFromGroupChat);
 
                     } catch (IOException e) {
+                        close(socket, bufferedWriter, bufferedReader);
+                    }
+                }
+            }
+            // startet den Thread
+        }).start();
+
+    }
+
+    public void listenForObject() {
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ArrayList<Object> ObjectsFromServer = new ArrayList<Object>();
+                while (socket.isConnected()) {
+
+                    // wenn eine Nachricht empfangen wird, wird diese in die Chatarea eingefügt
+                    try {
+                        ObjectsFromServer = (ArrayList<Object>) objectInputStream.readObject();
+                        System.out.println(ObjectsFromServer.get(0));
+
+                    } catch (IOException | ClassNotFoundException e) {
                         close(socket, bufferedWriter, bufferedReader);
                     }
                 }
@@ -107,6 +139,7 @@ public class Client {
             Socket socket = new Socket(ip, port);
             Client client = new Client(socket, username);
             client.listenForMessage();
+            client.listenForObject();
             client.sendMessage();
         }
     }
@@ -114,10 +147,13 @@ public class Client {
     // die Main Methode: sie startet die LoginGui
     public static void main(String[] args) throws IOException {
 
-        Client.username = "LOL";
+        Client.username = "Lilly";
         Client.ip = "localhost";
         Client.port = 25565;
         Client.start();
 
+    }
+
+    public class start {
     }
 }

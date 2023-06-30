@@ -7,17 +7,13 @@ import static Server.Card.getCardDeck;
 import static Server.Card.mixCards;
 
 public class Game {
-    int maxPlayer = 4;
-    static int numberOfPlayers = 4;
+    static int numberOfPlayers;
     static int cardsPerPlayer = 5;
     static Player firstPlayer;
     static Player currentPlayer;
     static Turn reihenfolge = new Turn();
     static Card card = new Card();
-    static Card topCard;
     static ArrayList<String> cardDeck = new ArrayList<String>();
-    static boolean gameRunning = false;
-    static int creatorCount = 0;
     private String winner;
 
     // Nessa
@@ -26,8 +22,6 @@ public class Game {
     public Game() {
 
         // Karten mischen
-        mixCards();
-        System.out.println("Gemischter cardDeck: \n" + getCardDeck() + "\n");
 
         // Karten austeilen
         // dealCards();
@@ -37,32 +31,22 @@ public class Game {
         // showTopCard();
 
         // Spiel spielen bis es einen Gewinner gibt
-        System.out.println("\n" + "--PLAY-----------------------------------------");
         // play();
 
     }
 
-    public void startGame() {
+    public void startGame(int size) {
+        numberOfPlayers = size;
+        mixCards();
+        System.out.println("Gemischtes cardDeck: \n" + getCardDeck() + "\n");
+        reihenfolge.connectFirstAndLast();
         firstPlayer = reihenfolge.getFirstPlayer();
         currentPlayer = firstPlayer;
         dealCards();
-
-        while (winner == null) {
-
-            playerTurn();
-            checkForWinner();
-        }
-
     }
 
-    public void playerTurn() {
-
-    }
-
-    // Oberste Karte anzeigen lassen
-    public static String showTopCard() {
-        System.out.println("Oberste Karte: " + getCardDeck().get(0));
-        return getCardDeck().get(0);
+    public void playerMove() {
+        // Move
     }
 
     // 5 Karten an jeden Spieler austeilen
@@ -70,7 +54,7 @@ public class Game {
         currentPlayer = firstPlayer;
         int cards = 0;
 
-        for (int player = 0; player < numberOfPlayers; player++) {
+        for (int i = 0; i < numberOfPlayers; i++) {
 
             while (cards < cardsPerPlayer) {
                 currentPlayer.getPlayerCards().add(getCardDeck().get(0));
@@ -95,61 +79,65 @@ public class Game {
     }
 
     // Karten ziehen
-    private void drawCard() {
-        for (int i = 0; i < drawCards; i++) {
-            currentPlayer.playerCards.add(getCardDeck().get(getCardDeck().size() - 1));
-            getCardDeck().remove(getCardDeck().get(getCardDeck().size() - 1));
-        }
-        drawCards = 0;
+    /*
+     * private void drawCard() {
+     * for (int i = 0; i < drawCards; i++) {
+     * currentPlayer.playerCards.add(getCardDeck().get(getCardDeck().size() - 1));
+     * getCardDeck().remove(getCardDeck().get(getCardDeck().size() - 1));
+     * }
+     * drawCards = 0;
+     * 
+     * if (showTopCard().contains("7")) {
+     * play();
+     * }
+     * }
+     */
 
-        if (showTopCard().contains("7")){
-            play();
-        }
-    }
-
-
-    private void checkForWinner() {
+    public boolean checkForWinner() {
         if (currentPlayer.getPlayerCards().isEmpty()) {
             winner = currentPlayer.getPlayerName();
             System.out.println("Gewinner ist: " + winner);
-        } 
-        
+            return true;
+        }
+        return false;
+    }
 
     // TEST /////////////////////////////////////
     static Scanner scanner = new Scanner(System.in);
     public static String playerCard;
     //////////////////////////////////////////
 
-    private void play() {
-        while (winner == null) {
-            System.out.println(currentPlayer.getPlayerName());
-            System.out.println(currentPlayer.getPlayerCards());
-            System.out.println("Lege einer deiner Karten");
-            playerCard = scanner.nextLine();
+    /*
+     * private void play() {
+     * while (winner == null) {
+     * System.out.println(currentPlayer.getPlayerName());
+     * System.out.println(currentPlayer.getPlayerCards());
+     * System.out.println("Lege einer deiner Karten");
+     * playerCard = scanner.nextLine();
+     * 
+     * if (playerCard.isEmpty()) {
+     * // drawCard();
+     * } else {
+     * putPlayerCardToCardDeck(playerCard);
+     * }
+     * System.out.println("\n");
+     * 
+     * checkForWinner();
+     * 
+     * specialCards(showTopCard());
+     * currentPlayer = currentPlayer.nextPlayer;
+     * 
+     * }
+     * }
+     */
 
-            if (playerCard.isEmpty()) {
-                drawCard();
-            } else {
-                putPlayerCardToCardDeck(playerCard);
-            }
-            System.out.println("\n");
-
-            checkForWinner();
-
-            specialCards(showTopCard());
-            currentPlayer = currentPlayer.nextPlayer;
-
-        }
-    }
-
-    
     private void specialCards(String playerCard) {
         // 2 Karten ziehen
 
-        if (showTopCard().contains("7")) {
+        if (getTopCard().contains("7")) {
             if (playerCard.contains("7")) {
                 currentPlayer.playerCards.remove(playerCard);
-                drawCards += 2;
+                // drawCards += 2;
             }
 
             // 4 Ziehen
@@ -166,7 +154,6 @@ public class Game {
 
     }
 
-
     public static void createPlayer(String playerIP, String playerName, Server.Server.ClientHandler playerID) {
         reihenfolge.createPlayer(playerIP, playerName, playerID);
         System.out.println("Hallo " + playerName);
@@ -177,6 +164,15 @@ public class Game {
         return reihenfolge.getAllKeyObjects();
     }
 
+    public void printAllKeyObjects() {
+        ArrayList<Object> keyObjects = getAllKeyObjects();
+        for (int i = 0; i < keyObjects.size(); i += 2) {
+            String playerName = (String) keyObjects.get(i);
+            int cardDeckSize = (int) keyObjects.get(i + 1);
+            System.out.println("Player Name: " + playerName + ", Card Deck Size: " + cardDeckSize);
+        }
+    }
+
     public Player getCurrentPlayer() {
         return currentPlayer;
     }
@@ -185,7 +181,16 @@ public class Game {
         return reihenfolge.getPlayerObject(clientHandler);
     }
 
+    // Oberste Karte anzeigen lassen
+    public void showTopCard() {
+        System.out.println(getTopCard());
+    }
+
+    public String getTopCard() {
+        return getCardDeck().get(0);
+    }
+
 }
 
-// [Clienthandler , [ist-Drann , [karten] , [(als Map)Spielername , Anzahl
-// Karten von Spieler] , Oberste Spielkarte]
+// [ist-Drann , [karten] , [Spielername , AnzahlKarten von Spieler] , Oberste
+// Spielkarte]

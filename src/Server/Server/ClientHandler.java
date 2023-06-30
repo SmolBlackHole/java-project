@@ -86,15 +86,27 @@ public class ClientHandler implements Runnable {
         broadcast("|Server| " + username + " hat das Spiel verlassen!");
     }
 
-    /*
-     * public void sendObjects(Objects) {
-     * 
-     * objectOutputStream.writeObject(Objects);
-     * 
-     * 
-     * 
-     * }
-     */
+    public void sendObjects(ArrayList<Object> informations) {
+        try {
+            boolean isTurn = (boolean) informations.get(0);
+            ArrayList<String> playerCards = (ArrayList<String>) informations.get(1);
+            ArrayList<Object> keyObjects = (ArrayList<Object>) informations.get(3);
+            for (int i = 0; i < keyObjects.size(); i += 2) {
+                String playerName = (String) keyObjects.get(i);
+                int cardDeckSize = (int) keyObjects.get(i + 1);
+                if (playerName != this.username) {
+                    objectOutputStream.writeObject("Player Name: " + playerName + ", Card Deck Size: " + cardDeckSize);
+                }
+            }
+            String topCard = (String) informations.get(4);
+
+            objectOutputStream.writeObject(isTurn + " " + playerCards + " " + topCard);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }
 
     // Methode, um den Server zu schließen
     public void close(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {

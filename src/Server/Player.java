@@ -5,7 +5,6 @@ import java.util.ArrayList;
 public class Player {
     /* ArrayList<String> handCards = new ArrayList<String>(); */
     ArrayList<String> playerCards;
-    Object[] keyObjects;
     String playerIP;
     boolean isConnected = true;
     String playerName;
@@ -96,17 +95,6 @@ public class Player {
      * handCards.add(card);
      * }
      */
-
-    public Object[] getKeyObjects() {
-        this.keyObjects = new Object[2];
-        keyObjects[0] = playerName;
-        keyObjects[1] = playerCards.size();
-        return this.keyObjects;
-    }
-
-    public void setKeyObjects(String name) {
-        keyObjects[0] = name;
-    }
 
     // Klasse Player wird ausschließlich von Klasse Game genutzt und aufgerufen
     // public static void main(String[] args) { }

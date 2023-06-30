@@ -57,7 +57,16 @@ public class Server {
 
     public void start() {
         game = new Game();
-        game.startGame();
+        game.startGame((int) clientHandlers.size());
+
+        for (int i = 0; i < 4; i++) {
+            // jeder Player soll die aktuellen infos kriegen
+            for (ClientHandler clientHandler : clientHandlers) {
+                createList(clientHandler);
+            }
+            game.playerMove();
+
+        }
     }
 
     public void closeServerSocket() {
@@ -70,16 +79,32 @@ public class Server {
         }
     }
 
-    public void CreateList(ClientHandler clientHandler) {
+    public void createList(ClientHandler clientHandler) {
         ArrayList<Object> informations = new ArrayList<>();
         boolean isTurn = false;
         if (game.getCurrentPlayer() == game.getPlayerObject(clientHandler)) {
             isTurn = true;
         }
 
+        // Info ob Client an der Reihe ist
         informations.add(isTurn);
+        // Eigene Handkarten
         informations.add(game.getPlayerObject(clientHandler).getPlayerCards());
+        // Info über Namen und zugehörige Kartenanzahl der Mitspieler
         informations.add(game.getAllKeyObjects());
+        informations.add(game.getTopCard());
+
+        /*
+         * System.out.println("\nab jetzt Ausgabe Liste");
+         * System.out.println(isTurn + " " +
+         * game.getPlayerObject(clientHandler).getPlayerCards());
+         * game.printAllKeyObjects();
+         */
+        System.out.println(clientHandler.getUsername() + ": " + isTurn + " , "
+                + game.getPlayerObject(clientHandler).getPlayerCards() + " , "
+                + game.getAllKeyObjects() + " , " + game.getTopCard());
+
+        clientHandler.sendObjects(informations);
     }
 
     public static void CheckMaxPlayer() {
@@ -114,12 +139,11 @@ public class Server {
         // hier wird vor dem Starten um eine Porteingabe gebeten
         Scanner portscanner = new Scanner(System.in);
         System.out.println("Port Eingeben");
-        int port = Integer.parseInt(portscanner.nextLine());
+        int port = 25565;
 
         Scanner playerscanner = new Scanner(System.in);
         System.out.println("Max Spieler");
-        maxPlayer = Integer.parseInt(playerscanner.nextLine());
-
+        maxPlayer = 2;
         // hier wird ein neuer Socket erstellt
         ServerSocket serverSocket = new ServerSocket(port);
         Server tempserver = new Server(serverSocket);

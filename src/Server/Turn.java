@@ -6,7 +6,7 @@ public class Turn {
     // Regelt Player und Reihenfolgen
     static Player firstPlayer;
     static Player prevPlayer;
-    ArrayList<Object> keyObjects;
+    ArrayList<Object> keyObjects = new ArrayList<Object>();
     // int playerCount;
 
     public Turn() {
@@ -41,21 +41,28 @@ public class Turn {
 
     public void listAllPlayers() {
         Player temp = firstPlayer;
-        while (!(temp.nextPlayer == firstPlayer || temp.nextPlayer == null)) {
+        do {
             System.out.println(temp.getPlayerName());
             temp = temp.nextPlayer;
 
-        }
+        } while (temp != firstPlayer);
         System.out.println(temp.getPlayerName());
     }
 
     public ArrayList<Object> getAllKeyObjects() {
-        Player temp = firstPlayer;
-        while (!(temp.nextPlayer == firstPlayer || temp.nextPlayer == null)) {
-            keyObjects.add(temp.getKeyObjects());
-            temp = temp.nextPlayer;
-
+        if (keyObjects.isEmpty()) {
+            createAllKeyObjects();
         }
+        return keyObjects;
+    }
+
+    public ArrayList<Object> createAllKeyObjects() {
+        Player temp = firstPlayer;
+        do {
+            keyObjects.add(temp.getPlayerName());
+            keyObjects.add(temp.getPlayerCards().size());
+            temp = temp.nextPlayer;
+        } while (temp != firstPlayer);
         return keyObjects;
     }
 
