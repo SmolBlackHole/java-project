@@ -22,6 +22,8 @@ public class CardGameUI {
                     ex.printStackTrace();
                 }
 
+
+                // gescheiterter Versuch den Server irgendwie auszutricksen
                 Turn.createPlayer("127.0.0.1", "Player 1", null);
                 Turn.createPlayer("127.0.0.1", "Player 2", null);
                 Turn.createPlayer("127.0.0.1", "Player 3", null);
@@ -111,6 +113,7 @@ public class CardGameUI {
             }
         }
 
+        // paint.exe
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             Graphics2D g2d = (Graphics2D) g.create();
@@ -141,6 +144,8 @@ public class CardGameUI {
             g2d.drawString(text, 0, fm.getAscent());
         }
 
+
+        // kp was ich hier machen wollte
         @Override
         public void addNotify() {
             super.addNotify();
@@ -154,6 +159,7 @@ public class CardGameUI {
         }
     }
 
+    // von Patrik geklauter und modifizierter Code
     public static class Turn {
 
         static Player firstPlayer;
@@ -192,6 +198,7 @@ public class CardGameUI {
             }
         }
 
+        // Temporärer Code, damit hier wenigstens etwas funktioniert
         public enum Face {
             ACE("A"),
             TWO("2"),
@@ -245,13 +252,16 @@ public class CardGameUI {
 
             public Hand(Player player) {
                 cards = new ArrayList<>(25);
-                // Add logic to get the player's cards based on the provided player object
-                // Example: cards = player.getPlayerCards();
+                // TODO: Logik, um Karten basierend auf Werten von Spieler Objekt zu bekommen
+                // Irndwie sowas in der Richtung: cards = player.getPlayerCards();
+
+                // Broken Code der irgendwie funktioniert und 2 Karten rendert (verstehe nicht, warum das funktioniert)
                 cards.add(new Card(Suit.CLUBS, Face.TWO));
                 cards.add(new Card(Suit.HEARTS, Face.KING));
                 // ...
             }
 
+            // Useless Code
             public void add(Card card) {
                 cards.add(card);
             }
