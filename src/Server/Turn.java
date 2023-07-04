@@ -30,7 +30,7 @@ public class Turn {
 
     // direkt nach Spielbeginn aufrufen, um Reihenfolgeschleife in Player zu
     // schließen
-    static public void connectFirstAndLast() {
+    public void connectFirstAndLast() {
         Player tempPlayer = firstPlayer;
         while (tempPlayer.getNextPlayer() != null) {
             tempPlayer = tempPlayer.getNextPlayer();

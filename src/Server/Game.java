@@ -15,25 +15,7 @@ public class Game {
     static Card card = new Card();
     static ArrayList<String> cardDeck = new ArrayList<String>();
     private String winner;
-
-    // Nessa
-
-    // Start Game
-    public Game() {
-
-        // Karten mischen
-
-        // Karten austeilen
-        // dealCards();
-        // System.out.println("\n" + "Restliche Karten: \n" + getCardDeck() + "\n");
-
-        // oberste Karte vom Stapel anzeigen lassen
-        // showTopCard();
-
-        // Spiel spielen bis es einen Gewinner gibt
-        // play();
-
-    }
+    private int drawCards = 0;
 
     public void startGame(int size) {
         numberOfPlayers = size;
@@ -43,6 +25,7 @@ public class Game {
         firstPlayer = reihenfolge.getFirstPlayer();
         currentPlayer = firstPlayer;
         dealCards();
+        play();
     }
 
     public void playerMove() {
@@ -79,19 +62,22 @@ public class Game {
     }
 
     // Karten ziehen
-    /*
-     * private void drawCard() {
-     * for (int i = 0; i < drawCards; i++) {
-     * currentPlayer.playerCards.add(getCardDeck().get(getCardDeck().size() - 1));
-     * getCardDeck().remove(getCardDeck().get(getCardDeck().size() - 1));
-     * }
-     * drawCards = 0;
-     * 
-     * if (showTopCard().contains("7")) {
-     * play();
-     * }
-     * }
-     */
+
+    private void drawCard() {
+        int i = 0;
+
+        do {
+            currentPlayer.playerCards.add(getCardDeck().get(getCardDeck().size() - 1));
+            getCardDeck().remove(getCardDeck().get(getCardDeck().size() - 1));
+            i++;
+        } while (i < drawCards);
+
+        drawCards = 0;
+
+        if (getTopCard().contains("7")) {
+            play();
+        }
+    }
 
     public boolean checkForWinner() {
         if (currentPlayer.getPlayerCards().isEmpty()) {
@@ -107,29 +93,27 @@ public class Game {
     public static String playerCard;
     //////////////////////////////////////////
 
-    /*
-     * private void play() {
-     * while (winner == null) {
-     * System.out.println(currentPlayer.getPlayerName());
-     * System.out.println(currentPlayer.getPlayerCards());
-     * System.out.println("Lege einer deiner Karten");
-     * playerCard = scanner.nextLine();
-     * 
-     * if (playerCard.isEmpty()) {
-     * // drawCard();
-     * } else {
-     * putPlayerCardToCardDeck(playerCard);
-     * }
-     * System.out.println("\n");
-     * 
-     * checkForWinner();
-     * 
-     * specialCards(showTopCard());
-     * currentPlayer = currentPlayer.nextPlayer;
-     * 
-     * }
-     * }
-     */
+    private void play() {
+        while (winner == null) {
+            System.out.println(currentPlayer.getPlayerName());
+            System.out.println(currentPlayer.getPlayerCards());
+            System.out.println("Lege einer deiner Karten");
+            playerCard = scanner.nextLine();
+
+            if (playerCard.isEmpty()) {
+                drawCard();
+            } else {
+                putPlayerCardToCardDeck(playerCard);
+            }
+
+            System.out.println("\n");
+
+            checkForWinner();
+            specialCards(getTopCard());
+            currentPlayer = currentPlayer.nextPlayer;
+
+        }
+    }
 
     private void specialCards(String playerCard) {
         // 2 Karten ziehen
@@ -137,7 +121,8 @@ public class Game {
         if (getTopCard().contains("7")) {
             if (playerCard.contains("7")) {
                 currentPlayer.playerCards.remove(playerCard);
-                // drawCards += 2;
+                drawCards += 2;
+                System.out.println("du musst 2 ziehen " + currentPlayer.nextPlayer.getPlayerName() + "\n");
             }
 
             // 4 Ziehen
@@ -145,11 +130,14 @@ public class Game {
             for (int i = 0; i <= 4; i++) {
                 currentPlayer.nextPlayer.playerCards.add(getCardDeck().get(getCardDeck().size() - 1));
                 getCardDeck().remove(getCardDeck().get(getCardDeck().size() - 1));
+                System.out.println("du musst 4 ziehen" + currentPlayer.nextPlayer.getPlayerName() + "\n");
             }
 
             // Aussetzer
         } else if (playerCard.contains("A")) {
+            System.out.println("du musst aussetzen" + currentPlayer.nextPlayer.getPlayerName() + "\n");
             currentPlayer = currentPlayer.nextPlayer;
+
         }
 
     }
@@ -182,10 +170,6 @@ public class Game {
     }
 
     // Oberste Karte anzeigen lassen
-    public void showTopCard() {
-        System.out.println(getTopCard());
-    }
-
     public String getTopCard() {
         return getCardDeck().get(0);
     }

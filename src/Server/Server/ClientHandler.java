@@ -11,8 +11,10 @@ public class ClientHandler implements Runnable {
     private Socket socket;
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;
-    private ObjectOutputStream objectOutputStream;
     private String username;
+    private String newMessage;
+    private String choose;
+    private String spielerKarte;
     public static ArrayList<ClientHandler> clientHandlers = new ArrayList<>();
 
     // hier werden die BufferedReader und BufferedWriter erstellt; diese benutzen
@@ -20,16 +22,14 @@ public class ClientHandler implements Runnable {
     public ClientHandler(Socket socket) {
         try {
             this.socket = socket;
-            OutputStream outputStream = socket.getOutputStream();
             this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             this.username = bufferedReader.readLine();
-            this.objectOutputStream = new ObjectOutputStream(outputStream);
             clientHandlers.add(this);
 
             // hier wird die broadcast Methode aufgerufen, um den Chatbeitritt anzukündigen
 
-            broadcast("|Server| " + username + " Ist dem Spiel beigetreten");
+            broadcast("M<:!ds5" + "|Server| " + username + " Ist dem Spiel beigetreten");
 
         } catch (IOException e) {
             close(socket, bufferedReader, bufferedWriter);
@@ -54,8 +54,38 @@ public class ClientHandler implements Runnable {
             // soballd ein Client eine Nachricht sendet, wird diese hier empfangen und mit
             // der Methode broadcast an alle Clients versendet
             try {
+                newMessage = "";
+                choose = "";
+                spielerKarte = "";
                 messageFromClient = bufferedReader.readLine();
-                broadcast(messageFromClient);
+                for (int i = 0; i < messageFromClient.length(); i++) {
+                    if (choose.equals("M<:!ds5")) {
+                        newMessage += messageFromClient.charAt(i);
+                    }
+
+                    if (choose.equals("C8->7G#")) {
+                        spielerKarte += messageFromClient.charAt(i);
+                    }
+                    if (i <= 6) {
+                        choose += messageFromClient.charAt(i);
+                    }
+                }
+
+                if (choose.equals("M<:!ds5")) {
+                    String temp = choose + newMessage;
+                    broadcast(temp);
+                }
+
+                if (choose.equals("Bh7.|+e")) {
+                    System.out.println("Spieler Zieht");
+                }
+
+                if (choose.equals("C8->7G#")) {
+                    System.out.println("Spieler Legt");
+                    System.out.println("Gelegte Karte " + spielerKarte);
+
+                }
+
             } catch (IOException e) {
                 close(socket, bufferedReader, bufferedWriter);
                 break;
@@ -84,28 +114,6 @@ public class ClientHandler implements Runnable {
     public void removeClientHandler() {
         clientHandlers.remove(this);
         broadcast("|Server| " + username + " hat das Spiel verlassen!");
-    }
-
-    public void sendObjects(ArrayList<Object> informations) {
-        try {
-            boolean isTurn = (boolean) informations.get(0);
-            ArrayList<String> playerCards = (ArrayList<String>) informations.get(1);
-            ArrayList<Object> keyObjects = (ArrayList<Object>) informations.get(3);
-            for (int i = 0; i < keyObjects.size(); i += 2) {
-                String playerName = (String) keyObjects.get(i);
-                int cardDeckSize = (int) keyObjects.get(i + 1);
-                if (playerName != this.username) {
-                    objectOutputStream.writeObject("Player Name: " + playerName + ", Card Deck Size: " + cardDeckSize);
-                }
-            }
-            String topCard = (String) informations.get(4);
-
-            objectOutputStream.writeObject(isTurn + " " + playerCards + " " + topCard);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
     }
 
     // Methode, um den Server zu schließen

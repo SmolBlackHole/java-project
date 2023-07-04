@@ -14,7 +14,6 @@ public class Server {
     private static int maxPlayer;
     private static boolean fullLobby;
     public static ArrayList<ClientHandler> clientHandlers = new ArrayList<>();
-    private static boolean temp;
 
     public Server(ServerSocket serverSocket) {
         this.serverSocket = serverSocket;
@@ -59,14 +58,16 @@ public class Server {
         game = new Game();
         game.startGame((int) clientHandlers.size());
 
-        for (int i = 0; i < 4; i++) {
-            // jeder Player soll die aktuellen infos kriegen
-            for (ClientHandler clientHandler : clientHandlers) {
-                createList(clientHandler);
-            }
-            game.playerMove();
-
-        }
+        /*
+         * for (int i = 0; i < 4; i++) {
+         * // jeder Player soll die aktuellen infos kriegen
+         * for (ClientHandler clientHandler : clientHandlers) {
+         * createList(clientHandler);
+         * }
+         * game.playerMove();
+         * 
+         * }
+         */
     }
 
     public void closeServerSocket() {
@@ -104,7 +105,6 @@ public class Server {
                 + game.getPlayerObject(clientHandler).getPlayerCards() + " , "
                 + game.getAllKeyObjects() + " , " + game.getTopCard());
 
-        clientHandler.sendObjects(informations);
     }
 
     public static void CheckMaxPlayer() {
@@ -150,6 +150,5 @@ public class Server {
         server = tempserver;
         CheckMaxPlayer();
         server.startServer();
-
     }
 }
