@@ -6,8 +6,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Scanner;
 
-import Server.Server.ClientHandler;
-
 public class Client {
 
     private static Socket socket;
@@ -88,10 +86,13 @@ public class Client {
                             }
                         }
                         if (choose.equals("M<:!ds5")) {
+                            // Hier Hast du die Empfangene Nachricht aus dem Chat, auch deine Eigenen
                             System.out.println(newMessage);
                         }
 
                         if (choose.equals("C8->7G#")) {
+                            // Hier Entsteht dann die Verknüpfung oder Methode die aus dem String die
+                            // Variablen befüllt
                         }
 
                     } catch (IOException e) {
@@ -178,3 +179,24 @@ public class Client {
 // in der Main Funktion siehst du die Variablen die ich befüllt habe. username,
 // ip, und port, diese müssen in Zukunft als Allererstes abgefragt werden, bevor
 // der Client gestartet wird
+
+// die Informationen die der Client jede Runder bekommt wären folgende:
+// C8->7G#ist-Drann|karten|ObersteSpielkarte|AnzahlSpieler|Spielername1|AnzahlKarten|Spielername2|AnzahlKarten|Spielername3|AnzahlKarten|
+// daraus werde ich eine Funktion schreiben die euch diesen String in
+// verschiedene Variablen aufteilt.
+// istDrann = boolean --> ein bool um zu gucken ob der Spieler gerade drann ist
+// karten = Arraylist --> die Karten die man am Anfang gezogen hat und die
+// Karten die man Ziehen muss, ist immer eine Liste mit den Karten die der
+// Spieler Aktuell haben sollte.
+// ObersteSpielKarte = String --> der Name der Obersten Karte auf dem
+// Wegwerfstapel
+// AnzahlSpieler = Int
+// mitspieler = [[Spielername,Anzahlkarten], [Spielername2,Anzahlkarten].....
+// --> eine Liste aus Listen die alle Spieler und ihre Anzahl an Karten besitzt.
+// hier wird auch der Eigene Name und die eigene Anzahl stehen, diese sollten am
+// besten ausgefiltert werden.
+// Diese Daten werden Jedesmal geschickt, auch wenn ihr karten ziehen müsst,
+// oder nicht drann seit
+// guck am besten das du die Liste mit den eigenen karten dann einfach entweder
+// jedesmal ersetzt oder so filterst, dass du nur die einfügst die du noch nicht
+// hast, damit sich keine Doppeln

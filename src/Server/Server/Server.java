@@ -13,6 +13,7 @@ public class Server {
     private Game game;
     private static int maxPlayer;
     private static boolean fullLobby;
+    public static String data;
     public static ArrayList<ClientHandler> clientHandlers = new ArrayList<>();
 
     public Server(ServerSocket serverSocket) {
@@ -80,30 +81,21 @@ public class Server {
         }
     }
 
+    // C8->7G#ist-Drann|karten|ObersteSpielkarte|AnzahlSpieler|Spielername1|AnzahlKarten|Spielername2|AnzahlKarten|Spielername3|AnzahlKarten|.....
     public void createList(ClientHandler clientHandler) {
-        ArrayList<Object> informations = new ArrayList<>();
+        data = "";
         boolean isTurn = false;
         if (game.getCurrentPlayer() == game.getPlayerObject(clientHandler)) {
             isTurn = true;
         }
 
-        // Info ob Client an der Reihe ist
-        informations.add(isTurn);
-        // Eigene Handkarten
-        informations.add(game.getPlayerObject(clientHandler).getPlayerCards());
-        // Info über Namen und zugehörige Kartenanzahl der Mitspieler
-        informations.add(game.getAllKeyObjects());
-        informations.add(game.getTopCard());
-
-        /*
-         * System.out.println("\nab jetzt Ausgabe Liste");
-         * System.out.println(isTurn + " " +
-         * game.getPlayerObject(clientHandler).getPlayerCards());
-         * game.printAllKeyObjects();
-         */
         System.out.println(clientHandler.getUsername() + ": " + isTurn + " , "
                 + game.getPlayerObject(clientHandler).getPlayerCards() + " , "
                 + game.getAllKeyObjects() + " , " + game.getTopCard());
+        data = "C8->7G#" + isTurn + "|" + game.getPlayerObject(clientHandler).getPlayerCards() + "|"
+                + game.getAllKeyObjects() + " , " + game.getTopCard() + "|" + maxPlayer + "|"
+                + clientHandler.getUsername() + "|" + game.getPlayerObject(clientHandler).getPlayerCards() + "|";
+        System.out.println(data);
 
     }
 

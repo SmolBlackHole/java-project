@@ -175,6 +175,3 @@ public class Game {
     }
 
 }
-
-// [ist-Drann , [karten] , [Spielername , AnzahlKarten von Spieler] , Oberste
-// Spielkarte]
