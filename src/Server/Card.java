@@ -7,6 +7,7 @@ public class Card {
 
     private static ArrayList<String> cardDeck = new ArrayList<String>();
 
+    // Methode erzeugt alle Karten im Spiel und mischt diese
     public static void mixCards() {
         cardDeck.add("H7");
         cardDeck.add("H8");
