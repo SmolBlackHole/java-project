@@ -6,7 +6,9 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Scanner;
 import Server.Game;
-//gh
+//gh hkjkjbjkbjbjk
+
+
 
 public class Server {
     private static ServerSocket serverSocket;
@@ -66,7 +68,7 @@ public class Server {
 
     public void start() {
         for(ClientHandler clientHandler : clientHandlers){
-            game.createPlayer(clientHandler.getIP(), clientHandler.getUsername(), clientHandler);
+            game.createPlayer(clientHandler.getUsername(), clientHandler);
         }
 
         game = new Game();
@@ -75,14 +77,17 @@ public class Server {
         
         while(!game.checkForWinner()) {
         // jeder Player soll die aktuellen infos kriegen
+            game.special();
             for (ClientHandler clientHandler : clientHandlers) {
                 clientHandler.sendObject(createList(clientHandler));
                 System.out.println(clientHandler.getUsername() + " " + createList(clientHandler));
             }
             game.play();
-        //game.playerMove();
-         
         }
+        for (ClientHandler clientHandler : clientHandlers) {
+                clientHandler.sendObject(createList(clientHandler)+game.getWinner());
+                System.out.println(clientHandler.getUsername() + " " + createList(clientHandler) + " " + game.getWinner());
+            }
         
     }
 
@@ -112,7 +117,7 @@ public class Server {
         for(ClientHandler player : clientHandlers){
             data += player.getUsername() + "|" + game.getPlayerObject(player).getPlayerCards().size() + "|";
         }
-
+        data = data + " ";
         return data;
 
     }
@@ -153,12 +158,12 @@ public class Server {
 
         Scanner playerscanner = new Scanner(System.in);
         System.out.println("Max Spieler");
-        maxPlayer = 2;
+        maxPlayer = 3;
         // hier wird ein neuer Socket erstellt
         ServerSocket serverSocket = new ServerSocket(port);
         Server tempserver = new Server(serverSocket);
         server = tempserver;
         CheckMaxPlayer();
         server.startServer();
-    }
+    }//    K<;?dHs0
 }

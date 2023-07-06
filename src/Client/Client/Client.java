@@ -1,5 +1,7 @@
 package Client.Client;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.io.*;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
@@ -17,6 +19,17 @@ public class Client {
     public static String newMessage;
     public static String gameData;
     public static int port;
+    public static boolean istDrann;
+    public static ArrayList<String> karten = new ArrayList<String>();
+    public static String ObersteSpielkarte;
+    public static ArrayList<ArrayList> Spieler = new ArrayList<ArrayList>();
+    public static int AnzahlSpieler;
+    public static String Gewinner;
+    
+
+    
+
+                       // "C8->7G#ist-Drann|karten|ObersteSpielkarte|AnzahlSpieler|Spielername1|AnzahlKarten|Spielername2|AnzahlKarten|Spielername3|AnzahlKarten|"
 
     public Client(Socket socket, String username) {
         try {
@@ -49,7 +62,6 @@ public class Client {
                         bufferedWriter.write("M<:!ds5" + "|" + time + "|" + username + ": " + messageToSend);
                         bufferedWriter.newLine();
                         bufferedWriter.flush();
-
                     } catch (IOException e) {
                         close(socket, bufferedWriter, bufferedReader);
                     }
@@ -71,6 +83,7 @@ public class Client {
                     try {
                         choose = "";
                         newMessage = "";
+                        String winner = "";
                         gameData = "";
                         msgFromGroupChat = bufferedReader.readLine();
                         for (int i = 0; i < msgFromGroupChat.length(); i++) {
@@ -81,6 +94,9 @@ public class Client {
                             if (choose.equals("C8->7G#")) {
                                 gameData += msgFromGroupChat.charAt(i);
                             }
+                            if (choose.equals("K<;?dHs0")) {
+                            winner += msgFromGroupChat.charAt(i);                        
+                        }
                             if (i <= 6) {
                                 choose += msgFromGroupChat.charAt(i);
                             }
@@ -89,8 +105,96 @@ public class Client {
                             // Hier Hast du die Empfangene Nachricht aus dem Chat, auch deine Eigenen
                             System.out.println(newMessage);
                         }
+                        if (choose.equals("K<;?dHs0")) {
+                            // Wenn diese String befüllt ist, bekommst du den Namen des Gewinners und das Spiel soll zuende sein.
+                            Gewinner = winner;                      
+                        }
 
                         if (choose.equals("C8->7G#")) {
+                            int a = 0;
+                            String b;
+                            String turn = "";
+                            String kar = "";
+                            String top = "";
+                            String count = "";
+                            String Pname = "";
+                            String Pcount = "";
+                            Spieler.clear();
+
+                            for (int i = 0; i < gameData.length(); i++) {
+                                ArrayList<Object> Spielerdaten = new ArrayList<Object>();
+                                b = "" + gameData.charAt(i);
+                                if(a == 6){
+                                    a=4;
+                                    String pn = Pname;
+                                    Spielerdaten.add(pn);
+                                    Pname = "";
+                                    try {
+                                        int nc = Integer.parseInt(Pcount);
+                                        Spielerdaten.add(nc);
+                                        Pcount = "";
+                                        
+                                    }
+                                    catch (NumberFormatException e) {
+                                        e.printStackTrace();  
+                                    }
+                                    Spieler.add(Spielerdaten);
+                                }  
+                                if (a == 0 &&  !b.equals("|")) {
+                                    turn = turn + b;
+                                }
+
+                                if (a == 1 && !b.equals("|")) {
+                                    if(!b.equals("[") && !b.equals("]") ){
+                                        kar = kar + b;
+                                    }
+                                }
+                                if (a == 2 && !b.equals("|")) {
+                                    top = top + b;
+                                }
+                                if (a == 3 && !b.equals("|")) {
+                                    count = count + b;
+                                }
+
+                                if (a == 4 && !b.equals("|")) {
+                                    Pname = Pname + b;
+                                }
+                                if (a == 5 && !b.equals("|")) {
+                                    Pcount = Pcount + b;
+
+                                }
+                              
+                                if (b.equals("|")) {
+                                    a++;
+                                }
+                            }
+                            if( turn.equals("true")){
+                                istDrann = true;
+                            }if (turn.equals("false")) {
+                                istDrann = false;
+                            }
+                            ArrayList<String> strList = new ArrayList<String>(Arrays.asList(kar.split(",")));
+                            karten = strList;
+
+                            ObersteSpielkarte = top;
+                            try {
+                            AnzahlSpieler = Integer.parseInt(count);
+                            }
+                            catch (NumberFormatException e) {
+                                e.printStackTrace();  
+                            }
+                            
+                            System.out.println(istDrann);
+                            System.out.println(karten);
+                            System.out.println(ObersteSpielkarte);
+                            System.out.println(AnzahlSpieler);
+                            System.out.println(Spieler);
+
+
+
+                            
+
+
                             System.out.println("Game array " + gameData);
                             // Hier Entsteht dann die Verknüpfung oder Methode die aus dem String die
                             // Variablen befüllt
@@ -170,7 +274,7 @@ public class Client {
 // um dem Server zu Signalisieren das du eine Karte ziehen magst/musst bzws
 // keine Karte legen kannst, sowohl bei einer +2 karte als auch wenn du keine
 // Passenden Karten hast.
-// schicke einen String mit "C8->7G#"+"Kartenname" also: data = "C8->7G#"+"H7"
+// schicke einen String mit "F4->3GA"+"Kartenname" also: data = "F4->3GA"+"H7"
 // um dem Server die Gelegte Karte, in diesem fall die Herz 7, zu schicken. die
 // Anfangszeichen dienen Als
 // Identifikation zwischen Server und Client, damit beide wissen was für Daten
@@ -178,6 +282,7 @@ public class Client {
 // (Das folgende ist noch nicht so Implementiert) benutze sendMessage(msg) um
 // eine Chatnachricht zu schicken, diese wird dann mit dem Chat-Code, Username
 // und der Uhrzeit versehen.
+// ab hier ist wieder alles Implementiert
 // in der Main Funktion siehst du die Variablen die ich befüllt habe. username,
 // ip, und port, diese müssen in Zukunft als Allererstes abgefragt werden, bevor
 // der Client gestartet wird
@@ -202,3 +307,4 @@ public class Client {
 // guck am besten das du die Liste mit den eigenen karten dann einfach entweder
 // jedesmal ersetzt oder so filterst, dass du nur die einfügst die du noch nicht
 // hast, damit sich keine Doppeln
+// wenn die Variable Gewinner mit dem Namen des Gewinners gefüllt ist, ist soll das Spiel vorbei sein

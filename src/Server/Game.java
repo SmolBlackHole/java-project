@@ -12,13 +12,11 @@ public class Game {
     static Player currentPlayer;
     static Turn reihenfolge = new Turn();
     static Card card = new Card();
-    static ArrayList<String> cardDeck = new ArrayList<String>();
+    static ArrayList<String> cardDeck = card.getCardDeck();
     private String winner;
     public boolean checked;
 
-public Game(){
-    cardDeck = card.getCardDeck();
-}
+
     // Methode startet das Spiel 
     // Spieleranzahl muss mit übergeben werden 
     public void startGame(int size) {
@@ -34,10 +32,6 @@ public Game(){
         firstPlayer = reihenfolge.getFirstPlayer();
         // aktueller Spieler wird festgelegt
         currentPlayer = firstPlayer;
-        do{
-            System.out.println(currentPlayer.getPlayerName());
-            currentPlayer = currentPlayer.nextPlayer;
-        } while(currentPlayer != firstPlayer);
         dealCards();
     }
 
@@ -45,19 +39,16 @@ public Game(){
     // je 5 Karten werden an jeden Spieler ausgeteilt
     private void dealCards() {
         currentPlayer = firstPlayer;
-        int cards = 0;
 
         for (int i = 0; i < numberOfPlayers; i++) {
 
-            while (cards < cardsPerPlayer) {
+            for(int cards = 0; cards < cardsPerPlayer; cards++) {
                 currentPlayer.getPlayerCards().add(getCardDeck().get(0));
                 getCardDeck().remove(0);
-                cards++;
             }
 
             System.out.println(currentPlayer.getPlayerName());
             System.out.println(currentPlayer.getPlayerCards());
-            cards = 0;
 
             currentPlayer = currentPlayer.getNextPlayer();
         }
@@ -72,17 +63,19 @@ public Game(){
      
      // Methode regelt Spielablauf, solange es keinen Gewinner gibt
      // gibt es einen Gewinner, wird das Spiel beendet
-    public void play() {
-            System.out.println(currentPlayer.getPlayerName());
-            System.out.println(currentPlayer.getPlayerCards());
-            
-            
+     public void special(){
         if(!checked){ 
             specialCards(getTopCard());
-        }       
+            checked = true;  
+        } 
+     }
+    public void play() {               
             // wenn Spieler keine Karte legen kann, so muss er ziehen
-            
+            System.out.println(currentPlayer.getPlayerName());
+            System.out.println(currentPlayer.getPlayerCards());
+
             System.out.println("Lege einer deiner Karten");
+            //playerCard = currentPlayer.getPlayerID().requestCard();
             playerCard = scanner.nextLine();
 
             if(playerCard.isEmpty()) {
@@ -118,7 +111,7 @@ public Game(){
     private void drawCards(int drawCards) {
         int i = 0;
         do{
-            currentPlayer.nextPlayer.playerCards.add(getCardDeck().get(getCardDeck().size() - 1));
+            currentPlayer.playerCards.add(getCardDeck().get(getCardDeck().size() - 1));
             getCardDeck().remove(getCardDeck().get(getCardDeck().size() - 1));
             i++;
         }while(i < drawCards);
@@ -139,15 +132,13 @@ public Game(){
      
 
     // Methode beschreibt was bei Sonderkarten passiert
-    private boolean specialCards(String playerCard) {
-        checked = true;
+    private void specialCards(String playerCard) {
         // 2 Karten ziehen
 
         if (getTopCard().contains("7")) {
             System.out.println("du musst 2 ziehen " + currentPlayer.getPlayerName() + "\n");
             drawCards(2);
             System.out.println("Du bist immernoch an der Reihe.\n");
-            return true;
             
             // 4 Ziehen
         } else if (getTopCard().equals("PK")) {
@@ -155,23 +146,18 @@ public Game(){
             drawCards(4);
             currentPlayer = currentPlayer.nextPlayer;
             System.out.println("Jetzt ist " + currentPlayer.getPlayerName() + " an der Reihe.\n");
-            return true;
             // Aussetzer
         } else if (playerCard.contains("A")) {
             System.out.println("du musst aussetzen" + currentPlayer.getPlayerName() + "\n");
             currentPlayer = currentPlayer.nextPlayer;
             System.out.println("Jetzt ist " + currentPlayer.getPlayerName() + " an der Reihe.\n");
-            return true;
         }
-        return false;
-
     }
 
 
     // Methode erzeugt Spieler
-     public static void createPlayer(String playerIP, String playerName, Server.Server.ClientHandler playerID) {
-        reihenfolge.createPlayer(playerIP, playerName, playerID);
-        System.out.println("Hallo " + playerName);
+     public static void createPlayer(String playerName, Server.Server.ClientHandler playerID) {
+        reihenfolge.createPlayer(playerName, playerID);
     }
 
 
@@ -192,19 +178,6 @@ public Game(){
     // aktuellen Spieler anzeigen lassen
     public Player getCurrentPlayer() {
         return currentPlayer;
-    }
-
-    public ArrayList<Object> getAllKeyObjects() {
-        return reihenfolge.getAllKeyObjects();
-    }
-
-    public void printAllKeyObjects() {
-        ArrayList<Object> keyObjects = getAllKeyObjects();
-        for (int i = 0; i < keyObjects.size(); i += 2) {
-            String playerName = (String) keyObjects.get(i);
-            int cardDeckSize = (int) keyObjects.get(i + 1);
-            System.out.println("Player Name: " + playerName + ", Card Deck Size: " + cardDeckSize);
-        }
     }
 
     public Player getPlayerObject(Server.Server.ClientHandler clientHandler) {

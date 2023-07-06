@@ -1,6 +1,5 @@
 package Server.Server;
 
-import java.awt.List;
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -88,7 +87,7 @@ public class ClientHandler implements Runnable {
                     System.out.println("Spieler Zieht");
                 }
 
-                if (choose.equals("C8->7G#")) {
+                if (choose.equals("F4->3GA")) {
                     System.out.println("Spieler Legt");
                     System.out.println("Gelegte Karte " + spielerKarte);
 
@@ -156,5 +155,9 @@ public class ClientHandler implements Runnable {
         }
         removeClientHandler();
 
+    }
+
+    public String requestCard(){
+        return spielerKarte;
     }
 }
