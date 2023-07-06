@@ -91,6 +91,7 @@ public class Client {
                         }
 
                         if (choose.equals("C8->7G#")) {
+                            System.out.println("Game array " + gameData);
                             // Hier Entsteht dann die Verknüpfung oder Methode die aus dem String die
                             // Variablen befüllt
                         }
@@ -152,7 +153,7 @@ public class Client {
     // die Main Methode: sie startet die LoginGui
     public static void main(String[] args) throws IOException {
 
-        Client.username = "Patrik";
+        Client.username = "PL3";
         Client.ip = "localhost";
         Client.port = 25565;
         Client.start();

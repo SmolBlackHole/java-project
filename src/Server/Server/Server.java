@@ -59,16 +59,18 @@ public class Server {
         game = new Game();
         game.startGame((int) clientHandlers.size());
 
-        /*
-         * for (int i = 0; i < 4; i++) {
-         * // jeder Player soll die aktuellen infos kriegen
-         * for (ClientHandler clientHandler : clientHandlers) {
-         * createList(clientHandler);
-         * }
-         * game.playerMove();
-         * 
-         * }
-         */
+        
+        while(!game.checkForWinner()) {
+        // jeder Player soll die aktuellen infos kriegen
+            for (ClientHandler clientHandler : clientHandlers) {
+                clientHandler.sendObject(createList(clientHandler));
+                System.out.println("Createlist " + createList(clientHandler));
+            }
+            game.play();
+        //game.playerMove();
+         
+        }
+        
     }
 
     public void closeServerSocket() {
@@ -82,20 +84,23 @@ public class Server {
     }
 
     // C8->7G#ist-Drann|karten|ObersteSpielkarte|AnzahlSpieler|Spielername1|AnzahlKarten|Spielername2|AnzahlKarten|Spielername3|AnzahlKarten|.....
-    public void createList(ClientHandler clientHandler) {
+    public String createList(ClientHandler clientHandler) {
         data = "";
         boolean isTurn = false;
         if (game.getCurrentPlayer() == game.getPlayerObject(clientHandler)) {
             isTurn = true;
         }
 
-        System.out.println(clientHandler.getUsername() + ": " + isTurn + " , "
-                + game.getPlayerObject(clientHandler).getPlayerCards() + " , "
-                + game.getAllKeyObjects() + " , " + game.getTopCard());
         data = "C8->7G#" + isTurn + "|" + game.getPlayerObject(clientHandler).getPlayerCards() + "|"
-                + game.getAllKeyObjects() + " , " + game.getTopCard() + "|" + maxPlayer + "|"
-                + clientHandler.getUsername() + "|" + game.getPlayerObject(clientHandler).getPlayerCards() + "|";
-        System.out.println(data);
+                + game.getTopCard() + "|" + maxPlayer + "|";
+        
+                
+
+        for(ClientHandler player : clientHandlers){
+            data += player.getUsername() + "|" + game.getPlayerObject(player).getPlayerCards().size() + "|";
+        }
+
+        return data;
 
     }
 
@@ -135,7 +140,7 @@ public class Server {
 
         Scanner playerscanner = new Scanner(System.in);
         System.out.println("Max Spieler");
-        maxPlayer = 2;
+        maxPlayer = 3;
         // hier wird ein neuer Socket erstellt
         ServerSocket serverSocket = new ServerSocket(port);
         Server tempserver = new Server(serverSocket);

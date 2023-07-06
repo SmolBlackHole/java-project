@@ -110,6 +110,19 @@ public class ClientHandler implements Runnable {
 
     }
 
+    public void sendObject(String messageToSend) {
+        ClientHandler clientHandler = this;
+        try {
+            clientHandler.bufferedWriter.write(messageToSend);
+            clientHandler.bufferedWriter.newLine();
+            clientHandler.bufferedWriter.flush();
+
+        } catch (IOException e) {
+            close(socket, bufferedReader, bufferedWriter);
+        }
+    }
+
+
     // sobald ein Client seine Verbindung trennt, wird dies allen Clients mitgeteilt
     public void removeClientHandler() {
         clientHandlers.remove(this);
