@@ -33,11 +33,19 @@ public class Server {
                 // hier einen Thread
                 Thread thread = new Thread(clientHandler);
                 thread.start();
-
-                clientHandlers.add(clientHandler);
-
-                game.createPlayer(clientHandler.getIP(), clientHandler.getUsername(), clientHandler);
-
+                boolean nametaken = false;
+                for(ClientHandler p : clientHandlers){
+                    if(p.getUsername().equals((clientHandler.getUsername()))){
+                        clientHandler.sendObject("M<:!ds5"+"Username schon vergeben\n\n");
+                        clientHandler.socket.close();
+                        nametaken = true;
+                        break;
+                    }
+                }
+                if(!nametaken){
+                    clientHandlers.add(clientHandler);
+                }
+                
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
@@ -56,6 +64,10 @@ public class Server {
     }
 
     public void start() {
+        for(ClientHandler clientHandler : clientHandlers){
+            game.createPlayer(clientHandler.getIP(), clientHandler.getUsername(), clientHandler);
+        }
+
         game = new Game();
         game.startGame((int) clientHandlers.size());
 
@@ -64,7 +76,7 @@ public class Server {
         // jeder Player soll die aktuellen infos kriegen
             for (ClientHandler clientHandler : clientHandlers) {
                 clientHandler.sendObject(createList(clientHandler));
-                System.out.println("Createlist " + createList(clientHandler));
+                System.out.println(clientHandler.getUsername() + " " + createList(clientHandler));
             }
             game.play();
         //game.playerMove();
@@ -140,7 +152,7 @@ public class Server {
 
         Scanner playerscanner = new Scanner(System.in);
         System.out.println("Max Spieler");
-        maxPlayer = 3;
+        maxPlayer = 2;
         // hier wird ein neuer Socket erstellt
         ServerSocket serverSocket = new ServerSocket(port);
         Server tempserver = new Server(serverSocket);

@@ -97,6 +97,7 @@ public class Client {
                         }
 
                     } catch (IOException e) {
+                        System.out.println("test");
                         close(socket, bufferedWriter, bufferedReader);
                     }
                 }

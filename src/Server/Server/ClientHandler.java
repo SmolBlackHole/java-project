@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 public class ClientHandler implements Runnable {
 
-    private Socket socket;
+    Socket socket;
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;
     private String username;
@@ -32,8 +32,16 @@ public class ClientHandler implements Runnable {
             broadcast("M<:!ds5" + "|Server| " + username + " Ist dem Spiel beigetreten");
 
         } catch (IOException e) {
-            close(socket, bufferedReader, bufferedWriter);
+            close(socket, bufferedWriter, bufferedReader);
         }
+    }
+
+    public BufferedReader getBufferedReader() {
+        return bufferedReader;
+    }
+
+    public BufferedWriter getBufferedWriter() {
+        return bufferedWriter;
     }
 
     public String getIP() {
@@ -87,7 +95,7 @@ public class ClientHandler implements Runnable {
                 }
 
             } catch (IOException e) {
-                close(socket, bufferedReader, bufferedWriter);
+                close(socket, bufferedWriter, bufferedReader);
                 break;
             }
         }
@@ -104,7 +112,7 @@ public class ClientHandler implements Runnable {
                 clientHandler.bufferedWriter.flush();
 
             } catch (IOException e) {
-                close(socket, bufferedReader, bufferedWriter);
+                close(socket, bufferedWriter, bufferedReader);
             }
         }
 
@@ -118,7 +126,7 @@ public class ClientHandler implements Runnable {
             clientHandler.bufferedWriter.flush();
 
         } catch (IOException e) {
-            close(socket, bufferedReader, bufferedWriter);
+            close(socket, bufferedWriter, bufferedReader);
         }
     }
 
@@ -127,25 +135,26 @@ public class ClientHandler implements Runnable {
     public void removeClientHandler() {
         clientHandlers.remove(this);
         broadcast("|Server| " + username + " hat das Spiel verlassen!");
+        Server.clientHandlers.remove(this);
     }
 
     // Methode, um den Server zu schließen
-    public void close(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {
-        removeClientHandler();
+    public void close(Socket socket, BufferedWriter bufferedWriter, BufferedReader bufferedReader) {
         try {
             if (bufferedReader != null) {
                 bufferedReader.close();
             }
             if (bufferedWriter != null) {
                 bufferedWriter.close();
+
             }
             if (socket != null) {
                 socket.close();
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
-
         }
+        removeClientHandler();
+
     }
 }
