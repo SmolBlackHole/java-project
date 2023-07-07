@@ -44,6 +44,9 @@ public class Client {
         }
     }
 
+    public Client(String localhost, int i, String username) {
+    }
+
     // Methode, die das Eingabefeld ausließt und den Inhalt absendet
     public static void sendMessage(String msg) {
         try {
@@ -294,12 +297,10 @@ public class Client {
     // die Main Methode: sie startet die LoginGui
     public static void main(String[] args) throws IOException {
 
-
         Client.username = "PL3";
         Client.ip = "localhost";
         Client.port = 25565;
         Client.start();
-
     } 
 }
 

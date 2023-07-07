@@ -130,7 +130,6 @@ public class MenUI extends JFrame {
     }
 
 
-
     private void startServer(int maxPlayers, int port) {
         // Code zum Starten des Servers mit den angegebenen Parametern
         try {
@@ -146,7 +145,9 @@ public class MenUI extends JFrame {
         // Code zum Beitritt zum Server mit dem angegebenen Benutzernamen
         System.out.println("Joining server with username: " + username);
         try {
-            Client client = new Client("localhost", 25565, username); // Erstellen einer neuen Client-Instanz
+            Client.username = username; // Setze den Benutzernamen in der Client-Klasse
+            Client.ip = "localhost";
+            Client.port = 25565;
             Client.start(); // Dem Server beitreten
         } catch (IOException e) {
             e.printStackTrace();
