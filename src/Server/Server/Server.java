@@ -75,7 +75,7 @@ public class Server {
         game.startGame((int) clientHandlers.size());
 
         
-        while(!game.checkForWinner()) {
+        do {
         // jeder Player soll die aktuellen infos kriegen
             game.special();
             for (ClientHandler clientHandler : clientHandlers) {
@@ -83,7 +83,8 @@ public class Server {
                 System.out.println(clientHandler.getUsername() + " " + createList(clientHandler));
             }
             game.play();
-        }
+        } while(!game.checkForWinner());
+        System.out.println("Gewinner ist: " + game.getWinner());
         for (ClientHandler clientHandler : clientHandlers) {
                 clientHandler.sendObject(createList(clientHandler)+game.getWinner());
                 System.out.println(clientHandler.getUsername() + " " + createList(clientHandler) + " " + game.getWinner());

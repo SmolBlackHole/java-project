@@ -17,7 +17,7 @@ public class Game {
     public boolean checked;
 
 
-    // Methode startet das Spiel 
+    // Methode startet das Spiel -> wird in Server aufgerufen
     // Spieleranzahl muss mit übergeben werden 
     public void startGame(int size) {
         numberOfPlayers = size;
@@ -64,6 +64,7 @@ public class Game {
      // Methode regelt Spielablauf, solange es keinen Gewinner gibt
      // gibt es einen Gewinner, wird das Spiel beendet
      public void special(){
+        currentPlayer = currentPlayer.nextPlayer;
         if(!checked){ 
             specialCards(getTopCard());
             checked = true;  
@@ -74,7 +75,7 @@ public class Game {
             System.out.println(currentPlayer.getPlayerName());
             System.out.println(currentPlayer.getPlayerCards());
 
-            System.out.println("Lege einer deiner Karten");
+            System.out.println("Lege eine deiner Karten");
             //playerCard = currentPlayer.getPlayerID().requestCard();
             playerCard = scanner.nextLine();
 
@@ -87,9 +88,6 @@ public class Game {
                 putPlayerCardToCardDeck(playerCard);
             }
             System.out.println("\n");
-        
-            
-            currentPlayer = currentPlayer.nextPlayer;
         
     }
     
@@ -171,7 +169,6 @@ public class Game {
 
     // Gewinner anzeigen lassen
     public String getWinner(){
-        System.out.println("Gewinner ist: " + winner);
         return winner;
     }
 
