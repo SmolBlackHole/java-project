@@ -1,6 +1,7 @@
 package GUI;
 
 import Server.Server.*;
+import Client.Client.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -101,7 +102,7 @@ public class MenUI extends JFrame {
         JFrame loginFrame = new JFrame("Login");
         loginFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         loginFrame.setSize(300, 200);
-        loginFrame.setLayout(new GridLayout(2, 2));
+        loginFrame.setLayout(new GridLayout(3, 2));
 
         // Label und Textfeld für Benutzernamen
         JLabel usernameLabel = new JLabel("Username:");
@@ -116,7 +117,6 @@ public class MenUI extends JFrame {
                 String username = usernameField.getText();
                 joinServer(username);
                 loginFrame.dispose();
-                showCardGameUI(); // Hier wird das CardGameUI-Fenster geöffnet
             }
         });
 
@@ -128,6 +128,8 @@ public class MenUI extends JFrame {
 
         loginFrame.setVisible(true);
     }
+
+
 
     private void startServer(int maxPlayers, int port) {
         // Code zum Starten des Servers mit den angegebenen Parametern
@@ -143,7 +145,14 @@ public class MenUI extends JFrame {
     private void joinServer(String username) {
         // Code zum Beitritt zum Server mit dem angegebenen Benutzernamen
         System.out.println("Joining server with username: " + username);
+        try {
+            Client client = new Client("localhost", 25565, username); // Erstellen einer neuen Client-Instanz
+            Client.start(); // Dem Server beitreten
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
+
 
     private void showCardGameUI() {
         // Überprüfen, ob die Voraussetzungen erfüllt sind

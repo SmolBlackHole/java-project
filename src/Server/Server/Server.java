@@ -29,7 +29,6 @@ public class Server {
     // Methode, die, solange der Socket nicht geschlossen ist, ständig auf
     // Verbindungsanfragen wartet
     public void startServer(int maxPlayers) {
-        System.out.println("2 Testnachricht");
         System.out.println("2 Der Server startet jetzt mit Port: " + serverSocket.getLocalPort() + " und " + maxPlayers
                 + " maximalen Spielern");
         try {
@@ -54,7 +53,7 @@ public class Server {
                 if(!nametaken){
                     clientHandlers.add(clientHandler);
                 }
-                
+
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
@@ -81,7 +80,7 @@ public class Server {
         game = new Game();
         game.startGame((int) clientHandlers.size());
 
-        
+
         do {
         // jeder Player soll die aktuellen infos kriegen
             game.special();
@@ -89,7 +88,7 @@ public class Server {
                 clientHandler.sendObject(createList(clientHandler));
                 System.out.println(clientHandler.getUsername() + " " + createList(clientHandler));
             }
-        
+
             for(Bot bot : bots){
                 System.out.println("hallihallo ich bin ein bot " + bot);
                 boolean isTurn = false;
@@ -101,14 +100,14 @@ public class Server {
         }
             game.play();
         } while(!game.checkForWinner());
-        
+
         System.out.println("Gewinner ist: " + game.getWinner());
         for (ClientHandler clientHandler : clientHandlers) {
             clientHandler.sendObject(createList(clientHandler)+game.getWinner());
             System.out.println(clientHandler.getUsername() + " " + createList(clientHandler) + " " + game.getWinner());
         }
-        
-        
+
+
     }
 
     public void closeServerSocket() {
@@ -131,8 +130,8 @@ public class Server {
 
         data = "C8->7G#" + isTurn + "|" + game.getPlayerObject(clientHandler).getPlayerCards() + "|"
                 + game.getTopCard() + "|" + maxPlayer + "|";
-        
-                
+
+
 
         for(ClientHandler player : clientHandlers){
             data += player.getUsername() + "|" + game.getPlayerObject(player).getPlayerCards().size() + "|";
