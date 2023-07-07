@@ -191,7 +191,7 @@ public class Server {
         Server tempserver = new Server(serverSocket);
         server = tempserver;
         CheckMaxPlayer();
-        int maxPlayers = 0;
+        int maxPlayers = 3;
 
         System.out.println("Testnachricht");
         server.startServer(maxPlayers);

@@ -256,6 +256,7 @@ public class Client {
                         String play = myObj.nextLine();
 
                         if(play.isEmpty()){
+                            //Befehl zum senden das mann ziehen muss
                             dataToSend("Bh7.|+e");
                             check = true;
                         }
@@ -270,6 +271,7 @@ public class Client {
                         }
 
                         if(check && karten.contains(play)){
+                            //befehlt zum senden der gelegten karte
                             dataToSend("F4->3GA" + play);
                         }
                         if(!check){
@@ -293,7 +295,7 @@ public class Client {
     public static void main(String[] args) throws IOException {
 
 
-        Client.username = "PL2";
+        Client.username = "PL3";
         Client.ip = "localhost";
         Client.port = 25565;
         Client.start();
