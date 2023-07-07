@@ -8,10 +8,10 @@ public class Player {
     String playerName;
     Player nextPlayer;
     public static Player lastPlayer;
-    Server.Server.ClientHandler playerID;
+    Object playerID;
     // maxSpieler -> Game
 
-    public Player(String playerName, Server.Server.ClientHandler playerID) {
+    public Player(String playerName, Object playerID) {
         this.playerName = playerName;
         this.playerID = playerID;
 
@@ -50,11 +50,11 @@ public class Player {
         this.nextPlayer = nextPlayer;
     }
 
-    public Server.Server.ClientHandler getPlayerID() {
+    public Object getPlayerID() {
         return this.playerID;
     }
 
-    public void setPlayerID(Server.Server.ClientHandler playerID) {
+    public void setPlayerID(Object playerID) {
         this.playerID = playerID;
     }
 

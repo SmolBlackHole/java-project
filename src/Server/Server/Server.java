@@ -5,6 +5,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Scanner;
+
+import Server.Bot;
 import Server.Game;
 //gh hkjkjbjkbjbjk
 
@@ -13,11 +15,12 @@ import Server.Game;
 public class Server {
     private static ServerSocket serverSocket;
     private static Server server;
-    private Game game;
+    public static Game game;
     private static int maxPlayer;
     private static boolean fullLobby;
     public static String data;
     public static ArrayList<ClientHandler> clientHandlers = new ArrayList<>();
+    public static ArrayList<Bot> bots = new ArrayList<>();
 
     public Server(ServerSocket serverSocket) {
         this.serverSocket = serverSocket;
@@ -57,7 +60,7 @@ public class Server {
             }
 
             if (!serverSocket.isClosed()) {
-                System.out.println("ich bin raus!!!");
+                System.out.println("Alle Spieler sind da.\n Das Spiel startet.");
                 start();
             }
 
@@ -68,6 +71,7 @@ public class Server {
 
     public void start() {
         for(ClientHandler clientHandler : clientHandlers){
+            clientHandler.gameRunning = true;
             game.createPlayer(clientHandler.getUsername(), clientHandler);
         }
 
@@ -82,13 +86,25 @@ public class Server {
                 clientHandler.sendObject(createList(clientHandler));
                 System.out.println(clientHandler.getUsername() + " " + createList(clientHandler));
             }
+        
+            for(Bot bot : bots){
+                System.out.println("hallihallo ich bin ein bot " + bot);
+                boolean isTurn = false;
+                if (game.getCurrentPlayer() == game.getPlayerObject(bot)) {
+                isTurn = true;
+                bot.createList(isTurn, game.getPlayerObject(bot).getPlayerCards(), game.getTopCard());
+                System.out.println("Der Bot hat die Karte: " + game.playerCard + " gewählt!!");
+            }
+        }
             game.play();
         } while(!game.checkForWinner());
+        
         System.out.println("Gewinner ist: " + game.getWinner());
         for (ClientHandler clientHandler : clientHandlers) {
-                clientHandler.sendObject(createList(clientHandler)+game.getWinner());
-                System.out.println(clientHandler.getUsername() + " " + createList(clientHandler) + " " + game.getWinner());
-            }
+            clientHandler.sendObject(createList(clientHandler)+game.getWinner());
+            System.out.println(clientHandler.getUsername() + " " + createList(clientHandler) + " " + game.getWinner());
+        }
+        
         
     }
 
@@ -117,6 +133,12 @@ public class Server {
 
         for(ClientHandler player : clientHandlers){
             data += player.getUsername() + "|" + game.getPlayerObject(player).getPlayerCards().size() + "|";
+            if(game.getCurrentPlayer() == game.getPlayerObject(player)){
+                data += true + "|";
+            }
+            else{
+                data += false + "|";
+            }
         }
         data = data + " ";
         return data;

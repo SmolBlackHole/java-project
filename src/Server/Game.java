@@ -2,6 +2,7 @@ package Server;
 
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 
 
 
@@ -15,6 +16,7 @@ public class Game {
     static ArrayList<String> cardDeck = card.getCardDeck();
     private String winner;
     public boolean checked;
+    static int drawCards = 0;
 
 
     // Methode startet das Spiel -> wird in Server aufgerufen
@@ -76,11 +78,19 @@ public class Game {
             System.out.println(currentPlayer.getPlayerCards());
 
             System.out.println("Lege eine deiner Karten");
-            //playerCard = currentPlayer.getPlayerID().requestCard();
-            playerCard = scanner.nextLine();
+            playerCard = null;
+            while(playerCard == null){
+                try {
+                    TimeUnit.MILLISECONDS.sleep(1000);
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            };
+            System.out.println("Grad dran: "+currentPlayer.getPlayerName() + " Dann: " + currentPlayer.nextPlayer.getPlayerName() + " Dann endlich: " + currentPlayer.nextPlayer.nextPlayer.getPlayerName());
 
             if(playerCard.isEmpty()) {
-                    drawCards(1);
+                    drawCards();
                     // wenn Spieler eine Karte legen kann, so wird sie aus seinen Karten gestrichen und auf den Stapel gepackt
             
             }
@@ -88,6 +98,11 @@ public class Game {
                 putPlayerCardToCardDeck(playerCard);
             }
             System.out.println("\n");
+
+            // currentPlayer = currentPlayer.nextPlayer;
+
+
+            
         
     }
     
@@ -106,15 +121,21 @@ public class Game {
 
      // @Chris: muss aufgerufen werden, wenn Spieler eine Karte ziehen muss (am besten extra button dafür, falls du es nicht schon hast)
      // Karten ziehen
-    private void drawCards(int drawCards) {
+    private void drawCards() {
         int i = 0;
+        System.out.println("Spieler " + currentPlayer.getPlayerName() + " muss " + drawCards + " Karten ziehen.");
         do{
             currentPlayer.playerCards.add(getCardDeck().get(getCardDeck().size() - 1));
             getCardDeck().remove(getCardDeck().get(getCardDeck().size() - 1));
             i++;
         }while(i < drawCards);
-        System.out.println("Ziehen ist abgeschlossen.");
+        drawCards = 0;
+        System.out.println("Ziehen ist abgeschlossen.");;
+
+        if (getTopCard().contains("7")){
+             play();
         }
+        } 
 
 
     // @Chris: muss aufgerufen werden, wenn Spieler eine Karte ablegt
@@ -133,15 +154,19 @@ public class Game {
     private void specialCards(String playerCard) {
         // 2 Karten ziehen
 
+//oder
         if (getTopCard().contains("7")) {
-            System.out.println("du musst 2 ziehen " + currentPlayer.getPlayerName() + "\n");
-            drawCards(2);
-            System.out.println("Du bist immernoch an der Reihe.\n");
+        // 7 legen       
+         System.out.println("du musst 2 ziehen oder 7 legen " + currentPlayer.getPlayerName() + "\n");
+            drawCards += 2;
             
             // 4 Ziehen
         } else if (getTopCard().equals("PK")) {
             System.out.println("du musst 4 ziehen" + currentPlayer.getPlayerName() + "\n");
-            drawCards(4);
+            for (int i = 0; i <= 4; i++) {
+                currentPlayer.playerCards.add(getCardDeck().get(getCardDeck().size() - 1));
+                getCardDeck().remove(getCardDeck().get(getCardDeck().size() - 1));
+            }
             currentPlayer = currentPlayer.nextPlayer;
             System.out.println("Jetzt ist " + currentPlayer.getPlayerName() + " an der Reihe.\n");
             // Aussetzer
@@ -177,7 +202,7 @@ public class Game {
         return currentPlayer;
     }
 
-    public Player getPlayerObject(Server.Server.ClientHandler clientHandler) {
+    public Player getPlayerObject(Object clientHandler) {
         return reihenfolge.getPlayerObject(clientHandler);
     }
 

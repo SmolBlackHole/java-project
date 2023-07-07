@@ -4,17 +4,21 @@ import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
+import Server.Bot;
+import Server.Player;
 
 public class ClientHandler implements Runnable {
 
     Socket socket;
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;
+    String sk;
     private String username;
     private String newMessage;
     private String choose;
     private String spielerKarte;
     public static ArrayList<ClientHandler> clientHandlers = new ArrayList<>();
+    public boolean gameRunning = false;
 
     // hier werden die BufferedReader und BufferedWriter erstellt; diese benutzen
     // wir, um Nachrichten auslesen und abzuschicken zu können
@@ -63,15 +67,15 @@ public class ClientHandler implements Runnable {
             try {
                 newMessage = "";
                 choose = "";
-                spielerKarte = "";
+                sk = "";
                 messageFromClient = bufferedReader.readLine();
                 for (int i = 0; i < messageFromClient.length(); i++) {
                     if (choose.equals("M<:!ds5")) {
                         newMessage += messageFromClient.charAt(i);
                     }
 
-                    if (choose.equals("C8->7G#")) {
-                        spielerKarte += messageFromClient.charAt(i);
+                    if (choose.equals("F4->3GA")) {
+                        sk += messageFromClient.charAt(i);
                     }
                     if (i <= 6) {
                         choose += messageFromClient.charAt(i);
@@ -85,13 +89,18 @@ public class ClientHandler implements Runnable {
 
                 if (choose.equals("Bh7.|+e")) {
                     System.out.println("Spieler Zieht");
+                    Server.game.playerCard = "";
                 }
 
                 if (choose.equals("F4->3GA")) {
-                    System.out.println("Spieler Legt");
-                    System.out.println("Gelegte Karte " + spielerKarte);
+                    spielerKarte = sk;
+                    Server.game.playerCard = spielerKarte;
+                    System.out.println("Gelegte Karte " + Server.game.playerCard);
+
 
                 }
+
+                spielerKarte = null;
 
             } catch (IOException e) {
                 close(socket, bufferedWriter, bufferedReader);
@@ -132,8 +141,13 @@ public class ClientHandler implements Runnable {
 
     // sobald ein Client seine Verbindung trennt, wird dies allen Clients mitgeteilt
     public void removeClientHandler() {
+        if(gameRunning){
+            Bot temp = new Bot(this);
+            Server.game.getPlayerObject(this).setPlayerID(temp);
+            Server.bots.add(temp);
+        }
         clientHandlers.remove(this);
-        broadcast("|Server| " + username + " hat das Spiel verlassen!");
+        broadcast("M<:!ds5"+"|Server| " + username + " hat das Spiel verlassen!");
         Server.clientHandlers.remove(this);
     }
 
@@ -158,6 +172,13 @@ public class ClientHandler implements Runnable {
     }
 
     public String requestCard(){
+        while(spielerKarte == null){
+            //  delay?
+        }
         return spielerKarte;
+    }
+
+    public void startGameRunning(){
+        gameRunning = true;
     }
 }

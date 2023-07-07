@@ -28,9 +28,6 @@ public class Client {
     
 
     
-
-                       // "C8->7G#ist-Drann|karten|ObersteSpielkarte|AnzahlSpieler|Spielername1|AnzahlKarten|Spielername2|AnzahlKarten|Spielername3|AnzahlKarten|"
-
     public Client(Socket socket, String username) {
         try {
             this.socket = socket;
@@ -48,27 +45,16 @@ public class Client {
     }
 
     // Methode, die das Eingabefeld ausließt und den Inhalt absendet
-    public static void sendMessage() {
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (socket.isConnected()) {
-                    try {
-                        Scanner messagescanner = new Scanner(System.in);
-                        String messageToSend = messagescanner.nextLine();
-                        // hier wird der Nachricht die aktuelle Uhrzeit beigefügt
-                        String time = new SimpleDateFormat("HH:mm").format(Calendar.getInstance().getTime());
-                        bufferedWriter.write("M<:!ds5" + "|" + time + "|" + username + ": " + messageToSend);
-                        bufferedWriter.newLine();
-                        bufferedWriter.flush();
-                    } catch (IOException e) {
-                        close(socket, bufferedWriter, bufferedReader);
-                    }
-                }
-            }
-            // startet den Thread
-        }).start();
+    public static void sendMessage(String msg) {
+        try {
+            // hier wird der Nachricht die aktuelle Uhrzeit beigefügt
+            String time = new SimpleDateFormat("HH:mm").format(Calendar.getInstance().getTime());
+            bufferedWriter.write("M<:!ds5" + "|" + time + "|" + username + ": " + msg);
+            bufferedWriter.newLine();
+            bufferedWriter.flush();
+        } catch (IOException e) {
+            close(socket, bufferedWriter, bufferedReader);
+        }
     }
 
     // Methode, die auf Nachrichten wartet, und diese bearbeitet
@@ -119,13 +105,15 @@ public class Client {
                             String count = "";
                             String Pname = "";
                             String Pcount = "";
+                            String Pturn = "";
                             Spieler.clear();
 
                             for (int i = 0; i < gameData.length(); i++) {
                                 ArrayList<Object> Spielerdaten = new ArrayList<Object>();
                                 b = "" + gameData.charAt(i);
-                                if(a == 6){
+                                if(a == 7){
                                     a=4;
+                                    boolean pt = false;
                                     String pn = Pname;
                                     Spielerdaten.add(pn);
                                     Pname = "";
@@ -138,7 +126,13 @@ public class Client {
                                     catch (NumberFormatException e) {
                                         e.printStackTrace();  
                                     }
+
+                                    if(Pturn.equals("true")){
+                                        pt = true;
+                                    }
+                                    Spielerdaten.add(pt);
                                     Spieler.add(Spielerdaten);
+                                    Pturn = "";
                                 }  
                                 if (a == 0 &&  !b.equals("|")) {
                                     turn = turn + b;
@@ -146,7 +140,9 @@ public class Client {
 
                                 if (a == 1 && !b.equals("|")) {
                                     if(!b.equals("[") && !b.equals("]") ){
-                                        kar = kar + b;
+                                        if (!b.equals(" ")){
+                                            kar = kar + b;
+                                        }
                                     }
                                 }
                                 if (a == 2 && !b.equals("|")) {
@@ -163,6 +159,10 @@ public class Client {
                                     Pcount = Pcount + b;
 
                                 }
+                                if (a == 6 && !b.equals("|")) {
+                                    Pturn = Pturn + b;
+
+                                }
                               
                                 if (b.equals("|")) {
                                     a++;
@@ -173,8 +173,9 @@ public class Client {
                             }if (turn.equals("false")) {
                                 istDrann = false;
                             }
+
                             ArrayList<String> strList = new ArrayList<String>(Arrays.asList(kar.split(",")));
-                            karten = strList;
+                            karten = strList; 
 
                             ObersteSpielkarte = top;
                             try {
@@ -190,18 +191,9 @@ public class Client {
                             System.out.println(AnzahlSpieler);
                             System.out.println(Spieler);
 
-
-
-                            
-
-
-                            System.out.println("Game array " + gameData);
-                            // Hier Entsteht dann die Verknüpfung oder Methode die aus dem String die
-                            // Variablen befüllt
                         }
 
                     } catch (IOException e) {
-                        System.out.println("test");
                         close(socket, bufferedWriter, bufferedReader);
                     }
                 }
@@ -223,7 +215,6 @@ public class Client {
             if (socket != null) {
                 socket.close();
             }
-            System.out.println("Der Server Ist Geschlossen");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -238,7 +229,7 @@ public class Client {
             Socket socket = new Socket(ip, port);
             Client client = new Client(socket, username);
             client.listenForMessage();
-            client.sendMessage();
+            client.Play();
         }
     }
 
@@ -254,18 +245,59 @@ public class Client {
         }
 
     }
+    public void Play(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (socket.isConnected() || Gewinner == null) {
+                    if(istDrann){
+                        boolean check = false;
+                        Scanner myObj = new Scanner(System.in);
+                        String play = myObj.nextLine();
+
+                        if(play.isEmpty()){
+                            dataToSend("Bh7.|+e");
+                            check = true;
+                        }
+                        else{
+                            for(int i = 0; i < ObersteSpielkarte.length(); i++){
+                                for(int o = 0; o < play.length(); o++){
+                                    if(play.charAt(o) == ObersteSpielkarte.charAt(i)){
+                                        check = true;
+                                    }
+                                }
+                            }
+                        }
+
+                        if(check && karten.contains(play)){
+                            dataToSend("F4->3GA" + play);
+                        }
+                        if(!check){
+                            System.out.println("Du kannst diese Karte nicht Legen");
+                        }
+                    }   
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                System.out.println("Der gewinner ist " + Gewinner);
+
+             }
+        }).start();
+    }
+
 
     // die Main Methode: sie startet die LoginGui
     public static void main(String[] args) throws IOException {
+
 
         Client.username = "PL3";
         Client.ip = "localhost";
         Client.port = 25565;
         Client.start();
 
-    }
-
-    public class start {
     }
 }
 
@@ -279,16 +311,15 @@ public class Client {
 // Anfangszeichen dienen Als
 // Identifikation zwischen Server und Client, damit beide wissen was für Daten
 // gerade Gesendet wurden.
-// (Das folgende ist noch nicht so Implementiert) benutze sendMessage(msg) um
+// benutze sendMessage(msg) um
 // eine Chatnachricht zu schicken, diese wird dann mit dem Chat-Code, Username
 // und der Uhrzeit versehen.
-// ab hier ist wieder alles Implementiert
 // in der Main Funktion siehst du die Variablen die ich befüllt habe. username,
 // ip, und port, diese müssen in Zukunft als Allererstes abgefragt werden, bevor
 // der Client gestartet wird
 
 // die Informationen die der Client jede Runder bekommt wären folgende:
-// C8->7G#ist-Drann|karten|ObersteSpielkarte|AnzahlSpieler|Spielername1|AnzahlKarten|Spielername2|AnzahlKarten|Spielername3|AnzahlKarten|
+// C8->7G#ist-Drann|karten|ObersteSpielkarte|AnzahlSpieler|Spielername1|AnzahlKarten|ist Drann|Spielername2|Ist drann2|AnzahlKarten|Spielername3|AnzahlKarten|Ist drann3|
 // daraus werde ich eine Funktion schreiben die euch diesen String in
 // verschiedene Variablen aufteilt.
 // istDrann = boolean --> ein bool um zu gucken ob der Spieler gerade drann ist
