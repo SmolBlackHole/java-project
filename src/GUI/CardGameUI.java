@@ -26,19 +26,15 @@ public class CardGameUI {
 
     // Pfad zum Hintergrundbild
     private static final String BACKGROUND_IMAGE_PATH = "src/GUI/Assets/Table.jpg";
-
-    // Liste zur Speicherung der Karten-Labels
-    private List<JLabel> cardLabels;
-
-    // Array zur Speicherung der ursprünglichen Positionen der Karten
-    private Point[] originalCardLocations;
-
-    // Label zur Darstellung der vergrößerten Karte in der Mitte
-    private JLabel enlargedCardLabel;
-
     // Breite und Höhe des Fensters
     private static final int WindowWidth = 1440;
     private static final int WindowHeight = 900;
+    // Liste zur Speicherung der Karten-Labels
+    private List<JLabel> cardLabels;
+    // Array zur Speicherung der ursprünglichen Positionen der Karten
+    private Point[] originalCardLocations;
+    // Label zur Darstellung der vergrößerten Karte in der Mitte
+    private JLabel enlargedCardLabel;
 
     public CardGameUI() {
         EventQueue.invokeLater(new Runnable() {
@@ -102,6 +98,16 @@ public class CardGameUI {
 
                 frame.setLocationRelativeTo(null);
                 frame.setVisible(true);
+            }
+        });
+    }
+
+    // Hauptmethode des Programms, die das GUI startet
+    public static void main(String[] args) {
+        EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new CardGameUI();
             }
         });
     }
@@ -210,16 +216,6 @@ public class CardGameUI {
     // Methode zum Ausblenden der vergrößerten Karte
     private void hideEnlargedCard() {
         enlargedCardLabel.setVisible(false);
-    }
-
-    // Hauptmethode des Programms, die das GUI startet
-    public static void main(String[] args) {
-        EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new CardGameUI();
-            }
-        });
     }
 
     // Professionell von Vanessa geklauter Code (Testzwecke)
