@@ -23,12 +23,15 @@ public class Server {
     public static ArrayList<Bot> bots = new ArrayList<>();
 
     public Server(ServerSocket serverSocket) {
-        this.serverSocket = serverSocket;
+        Server.serverSocket = serverSocket;
     }
 
     // Methode, die, solange der Socket nicht geschlossen ist, ständig auf
     // Verbindungsanfragen wartet
-    public void startServer() {
+    public void startServer(int maxPlayers) {
+        System.out.println("2 Testnachricht");
+        System.out.println("2 Der Server startet jetzt mit Port: " + serverSocket.getLocalPort() + " und " + maxPlayers
+                + " maximalen Spielern");
         try {
             while (!serverSocket.isClosed() && !fullLobby) {
                 // hier werden die Verbindungsanfragen von Clients akzeptiert25566
@@ -42,7 +45,7 @@ public class Server {
                 boolean nametaken = false;
                 for(ClientHandler p : clientHandlers){
                     if(p.getUsername().equals((clientHandler.getUsername()))){
-                        clientHandler.sendObject("M<:!ds5"+"Username schon vergeben\n\n");
+                        clientHandler.sendObject("M<:!ds5"+"Username schon vergeben\n");
                         clientHandler.socket.close();
                         nametaken = true;
                         break;
@@ -164,7 +167,8 @@ public class Server {
                     }
                     if (clientHandlers.size() < maxPlayer && wasFull) {
                         fullLobby = false;
-                        server.startServer();
+                        int maxPlayers = 0;
+                        server.startServer(maxPlayers);
                     }
                 }
             }
@@ -187,6 +191,9 @@ public class Server {
         Server tempserver = new Server(serverSocket);
         server = tempserver;
         CheckMaxPlayer();
-        server.startServer();
+        int maxPlayers = 0;
+
+        System.out.println("Testnachricht");
+        server.startServer(maxPlayers);
     }//    K<;?dHs0
 }

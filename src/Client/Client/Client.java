@@ -293,12 +293,12 @@ public class Client {
     public static void main(String[] args) throws IOException {
 
 
-        Client.username = "PL3";
+        Client.username = "PL2";
         Client.ip = "localhost";
         Client.port = 25565;
         Client.start();
 
-    }
+    } 
 }
 
 // Benutz die Methode dataToSend(data) um deine Daten an den Server zu schicken.

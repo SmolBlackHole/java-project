@@ -1,15 +1,20 @@
 package GUI;
 
+import Server.Server.*;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.ServerSocket;
 
-public class MainUI extends JFrame {
+public class MenUI extends JFrame {
 
     private CardGameUI cardGameUI; // Referenz auf das CardGameUI-Objekt
+    private Server server; // Referenz auf das Server-Objekt
 
-    public MainUI() {
+    public MenUI() {
         // Fenstereinstellungen
         setTitle("Card Game");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -45,7 +50,7 @@ public class MainUI extends JFrame {
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                new MainUI();
+                new MenUI();
             }
         });
     }
@@ -66,7 +71,6 @@ public class MainUI extends JFrame {
         JLabel portLabel = new JLabel("Port:");
         JTextField portField = new JTextField("25565");
         portField.setHorizontalAlignment(JTextField.CENTER);
-        portField.setEditable(false);
 
         // Button zum Starten des Servers
         JButton startHostingButton = new JButton("Start Server");
@@ -127,7 +131,13 @@ public class MainUI extends JFrame {
 
     private void startServer(int maxPlayers, int port) {
         // Code zum Starten des Servers mit den angegebenen Parametern
-        System.out.println("Starting server with max players: " + maxPlayers + ", port: " + port);
+        try {
+            ServerSocket serverSocket = new ServerSocket(port);
+            server = new Server(serverSocket);
+            server.startServer(maxPlayers);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void joinServer(String username) {
