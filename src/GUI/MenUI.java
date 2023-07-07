@@ -1,7 +1,7 @@
 package GUI;
 
-import Server.Server.*;
-import Client.Client.*;
+import Client.Client.Client;
+import Server.Server.Server;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,10 +10,13 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.ServerSocket;
 
+import static Server.Server.Server.CheckMaxPlayer;
+
 public class MenUI extends JFrame {
 
     private CardGameUI cardGameUI; // Referenz auf das CardGameUI-Objekt
-    private Server server; // Referenz auf das Server-Objekt
+    private static Server server; // Referenz auf das Server-Objekt
+    private ChatUI chatUI; // Referenz auf das ChatUI-Objekt
 
     public MenUI() {
         // Fenstereinstellungen
@@ -28,6 +31,7 @@ public class MenUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 showHostServerOptions();
+                setVisible(false); // Minimiere das Hauptfenster
             }
         });
 
@@ -37,6 +41,7 @@ public class MenUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 showLoginDialog();
+                setVisible(false); // Minimiere das Hauptfenster
             }
         });
 
@@ -48,12 +53,7 @@ public class MenUI extends JFrame {
     }
 
     public static void main(String[] args) {
-        EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new MenUI();
-            }
-        });
+        EventQueue.invokeLater(MenUI::new);
     }
 
     private void showHostServerOptions() {
@@ -83,6 +83,7 @@ public class MenUI extends JFrame {
                 startServer(maxPlayers, port);
                 hostServerFrame.dispose();
                 showLoginDialog();
+                setVisible(false); // Minimiere das Hauptfenster
             }
         });
 
@@ -117,6 +118,7 @@ public class MenUI extends JFrame {
                 String username = usernameField.getText();
                 joinServer(username);
                 loginFrame.dispose();
+                setVisible(false); // Minimiere das Hauptfenster
             }
         });
 
@@ -129,13 +131,23 @@ public class MenUI extends JFrame {
         loginFrame.setVisible(true);
     }
 
+    public static Server getServer() {
+        return server;
+    }
 
     private void startServer(int maxPlayers, int port) {
         // Code zum Starten des Servers mit den angegebenen Parametern
         try {
             ServerSocket serverSocket = new ServerSocket(port);
-            server = new Server(serverSocket);
-            server.startServer(maxPlayers);
+            Server tempserver = new Server(serverSocket);
+            Server.maxPlayer = maxPlayers;
+            server = tempserver;
+            CheckMaxPlayer();
+            server.startServer();
+            if (MenUI.getServer() != null) {
+                MenUI.getServer().start(); // Spiel starten
+                showLoginDialog();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -146,20 +158,31 @@ public class MenUI extends JFrame {
         System.out.println("Joining server with username: " + username);
         try {
             Client.username = username; // Setze den Benutzernamen in der Client-Klasse
-            Client.ip = "localhost";
-            Client.port = 25565;
+            Client.ip = "localhost"; // Setze die IP-Adresse des Servers
+            Client.port = 25565; // Setze den Port des Servers
             Client.start(); // Dem Server beitreten
+            showCardGameUI(); // Öffne das CardGameUI-Fenster
+            showChatUI(); // Öffne das ChatUI-Fenster
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-
     private void showCardGameUI() {
-        // Überprüfen, ob die Voraussetzungen erfüllt sind
+        // Überprüfen, ob das CardGameUI-Objekt bereits erstellt wurde
         if (cardGameUI == null) {
-            // Wenn das CardGameUI-Objekt noch nicht erstellt wurde, erstelle es
+            // Erstelle ein neues CardGameUI-Objekt
             cardGameUI = new CardGameUI();
+            // Füge den eigenen Namen unter dem Kartendeck hinzu
+            cardGameUI.addPlayerName(Client.username);
+        }
+    }
+
+    private void showChatUI() {
+        // Überprüfen, ob das ChatUI-Objekt bereits erstellt wurde
+        if (chatUI == null) {
+            // Erstelle ein neues ChatUI-Objekt
+            chatUI = new ChatUI();
         }
     }
 }

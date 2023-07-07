@@ -16,7 +16,7 @@ public class Server {
     private static ServerSocket serverSocket;
     private static Server server;
     public static Game game;
-    private static int maxPlayer;
+    public static int maxPlayer;
     private static boolean fullLobby;
     public static String data;
     public static ArrayList<ClientHandler> clientHandlers = new ArrayList<>();
@@ -28,8 +28,8 @@ public class Server {
 
     // Methode, die, solange der Socket nicht geschlossen ist, ständig auf
     // Verbindungsanfragen wartet
-    public void startServer(int maxPlayers) {
-        System.out.println("2 Der Server startet jetzt mit Port: " + serverSocket.getLocalPort() + " und " + maxPlayers
+    public void startServer() {
+        System.out.println("Der Server startet jetzt mit Port: " + serverSocket.getLocalPort() + " und " + maxPlayer
                 + " maximalen Spielern");
         try {
             while (!serverSocket.isClosed() && !fullLobby) {
@@ -166,8 +166,8 @@ public class Server {
                     }
                     if (clientHandlers.size() < maxPlayer && wasFull) {
                         fullLobby = false;
-                        int maxPlayers = 0;
-                        server.startServer(maxPlayers);
+
+                        server.startServer();
                     }
                 }
             }
@@ -181,18 +181,16 @@ public class Server {
         Scanner portscanner = new Scanner(System.in);
         System.out.println("Port Eingeben");
         int port = 25565;
-
+        maxPlayer = 2;
         Scanner playerscanner = new Scanner(System.in);
         System.out.println("Max Spieler");
-        maxPlayer = 3;
         // hier wird ein neuer Socket erstellt
         ServerSocket serverSocket = new ServerSocket(port);
         Server tempserver = new Server(serverSocket);
         server = tempserver;
         CheckMaxPlayer();
-        int maxPlayers = 3;
 
         System.out.println("Testnachricht");
-        server.startServer(maxPlayers);
+        server.startServer();
     }//    K<;?dHs0
 }

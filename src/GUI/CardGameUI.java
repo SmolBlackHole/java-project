@@ -43,7 +43,7 @@ public class CardGameUI {
                 try {
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                 } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
-                         UnsupportedLookAndFeelException ex) {
+                        UnsupportedLookAndFeelException ex) {
                     ex.printStackTrace();
                 }
 
@@ -216,6 +216,9 @@ public class CardGameUI {
     // Methode zum Ausblenden der vergrößerten Karte
     private void hideEnlargedCard() {
         enlargedCardLabel.setVisible(false);
+    }
+
+    public void addPlayerName(String username) {
     }
 
     // Professionell von Vanessa geklauter Code (Testzwecke)

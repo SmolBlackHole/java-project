@@ -25,9 +25,9 @@ public class Client {
     public static ArrayList<ArrayList> Spieler = new ArrayList<ArrayList>();
     public static int AnzahlSpieler;
     public static String Gewinner;
-    
 
-    
+
+
     public Client(Socket socket, String username) {
         try {
             this.socket = socket;
@@ -42,9 +42,6 @@ public class Client {
         } catch (IOException e) {
             close(socket, bufferedWriter, bufferedReader);
         }
-    }
-
-    public Client(String localhost, int i, String username) {
     }
 
     // Methode, die das Eingabefeld ausließt und den Inhalt absendet
@@ -62,7 +59,6 @@ public class Client {
 
     // Methode, die auf Nachrichten wartet, und diese bearbeitet
     public void listenForMessage() {
-
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -84,8 +80,8 @@ public class Client {
                                 gameData += msgFromGroupChat.charAt(i);
                             }
                             if (choose.equals("K<;?dHs0")) {
-                            winner += msgFromGroupChat.charAt(i);                        
-                        }
+                                winner += msgFromGroupChat.charAt(i);
+                            }
                             if (i <= 6) {
                                 choose += msgFromGroupChat.charAt(i);
                             }
@@ -96,7 +92,7 @@ public class Client {
                         }
                         if (choose.equals("K<;?dHs0")) {
                             // Wenn diese String befüllt ist, bekommst du den Namen des Gewinners und das Spiel soll zuende sein.
-                            Gewinner = winner;                      
+                            Gewinner = winner;
                         }
 
                         if (choose.equals("C8->7G#")) {
@@ -124,10 +120,10 @@ public class Client {
                                         int nc = Integer.parseInt(Pcount);
                                         Spielerdaten.add(nc);
                                         Pcount = "";
-                                        
+
                                     }
                                     catch (NumberFormatException e) {
-                                        e.printStackTrace();  
+                                        e.printStackTrace();
                                     }
 
                                     if(Pturn.equals("true")){
@@ -136,7 +132,7 @@ public class Client {
                                     Spielerdaten.add(pt);
                                     Spieler.add(Spielerdaten);
                                     Pturn = "";
-                                }  
+                                }
                                 if (a == 0 &&  !b.equals("|")) {
                                     turn = turn + b;
                                 }
@@ -166,7 +162,7 @@ public class Client {
                                     Pturn = Pturn + b;
 
                                 }
-                              
+
                                 if (b.equals("|")) {
                                     a++;
                                 }
@@ -178,16 +174,16 @@ public class Client {
                             }
 
                             ArrayList<String> strList = new ArrayList<String>(Arrays.asList(kar.split(",")));
-                            karten = strList; 
+                            karten = strList;
 
                             ObersteSpielkarte = top;
                             try {
-                            AnzahlSpieler = Integer.parseInt(count);
+                                AnzahlSpieler = Integer.parseInt(count);
                             }
                             catch (NumberFormatException e) {
-                                e.printStackTrace();  
+                                e.printStackTrace();
                             }
-                            
+
                             System.out.println(istDrann);
                             System.out.println(karten);
                             System.out.println(ObersteSpielkarte);
@@ -280,7 +276,7 @@ public class Client {
                         if(!check){
                             System.out.println("Du kannst diese Karte nicht Legen");
                         }
-                    }   
+                    }
                     try {
                         Thread.sleep(2000);
                     } catch (InterruptedException e) {
@@ -289,7 +285,7 @@ public class Client {
                 }
                 System.out.println("Der gewinner ist " + Gewinner);
 
-             }
+            }
         }).start();
     }
 
@@ -297,11 +293,17 @@ public class Client {
     // die Main Methode: sie startet die LoginGui
     public static void main(String[] args) throws IOException {
 
-        Client.username = "PL3";
+
+        Client.username = "PL1";
         Client.ip = "localhost";
         Client.port = 25565;
         Client.start();
-    } 
+
+    }
+
+    public static String receiveMessage() {
+        return newMessage;
+    }
 }
 
 // Benutz die Methode dataToSend(data) um deine Daten an den Server zu schicken.
