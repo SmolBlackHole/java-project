@@ -5,15 +5,14 @@ import Server.Server.Server;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.util.ArrayList;
 
 import static Server.Server.Server.CheckMaxPlayer;
 
 public class MenUI extends JFrame {
-
+    private ArrayList<String> karten; // Kartenliste
     private CardGameUI cardGameUI; // Referenz auf das CardGameUI-Objekt
     private static Server server; // Referenz auf das Server-Objekt
     private ChatUI chatUI; // Referenz auf das ChatUI-Objekt
@@ -27,22 +26,16 @@ public class MenUI extends JFrame {
 
         // Button für "Host Server"
         JButton hostServerButton = new JButton("Host Server");
-        hostServerButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                showHostServerOptions();
-                setVisible(false); // Minimiere das Hauptfenster
-            }
+        hostServerButton.addActionListener(e -> {
+            showHostServerOptions();
+            setVisible(false); // Minimiere das Hauptfenster
         });
 
         // Button für "Spielen"
         JButton playButton = new JButton("Spielen");
-        playButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                showLoginDialog();
-                setVisible(false); // Minimiere das Hauptfenster
-            }
+        playButton.addActionListener(e -> {
+            showLoginDialog();
+            setVisible(false); // Minimiere das Hauptfenster
         });
 
         // Buttons zum Hauptfenster hinzufügen
@@ -75,16 +68,13 @@ public class MenUI extends JFrame {
 
         // Button zum Starten des Servers
         JButton startHostingButton = new JButton("Start Server");
-        startHostingButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int maxPlayers = Integer.parseInt(maxPlayersField.getText());
-                int port = Integer.parseInt(portField.getText());
-                startServer(maxPlayers, port);
-                hostServerFrame.dispose();
-                showLoginDialog();
-                setVisible(false); // Minimiere das Hauptfenster
-            }
+        startHostingButton.addActionListener(e -> {
+            int maxPlayers = Integer.parseInt(maxPlayersField.getText());
+            int port = Integer.parseInt(portField.getText());
+            startServer(maxPlayers, port);
+            hostServerFrame.dispose();
+            showLoginDialog();
+            setVisible(false); // Minimiere das Hauptfenster
         });
 
         // Komponenten zum Host-Server-Fenster hinzufügen
@@ -112,14 +102,11 @@ public class MenUI extends JFrame {
 
         // Button zum Beitritt zum Server
         JButton joinServerButton = new JButton("Server Beitreten");
-        joinServerButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String username = usernameField.getText();
-                joinServer(username);
-                loginFrame.dispose();
-                setVisible(false); // Minimiere das Hauptfenster
-            }
+        joinServerButton.addActionListener(e -> {
+            String username = usernameField.getText();
+            joinServer(username);
+            loginFrame.dispose();
+            setVisible(false); // Minimiere das Hauptfenster
         });
 
         // Komponenten zum Login-Fenster hinzufügen
@@ -161,8 +148,9 @@ public class MenUI extends JFrame {
             Client.ip = "localhost"; // Setze die IP-Adresse des Servers
             Client.port = 25565; // Setze den Port des Servers
             Client.start(); // Dem Server beitreten
-            showCardGameUI(); // Öffne das CardGameUI-Fenster
+
             showChatUI(); // Öffne das ChatUI-Fenster
+            showCardGameUI(); // Öffne das CardGameUI-Fenster
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -171,11 +159,13 @@ public class MenUI extends JFrame {
     private void showCardGameUI() {
         // Überprüfen, ob das CardGameUI-Objekt bereits erstellt wurde
         if (cardGameUI == null) {
-            // Erstelle ein neues CardGameUI-Objekt und übergabe des Benutzernamen
-            cardGameUI = new CardGameUI(Client.username);
-            // Debug
+            karten = new ArrayList<>();
+            CardGameUI cardGameUi = new CardGameUI(Client.username, karten);
+
+            cardGameUI = new CardGameUI(Client.username, karten);
             cardGameUI.setTitel(Client.username);
         }
+        cardGameUI.renderHandCards(karten);
     }
 
     private void showChatUI() {

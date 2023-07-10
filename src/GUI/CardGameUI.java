@@ -15,17 +15,13 @@ public class CardGameUI {
     // Breite und Höhe einer Karte
     private static final int CARD_WIDTH = (int) (73 * 1.5);
     private static final int CARD_HEIGHT = (int) (97 * 1.5);
-
     //  Offset beim Karten verschieben (beim Hovern)
     private static final int HOVER_OFFSET = -20 * 2;
-
     // Anfangsposition der Karten
-    private static final int INITIAL_X = 1100;
+    private static final int INITIAL_X = 1800;
     private static final int INITIAL_Y = 650;
-
     //  Faktor, um die Karte beim Hovern zu vergrößern
     private static final double HOVER_SCALE_FACTOR = 1.5;
-
     // Pfad zum Hintergrundbild
     private static final String BACKGROUND_IMAGE_PATH = "src/GUI/Assets/Table.jpg";
     // Breite und Höhe des Fensters
@@ -38,9 +34,11 @@ public class CardGameUI {
     // Label zur Darstellung der vergrößerten Karte in der Mitte
     private JLabel enlargedCardLabel;
     private JFrame frame;
-    private CardGameUI cardGameUI;
+    private static ArrayList<String> karten;
+    private boolean isInizialized = false;
 
-    public CardGameUI(String username) {
+    public CardGameUI(String username, ArrayList<String> karten) {
+        CardGameUI.karten = karten;
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -79,10 +77,8 @@ public class CardGameUI {
                 cardLabels = new ArrayList<>();
                 enlargedCardLabel = createEnlargedCardLabel();
 
-                int x;
-                x = INITIAL_X;
-                int y;
-                y = INITIAL_Y;
+                int x = INITIAL_X;
+                int y = INITIAL_Y;
 
                 for (int i = cardDeck.size() - 1; i >= 0; i--) {
                     String card = cardDeck.get(i);
@@ -93,6 +89,7 @@ public class CardGameUI {
 
                     x -= 30;
                 }
+
 
                 // Speichern der ursprünglichen Kartenpositionen
                 originalCardLocations = new Point[cardLabels.size()];
@@ -117,16 +114,16 @@ public class CardGameUI {
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                new CardGameUI(Client.username);
+                new CardGameUI(Client.username, karten);
                 System.out.println("GUI started mit Benutzername: " + Client.username);
             }
         });
     }
 
     // Methode zur Erstellung eines Karten-Labels
-    private JLabel createCardLabel(String card) {
+    private JLabel createCardLabel(String cardName) {
         JLabel cardLabel = new JLabel();
-        ImageIcon imageIcon = new ImageIcon("src/GUI/Assets/" + card + ".png");
+        ImageIcon imageIcon = new ImageIcon("src/GUI/Assets/" + cardName + ".png");
         Image image = imageIcon.getImage();
         Image scaledImage = image.getScaledInstance(CARD_WIDTH, CARD_HEIGHT, Image.SCALE_SMOOTH);
         ImageIcon scaledImageIcon = new ImageIcon(scaledImage);
@@ -232,6 +229,7 @@ public class CardGameUI {
 
     public void setTitel(String s) {
         if (frame != null) {
+            frame = new JFrame();
             frame.setTitle(s);
         } else {
             System.out.println("WAS IST DEN HIER LOS?!?!");
@@ -243,41 +241,7 @@ public class CardGameUI {
         private static final ArrayList<String> cardDeck = new ArrayList<>();
 
         public static void mixCards() {
-            cardDeck.add("H7");
-            cardDeck.add("H8");
-            cardDeck.add("H9");
-            cardDeck.add("HX");
-            cardDeck.add("HB");
-            cardDeck.add("HD");
-            cardDeck.add("HK");
-            cardDeck.add("HA");
 
-            cardDeck.add("C7");
-            cardDeck.add("C8");
-            cardDeck.add("C9");
-            cardDeck.add("CX");
-            cardDeck.add("CB");
-            cardDeck.add("CD");
-            cardDeck.add("CK");
-            cardDeck.add("CA");
-
-            cardDeck.add("P7");
-            cardDeck.add("P8");
-            cardDeck.add("P9");
-            cardDeck.add("PX");
-            cardDeck.add("PB");
-            cardDeck.add("PD");
-            cardDeck.add("PK");
-            cardDeck.add("PA");
-
-            cardDeck.add("K7");
-            cardDeck.add("K8");
-            cardDeck.add("K9");
-            cardDeck.add("KX");
-            cardDeck.add("KB");
-            cardDeck.add("KD");
-            cardDeck.add("KK");
-            cardDeck.add("KA");
 
             Collections.shuffle(cardDeck); // Mischen der Karten
         }
@@ -286,5 +250,26 @@ public class CardGameUI {
             mixCards();
             return cardDeck;
         }
+    }
+
+    public void renderHandCards(ArrayList<String> karten) {
+
+        JPanel mainPanel = (JPanel) frame.getContentPane();
+        mainPanel.removeAll(); // Entfernen aller vorhandenen Karten-Labels
+
+        int x = INITIAL_X;
+        int y = INITIAL_Y;
+
+        for (String card : karten) {
+            JLabel cardLabel = createCardLabel(card);
+            cardLabel.setBounds(x, y, CARD_WIDTH, CARD_HEIGHT);
+            mainPanel.add(cardLabel);
+            x -= 30;
+            y -= 30;
+        }
+
+        mainPanel.add(enlargedCardLabel); // Hinzufügen des Labels für die vergrößerte Karte
+        frame.validate(); // Neuzeichnen des Hauptpanels
+        frame.repaint(); // Aktualisieren der Anzeige
     }
 }
