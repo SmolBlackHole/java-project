@@ -297,46 +297,4 @@ public class CardGameUI {
         // Rendern Sie die Handkarten
         renderHandCards(karten);
     }
-
-
-    void listenForGameData() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                String placeholderData = "";
-                while (true) {
-                    String receivedData = Client.receiveGameData();
-
-                    if (!receivedData.equals(placeholderData)) {
-                        String[] dataParts = receivedData.split("\\|");
-
-                        boolean istDrann = Boolean.parseBoolean(dataParts[0]);
-                        ArrayList<String> karten = new ArrayList<>(Arrays.asList(dataParts[1].split(",")));
-                        String obersteSpielkarte = dataParts[2];
-                        int anzahlSpieler = Integer.parseInt(dataParts[3]);
-
-                        ArrayList<ArrayList<Object>> spieler = new ArrayList<>();
-                        for (int i = 4; i < dataParts.length; i += 3) {
-                            String spielername = dataParts[i];
-                            int anzahlKarten = Integer.parseInt(dataParts[i + 1]);
-                            boolean spielerIstDrann = Boolean.parseBoolean(dataParts[i + 2]);
-
-                            ArrayList<Object> spielerDaten = new ArrayList<>();
-                            spielerDaten.add(spielername);
-                            spielerDaten.add(anzahlKarten);
-                            spielerDaten.add(spielerIstDrann);
-
-                            spieler.add(spielerDaten);
-                        }
-
-                        handleGameData(istDrann, karten, obersteSpielkarte, anzahlSpieler, spieler);
-                        placeholderData = receivedData;
-                    }
-
-                }
-            }
-        }).start();
-    }
-
-
 }
