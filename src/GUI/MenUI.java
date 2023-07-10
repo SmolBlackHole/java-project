@@ -171,10 +171,10 @@ public class MenUI extends JFrame {
     private void showCardGameUI() {
         // Überprüfen, ob das CardGameUI-Objekt bereits erstellt wurde
         if (cardGameUI == null) {
-            // Erstelle ein neues CardGameUI-Objekt
-            cardGameUI = new CardGameUI();
-            // Füge den eigenen Namen unter dem Kartendeck hinzu
-            cardGameUI.addPlayerName(Client.username);
+            // Erstelle ein neues CardGameUI-Objekt und übergabe des Benutzernamen
+            cardGameUI = new CardGameUI(Client.username);
+            // Debug
+            cardGameUI.setTitel(Client.username);
         }
     }
 

@@ -1,5 +1,7 @@
 package GUI;
 
+import Client.Client.Client;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -35,25 +37,31 @@ public class CardGameUI {
     private Point[] originalCardLocations;
     // Label zur Darstellung der vergrößerten Karte in der Mitte
     private JLabel enlargedCardLabel;
+    private JFrame frame;
+    private CardGameUI cardGameUI;
 
-    public CardGameUI() {
+    public CardGameUI(String username) {
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
                 try {
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                 } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
-                        UnsupportedLookAndFeelException ex) {
+                         UnsupportedLookAndFeelException ex) {
                     ex.printStackTrace();
                 }
 
                 // Erzeugen des Kartendecks
                 List<String> cardDeck = Card.getCardDeck();
 
-                // Erzeugen des Hauptfensters
-                JFrame frame = new JFrame("Card Game");
+                // JFrame-Objekt initialisieren
+                frame = new JFrame();
+
+                // Erstelle das Hauptfenster
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 frame.setSize(WindowWidth, WindowHeight);
+
+                frame.setTitle("Card Game - " + username);
 
                 // Haupt-Panel mit Hintergrundbild
                 JPanel mainPanel = new JPanel(null) {
@@ -71,8 +79,10 @@ public class CardGameUI {
                 cardLabels = new ArrayList<>();
                 enlargedCardLabel = createEnlargedCardLabel();
 
-                int x = INITIAL_X;
-                int y = INITIAL_Y;
+                int x;
+                x = INITIAL_X;
+                int y;
+                y = INITIAL_Y;
 
                 for (int i = cardDeck.size() - 1; i >= 0; i--) {
                     String card = cardDeck.get(i);
@@ -107,7 +117,8 @@ public class CardGameUI {
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                new CardGameUI();
+                new CardGameUI(Client.username);
+                System.out.println("GUI started mit Benutzername: " + Client.username);
             }
         });
     }
@@ -218,7 +229,13 @@ public class CardGameUI {
         enlargedCardLabel.setVisible(false);
     }
 
-    public void addPlayerName(String username) {
+
+    public void setTitel(String s) {
+        if (frame != null) {
+            frame.setTitle(s);
+        } else {
+            System.out.println("WAS IST DEN HIER LOS?!?!");
+        }
     }
 
     // Professionell von Vanessa geklauter Code (Testzwecke)

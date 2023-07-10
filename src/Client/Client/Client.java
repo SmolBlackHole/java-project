@@ -9,7 +9,6 @@ import java.util.Calendar;
 import java.util.Scanner;
 
 public class Client {
-
     private static Socket socket;
     private static BufferedWriter bufferedWriter;
     private static BufferedReader bufferedReader;
@@ -26,7 +25,6 @@ public class Client {
     public static int AnzahlSpieler;
     public static String Gewinner;
     public static String wilderChatString;
-
 
 
     public Client(Socket socket, String username) {
@@ -61,6 +59,7 @@ public class Client {
     // Methode, die auf Nachrichten wartet, und diese bearbeitet
     public void listenForMessage() {
         new Thread(new Runnable() {
+
             @Override
             public void run() {
                 String msgFromGroupChat;
@@ -201,8 +200,8 @@ public class Client {
             }
             // startet den Thread
         }).start();
-
     }
+
 
     // Methode, um bei Fehlern das Programm zu stoppen
     public static void close(Socket socket, BufferedWriter bufferedWriter, BufferedReader bufferedReader) {
@@ -308,31 +307,30 @@ public class Client {
     }
 }
 
+
+// ToDo:
 // Benutz die Methode dataToSend(data) um deine Daten an den Server zu schicken.
 // schicke einen String mit "Bh7.|+e" also: data = "Bh7.|+e".
-// um dem Server zu Signalisieren das du eine Karte ziehen magst/musst bzws
-// keine Karte legen kannst, sowohl bei einer +2 karte als auch wenn du keine
-// Passenden Karten hast.
+// um dem Server zu signalisieren, dass du eine Karte ziehen musst bzw.
+// keine Karte legen kannst, sowohl bei einer +2 karte als, auch wenn du keine
+// passenden Karten hast.
+
 // schicke einen String mit "F4->3GA"+"Kartenname" also: data = "F4->3GA"+"H7"
-// um dem Server die Gelegte Karte, in diesem fall die Herz 7, zu schicken. die
-// Anfangszeichen dienen Als
+// um dem Server die gelegte Karte, in diesem fall die Herz 7, zu schicken. Die
+// Anfangszeichen dienen als
 // Identifikation zwischen Server und Client, damit beide wissen was für Daten
 // gerade Gesendet wurden.
-// benutze sendMessage(msg) um
-// eine Chatnachricht zu schicken, diese wird dann mit dem Chat-Code, Username
-// und der Uhrzeit versehen.
+
 // in der Main Funktion siehst du die Variablen die ich befüllt habe. username,
 // ip, und port, diese müssen in Zukunft als Allererstes abgefragt werden, bevor
 // der Client gestartet wird
 
-// die Informationen die der Client jede Runder bekommt wären folgende:
-// C8->7G#ist-Drann|karten|ObersteSpielkarte|AnzahlSpieler|Spielername1|AnzahlKarten|ist Drann|Spielername2|Ist drann2|AnzahlKarten|Spielername3|AnzahlKarten|Ist drann3|
-// daraus werde ich eine Funktion schreiben die euch diesen String in
-// verschiedene Variablen aufteilt.
-// istDrann = boolean --> ein bool um zu gucken ob der Spieler gerade drann ist
-// karten = Arraylist --> die Karten die man am Anfang gezogen hat und die
-// Karten die man Ziehen muss, ist immer eine Liste mit den Karten die der
-// Spieler Aktuell haben sollte.
+// die Informationen, die der Client jede Runder bekommt, wären folgende:
+// C8->7G#istDrann|karten|ObersteSpielkarte|AnzahlSpieler|Spielername1|AnzahlKarten|istDrann|Spielername2|Istdrann2|AnzahlKarten|Spielername3|AnzahlKarten|IstDrann3|
+// istDrann = boolean --> ein bool um zu gucken ob der Spieler gerade Drann ist
+// karten = Arraylist --> die Karten, die man am Anfang gezogen hat und die
+// Karten, die man Ziehen muss, ist immer eine Liste mit den Karten, die der
+// Spieler aktuell haben sollte.
 // ObersteSpielKarte = String --> der Name der Obersten Karte auf dem
 // Wegwerfstapel
 // AnzahlSpieler = Int
@@ -340,9 +338,17 @@ public class Client {
 // --> eine Liste aus Listen die alle Spieler und ihre Anzahl an Karten besitzt.
 // hier wird auch der Eigene Name und die eigene Anzahl stehen, diese sollten am
 // besten ausgefiltert werden.
-// Diese Daten werden Jedesmal geschickt, auch wenn ihr karten ziehen müsst,
-// oder nicht drann seit
+// Diese Daten werden Jedes Mal geschickt, auch wenn ihr karten ziehen müsst,
+// oder nicht Drann seit
+
 // guck am besten das du die Liste mit den eigenen karten dann einfach entweder
 // jedesmal ersetzt oder so filterst, dass du nur die einfügst die du noch nicht
 // hast, damit sich keine Doppeln
 // wenn die Variable Gewinner mit dem Namen des Gewinners gefüllt ist, ist soll das Spiel vorbei sein
+
+
+// Done
+
+// Benutze sendMessage(msg) um
+// eine Chatnachricht zu schicken, diese wird dann mit dem Chat-Code, Username
+// und der Uhrzeit versehen.

@@ -8,14 +8,11 @@ import java.util.Objects;
 
 import Client.Client.Client;
 
-import static Client.Client.Client.wilderChatString;
-
 public class ChatUI extends JFrame {
 
-    private JTextArea chatArea;
-    private JTextField messageField;
-    private JButton sendButton;
-    private Client client;
+    private final JTextArea chatArea;
+    private final JTextField messageField;
+
 
     public ChatUI() {
 
@@ -34,7 +31,7 @@ public class ChatUI extends JFrame {
         // Eingabebereich für Nachrichten
         JPanel inputPanel = new JPanel(new BorderLayout());
         messageField = new JTextField();
-        sendButton = new JButton("Senden");
+        JButton sendButton = new JButton("Senden");
         sendButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -67,13 +64,13 @@ public class ChatUI extends JFrame {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                String Platzhalter = "";
+                String PlatzhalterString = "";
                 while (true) {
                     String receivedMessage = Client.receiveMessage();
 
-                    if (!Objects.equals(receivedMessage, Platzhalter)) {
+                    if (!Objects.equals(receivedMessage, PlatzhalterString)) {
                         addMessage(receivedMessage); // Empfangene Nachricht zum Chat
-                        Platzhalter = receivedMessage;
+                        PlatzhalterString = receivedMessage;
                     }
                 }
             }
