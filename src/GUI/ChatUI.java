@@ -4,8 +4,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Objects;
 
 import Client.Client.Client;
+
+import static Client.Client.Client.wilderChatString;
 
 public class ChatUI extends JFrame {
 
@@ -52,7 +55,6 @@ public class ChatUI extends JFrame {
         String message = messageField.getText();
         if (!message.isEmpty()) {
             Client.sendMessage(message);
-            addMessage(Client.username + ": " + message); // Nachricht zum Chat hinzufügen
             messageField.setText("");
         }
     }
@@ -65,10 +67,13 @@ public class ChatUI extends JFrame {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                String Platzhalter = "";
                 while (true) {
                     String receivedMessage = Client.receiveMessage();
-                    if (receivedMessage != null) {
-                        addMessage(receivedMessage); // Empfangene Nachricht zum Chat hinzufügen
+
+                    if (!Objects.equals(receivedMessage, Platzhalter)) {
+                        addMessage(receivedMessage); // Empfangene Nachricht zum Chat
+                        Platzhalter = receivedMessage;
                     }
                 }
             }

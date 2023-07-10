@@ -25,6 +25,7 @@ public class Client {
     public static ArrayList<ArrayList> Spieler = new ArrayList<ArrayList>();
     public static int AnzahlSpieler;
     public static String Gewinner;
+    public static String wilderChatString;
 
 
 
@@ -88,6 +89,7 @@ public class Client {
                         }
                         if (choose.equals("M<:!ds5")) {
                             // Hier Hast du die Empfangene Nachricht aus dem Chat, auch deine Eigenen
+                            wilderChatString = newMessage;
                             System.out.println(newMessage);
                         }
                         if (choose.equals("K<;?dHs0")) {
@@ -302,7 +304,7 @@ public class Client {
     }
 
     public static String receiveMessage() {
-        return newMessage;
+        return wilderChatString;
     }
 }
 
