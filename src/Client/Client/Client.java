@@ -25,6 +25,7 @@ public class Client {
     public static int AnzahlSpieler;
     public static String Gewinner;
     public static String wilderChatString;
+    public static ArrayList<String> Karten = new ArrayList<String>();
 
 
     public Client(Socket socket, String username) {
@@ -54,6 +55,10 @@ public class Client {
         } catch (IOException e) {
             close(socket, bufferedWriter, bufferedReader);
         }
+    }
+
+    public static String receiveGameData() {
+        return gameData;
     }
 
     // Methode, die auf Nachrichten wartet, und diese bearbeitet
@@ -185,6 +190,9 @@ public class Client {
                                 e.printStackTrace();
                             }
 
+                            Karten = new ArrayList<String>();
+                            Karten.addAll(karten);
+
                             System.out.println(istDrann);
                             System.out.println(karten);
                             System.out.println(ObersteSpielkarte);
@@ -304,6 +312,9 @@ public class Client {
 
     public static String receiveMessage() {
         return wilderChatString;
+    }
+    public static ArrayList<String> receiveKarten() {
+        return Karten;
     }
 }
 

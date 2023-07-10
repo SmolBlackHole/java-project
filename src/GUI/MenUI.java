@@ -151,8 +151,16 @@ public class MenUI extends JFrame {
 
             showChatUI(); // Öffne das ChatUI-Fenster
             showCardGameUI(); // Öffne das CardGameUI-Fenster
+
+            updateCardGameUI(); // Aktualisiere das CardGameUI
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void updateCardGameUI() {
+        if (cardGameUI != null) {
+            cardGameUI.renderHandCards(karten);
         }
     }
 
@@ -160,12 +168,11 @@ public class MenUI extends JFrame {
         // Überprüfen, ob das CardGameUI-Objekt bereits erstellt wurde
         if (cardGameUI == null) {
             karten = new ArrayList<>();
-            CardGameUI cardGameUi = new CardGameUI(Client.username, karten);
-
             cardGameUI = new CardGameUI(Client.username, karten);
             cardGameUI.setTitel(Client.username);
+            cardGameUI.listenForGameData(); // Starte das Lauschen auf Spieldaten
         }
-        cardGameUI.renderHandCards(karten);
+        updateCardGameUI(); // Aktualisiere das CardGameUI
     }
 
     private void showChatUI() {

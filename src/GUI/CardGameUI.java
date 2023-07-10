@@ -6,7 +6,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -28,14 +30,18 @@ public class CardGameUI {
     private static final int WindowWidth = 1440;
     private static final int WindowHeight = 900;
     // Liste zur Speicherung der Karten-Labels
-    private List<JLabel> cardLabels;
+    private List<JLabel> cardLabels = new ArrayList<>();
     // Array zur Speicherung der ursprünglichen Positionen der Karten
     private Point[] originalCardLocations;
     // Label zur Darstellung der vergrößerten Karte in der Mitte
     private JLabel enlargedCardLabel;
-    private JFrame frame;
+    private JFrame frame = new JFrame();
     private static ArrayList<String> karten;
+    private String obersteSpielkarte;
+    private int anzahlSpieler;
+    private ArrayList<ArrayList<Object>> spieler;
     private boolean isInizialized = false;
+    private boolean istDrann;
 
     public CardGameUI(String username, ArrayList<String> karten) {
         CardGameUI.karten = karten;
@@ -109,16 +115,7 @@ public class CardGameUI {
         });
     }
 
-    // Hauptmethode des Programms, die das GUI startet
-    public static void main(String[] args) {
-        EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new CardGameUI(Client.username, karten);
-                System.out.println("GUI started mit Benutzername: " + Client.username);
-            }
-        });
-    }
+
 
     // Methode zur Erstellung eines Karten-Labels
     private JLabel createCardLabel(String cardName) {
@@ -229,7 +226,6 @@ public class CardGameUI {
 
     public void setTitel(String s) {
         if (frame != null) {
-            frame = new JFrame();
             frame.setTitle(s);
         } else {
             System.out.println("WAS IST DEN HIER LOS?!?!");
@@ -253,23 +249,94 @@ public class CardGameUI {
     }
 
     public void renderHandCards(ArrayList<String> karten) {
+        // Leeren Sie die Liste der Karten-Labels
+        cardLabels.clear();
 
+        // Holen Sie sich das Hauptpanel
         JPanel mainPanel = (JPanel) frame.getContentPane();
-        mainPanel.removeAll(); // Entfernen aller vorhandenen Karten-Labels
 
-        int x = INITIAL_X;
-        int y = INITIAL_Y;
+        // Berechnen Sie die Anfangsposition der Karten basierend auf der Anzahl der Karten
+        int startX = INITIAL_X - (karten.size() - 1) * 30;
+        int startY = INITIAL_Y - (karten.size() - 1) * 30;
 
-        for (String card : karten) {
+        // Erstellen und Hinzufügen der Karten-Labels zum Hauptpanel
+        for (int i = 0; i < karten.size(); i++) {
+            String card = karten.get(i);
             JLabel cardLabel = createCardLabel(card);
+            int x = startX + i * 30;
+            int y = startY + i * 30;
             cardLabel.setBounds(x, y, CARD_WIDTH, CARD_HEIGHT);
             mainPanel.add(cardLabel);
-            x -= 30;
-            y -= 30;
+            cardLabels.add(cardLabel);
         }
 
-        mainPanel.add(enlargedCardLabel); // Hinzufügen des Labels für die vergrößerte Karte
-        frame.validate(); // Neuzeichnen des Hauptpanels
-        frame.repaint(); // Aktualisieren der Anzeige
+        frame.validate();
+        frame.repaint();
     }
+
+    private void handleGameData(boolean istDrann, ArrayList<String> karten, String obersteSpielkarte,
+                                int anzahlSpieler, ArrayList<ArrayList<Object>> spieler) {
+        // Aktualisieren Sie das UI mit den empfangenen Daten
+        updateGameUI(istDrann, karten, obersteSpielkarte, anzahlSpieler, spieler);
+    }
+
+    private void updateGameUI(boolean istDrann, ArrayList<String> karten, String obersteSpielkarte,
+                              int anzahlSpieler, ArrayList<ArrayList<Object>> spieler) {
+
+        // Beispielaktualisierungen:
+        System.out.println("Ist dran: " + istDrann);
+        System.out.println("Karten: " + karten);
+        System.out.println("Oberste Spielkarte: " + obersteSpielkarte);
+        System.out.println("Anzahl Spieler: " + anzahlSpieler);
+        System.out.println("Spieler: " + spieler);
+
+
+        karten = Client.receiveKarten();
+
+
+        // Rendern Sie die Handkarten
+        renderHandCards(karten);
+    }
+
+
+    void listenForGameData() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String placeholderData = "";
+                while (true) {
+                    String receivedData = Client.receiveGameData();
+
+                    if (!receivedData.equals(placeholderData)) {
+                        String[] dataParts = receivedData.split("\\|");
+
+                        boolean istDrann = Boolean.parseBoolean(dataParts[0]);
+                        ArrayList<String> karten = new ArrayList<>(Arrays.asList(dataParts[1].split(",")));
+                        String obersteSpielkarte = dataParts[2];
+                        int anzahlSpieler = Integer.parseInt(dataParts[3]);
+
+                        ArrayList<ArrayList<Object>> spieler = new ArrayList<>();
+                        for (int i = 4; i < dataParts.length; i += 3) {
+                            String spielername = dataParts[i];
+                            int anzahlKarten = Integer.parseInt(dataParts[i + 1]);
+                            boolean spielerIstDrann = Boolean.parseBoolean(dataParts[i + 2]);
+
+                            ArrayList<Object> spielerDaten = new ArrayList<>();
+                            spielerDaten.add(spielername);
+                            spielerDaten.add(anzahlKarten);
+                            spielerDaten.add(spielerIstDrann);
+
+                            spieler.add(spielerDaten);
+                        }
+
+                        handleGameData(istDrann, karten, obersteSpielkarte, anzahlSpieler, spieler);
+                        placeholderData = receivedData;
+                    }
+
+                }
+            }
+        }).start();
+    }
+
+
 }
