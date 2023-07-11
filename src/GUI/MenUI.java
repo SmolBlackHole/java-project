@@ -170,7 +170,6 @@ public class MenUI extends JFrame {
             karten = new ArrayList<>();
             cardGameUI = new CardGameUI(Client.username, karten);
             cardGameUI.setTitel(Client.username);
-            cardGameUI.listenForGameData(); // Starte das Lauschen auf Spieldaten
         }
         updateCardGameUI(); // Aktualisiere das CardGameUI
     }

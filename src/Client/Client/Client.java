@@ -24,8 +24,9 @@ public class Client {
     public static ArrayList<ArrayList> Spieler = new ArrayList<ArrayList>();
     public static int AnzahlSpieler;
     public static String Gewinner;
+
     public static String wilderChatString;
-    public static ArrayList<String> Karten = new ArrayList<String>();
+    public static ArrayList<String> wilderKartenString;
 
 
     public Client(Socket socket, String username) {
@@ -181,6 +182,7 @@ public class Client {
 
                             ArrayList<String> strList = new ArrayList<String>(Arrays.asList(kar.split(",")));
                             karten = strList;
+                            wilderKartenString = karten;
 
                             ObersteSpielkarte = top;
                             try {
@@ -189,9 +191,6 @@ public class Client {
                             catch (NumberFormatException e) {
                                 e.printStackTrace();
                             }
-
-                            Karten = new ArrayList<String>();
-                            Karten.addAll(karten);
 
                             System.out.println(istDrann);
                             System.out.println(karten);
@@ -314,7 +313,7 @@ public class Client {
         return wilderChatString;
     }
     public static ArrayList<String> receiveKarten() {
-        return Karten;
+        return karten;
     }
 }
 

@@ -6,29 +6,27 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class CardGameUI {
-
     // Breite und Höhe einer Karte
     private static final int CARD_WIDTH = (int) (73 * 1.5);
     private static final int CARD_HEIGHT = (int) (97 * 1.5);
-    //  Offset beim Karten verschieben (beim Hovern)
+    //  Offset beim Karten verschieben (beim Hover)
     private static final int HOVER_OFFSET = -20 * 2;
     // Anfangsposition der Karten
-    private static final int INITIAL_X = 1800;
+    private static final int INITIAL_X = 1000;
     private static final int INITIAL_Y = 650;
-    //  Faktor, um die Karte beim Hovern zu vergrößern
+    //  Faktor, um die Karte beim Hover zu vergrößern
     private static final double HOVER_SCALE_FACTOR = 1.5;
     // Pfad zum Hintergrundbild
     private static final String BACKGROUND_IMAGE_PATH = "src/GUI/Assets/Table.jpg";
     // Breite und Höhe des Fensters
     private static final int WindowWidth = 1440;
     private static final int WindowHeight = 900;
+    private static ArrayList<String> karten;
     // Liste zur Speicherung der Karten-Labels
     private List<JLabel> cardLabels = new ArrayList<>();
     // Array zur Speicherung der ursprünglichen Positionen der Karten
@@ -36,12 +34,6 @@ public class CardGameUI {
     // Label zur Darstellung der vergrößerten Karte in der Mitte
     private JLabel enlargedCardLabel;
     private JFrame frame = new JFrame();
-    private static ArrayList<String> karten;
-    private String obersteSpielkarte;
-    private int anzahlSpieler;
-    private ArrayList<ArrayList<Object>> spieler;
-    private boolean isInizialized = false;
-    private boolean istDrann;
 
     public CardGameUI(String username, ArrayList<String> karten) {
         CardGameUI.karten = karten;
@@ -54,9 +46,6 @@ public class CardGameUI {
                          UnsupportedLookAndFeelException ex) {
                     ex.printStackTrace();
                 }
-
-                // Erzeugen des Kartendecks
-                List<String> cardDeck = Card.getCardDeck();
 
                 // JFrame-Objekt initialisieren
                 frame = new JFrame();
@@ -79,17 +68,16 @@ public class CardGameUI {
                 };
                 frame.setContentPane(mainPanel);
 
-                // Erstellen der Karten-Labels und Hinzufügen zum Hauptpanel
+                // Erstellen der Karten-Labels und Hinzufügen zum Haupt panel
                 cardLabels = new ArrayList<>();
                 enlargedCardLabel = createEnlargedCardLabel();
 
+                // Erstellen der Karten-Labels und Hinzufügen zum Hauptpanel
                 int x = INITIAL_X;
-                int y = INITIAL_Y;
 
-                for (int i = cardDeck.size() - 1; i >= 0; i--) {
-                    String card = cardDeck.get(i);
+                for (String card : karten) {
                     JLabel cardLabel = createCardLabel(card);
-                    cardLabel.setBounds(x, y, CARD_WIDTH, CARD_HEIGHT);
+                    cardLabel.setBounds(x, INITIAL_Y, CARD_WIDTH, CARD_HEIGHT);
                     mainPanel.add(cardLabel);
                     cardLabels.add(cardLabel);
 
@@ -107,15 +95,18 @@ public class CardGameUI {
                 mainPanel.add(enlargedCardLabel);
 
                 // Hinzufügen der MouseListener zu den Karten-Labels
-                addMouseListeners(frame);
+                addMouseListeners();
+
+                // Karten rendern
+                renderHandCards(karten);
 
                 frame.setLocationRelativeTo(null);
                 frame.setVisible(true);
+
+                listenForGameInfo();
             }
         });
     }
-
-
 
     // Methode zur Erstellung eines Karten-Labels
     private JLabel createCardLabel(String cardName) {
@@ -136,47 +127,53 @@ public class CardGameUI {
     }
 
     // Methode zum Hinzufügen der MouseListener zu den Karten-Labels
-    private void addMouseListeners(JFrame frame) {
-        for (int i = 0; i < cardLabels.size(); i++) {
-            int index = i;
-            JLabel cardLabel = cardLabels.get(i);
-            cardLabel.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseEntered(MouseEvent e) {
-                    moveCard(cardLabel, HOVER_OFFSET);
-                    setComponentZOrder(frame, cardLabel, index + cardLabels.size());
+    // Methode zum Hinzufügen der MouseListener zu einem Karten-Label
+    private void addMouseListenerToCardLabel(JLabel cardLabel, int index) {
+        cardLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                moveCard(cardLabel, HOVER_OFFSET);
+                setComponentZOrder(frame, cardLabel, index + cardLabels.size());
+                showEnlargedCard(cardLabel.getIcon());
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                moveCard(cardLabel, 0);
+                setComponentZOrder(frame, cardLabel, index);
+                hideEnlargedCard();
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (enlargedCardLabel.isVisible()) {
+                    hideEnlargedCard();
+                } else {
                     showEnlargedCard(cardLabel.getIcon());
                 }
+            }
+        });
 
-                @Override
-                public void mouseExited(MouseEvent e) {
-                    moveCard(cardLabel, 0);
+        // Füge MouseMotionListener hinzu, um die Z-Reihenfolge der Karten zu aktualisieren
+        cardLabel.addMouseMotionListener(new MouseAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                if (index == cardLabels.size() - 1) {
+                    // Setze die Z-Reihenfolge der letzten Karte auf die Vorderseite
+                    setComponentZOrder(frame, cardLabel, index + cardLabels.size());
+                } else if (index == 0) {
+                    // Setze die Z-Reihenfolge der ersten Karte auf die Rückseite
                     setComponentZOrder(frame, cardLabel, index);
-                    hideEnlargedCard();
                 }
+            }
+        });
+    }
 
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    if (enlargedCardLabel.isVisible()) {
-                        hideEnlargedCard();
-                    } else {
-                        showEnlargedCard(cardLabel.getIcon());
-                    }
-                }
-            });
-            // Füge MouseMotionListener hinzu, um die Z-Reihenfolge der Karten zu aktualisieren
-            cardLabel.addMouseMotionListener(new MouseAdapter() {
-                @Override
-                public void mouseMoved(MouseEvent e) {
-                    if (index == cardLabels.size() - 1) {
-                        // Setze die Z-Reihenfolge der letzten Karte auf die Vorderseite
-                        setComponentZOrder(frame, cardLabel, index + cardLabels.size());
-                    } else if (index == 0) {
-                        // Setze die Z-Reihenfolge der ersten Karte auf die Rückseite
-                        setComponentZOrder(frame, cardLabel, index);
-                    }
-                }
-            });
+    // Methode zum Hinzufügen der MouseListener zu den Karten-Labels
+    private void addMouseListeners() {
+        for (int i = 0; i < cardLabels.size(); i++) {
+            JLabel cardLabel = cardLabels.get(i);
+            addMouseListenerToCardLabel(cardLabel, i);
         }
     }
 
@@ -232,69 +229,66 @@ public class CardGameUI {
         }
     }
 
-    // Professionell von Vanessa geklauter Code (Testzwecke)
-    public static class Card {
-        private static final ArrayList<String> cardDeck = new ArrayList<>();
-
-        public static void mixCards() {
-
-
-            Collections.shuffle(cardDeck); // Mischen der Karten
-        }
-
-        public static ArrayList<String> getCardDeck() {
-            mixCards();
-            return cardDeck;
-        }
-    }
-
+    // Methode zum Rendern der Handkarten
     public void renderHandCards(ArrayList<String> karten) {
-        // Leeren Sie die Liste der Karten-Labels
+        // Leere die Liste der Karten-Labels
         cardLabels.clear();
 
-        // Holen Sie sich das Hauptpanel
+        // Holt sich das Haupt panel
         JPanel mainPanel = (JPanel) frame.getContentPane();
 
-        // Berechnen Sie die Anfangsposition der Karten basierend auf der Anzahl der Karten
-        int startX = INITIAL_X - (karten.size() - 1) * 30;
-        int startY = INITIAL_Y - (karten.size() - 1) * 30;
+        // Anzahl der Karten
+        int cardCount = karten.size();
 
-        // Erstellen und Hinzufügen der Karten-Labels zum Hauptpanel
-        for (int i = 0; i < karten.size(); i++) {
+        // Breite des sichtbaren Bereichs abzüglich der Kartenbreite
+        int visibleWidth = WindowWidth - CARD_WIDTH;
+
+        // Berechnung des horizontalen Abstands zwischen den Karten basierend auf der Anzahl der Karten
+        int horizontalSpacing = Math.min(visibleWidth / (cardCount - 1), 30);
+
+        // Anfangsposition der Karten
+        int startX = (WindowWidth - (CARD_WIDTH + (cardCount - 1) * horizontalSpacing)) / 2;
+        int y = INITIAL_Y;
+
+        // Erstellen und Hinzufügen der Karten-Labels zum Haupt panel
+        for (int i = 0; i < cardCount; i++) {
             String card = karten.get(i);
             JLabel cardLabel = createCardLabel(card);
-            int x = startX + i * 30;
-            int y = startY + i * 30;
+            int x = startX + i * horizontalSpacing;
             cardLabel.setBounds(x, y, CARD_WIDTH, CARD_HEIGHT);
             mainPanel.add(cardLabel);
             cardLabels.add(cardLabel);
         }
 
+        // Speichern der ursprünglichen Kartenpositionen
+        originalCardLocations = new Point[cardLabels.size()];
+        for (int i = 0; i < cardLabels.size(); i++) {
+            originalCardLocations[i] = cardLabels.get(i).getLocation();
+        }
+
+        frame.validate();
+        frame.repaint();
+
+        // Füge MouseListener hinzu
+        addMouseListeners();
+
         frame.validate();
         frame.repaint();
     }
 
-    private void handleGameData(boolean istDrann, ArrayList<String> karten, String obersteSpielkarte,
-                                int anzahlSpieler, ArrayList<ArrayList<Object>> spieler) {
-        // Aktualisieren Sie das UI mit den empfangenen Daten
-        updateGameUI(istDrann, karten, obersteSpielkarte, anzahlSpieler, spieler);
-    }
+    private void listenForGameInfo() {
+        new Thread(() -> {
+            ArrayList<String> PlatzhalterString = new ArrayList<>();
+            while (true) {
+                karten = Client.receiveKarten();
 
-    private void updateGameUI(boolean istDrann, ArrayList<String> karten, String obersteSpielkarte,
-                              int anzahlSpieler, ArrayList<ArrayList<Object>> spieler) {
-
-        // Beispielaktualisierungen:
-        System.out.println("Ist dran: " + istDrann);
-        System.out.println("Karten: " + karten);
-        System.out.println("Oberste Spielkarte: " + obersteSpielkarte);
-        System.out.println("Anzahl Spieler: " + anzahlSpieler);
-        System.out.println("Spieler: " + spieler);
-
-
-        karten = Client.receiveKarten();
-
-
-        // Rendern Sie die Handkarten
-        renderHandCards(karten);
+                if (!Objects.equals(karten, PlatzhalterString)) {
+                    renderHandCards(karten); // Empfangene Karten zur Render Queue hinzufügen
+                    PlatzhalterString = karten;
+                    System.out.println("Karten empfangen " + karten);
+                    addMouseListeners(); // Füge MouseListener hinzu
+                }
+            }
+        }).start();
     }
 }
