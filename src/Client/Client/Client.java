@@ -27,6 +27,11 @@ public class Client {
 
     public static String wilderChatString;
     public static ArrayList<String> wilderKartenString;
+    public static boolean wilderBool;
+    public static String wildeObersteSpielkarte;
+    public static int wildeSpielerAnzahl;
+    public static String winnerWinnerChickenDinner;
+    private static ArrayList<ArrayList> wildeSpielerListe;
 
 
     public Client(Socket socket, String username) {
@@ -179,14 +184,17 @@ public class Client {
                             }if (turn.equals("false")) {
                                 istDrann = false;
                             }
+                            wilderBool = istDrann;
 
                             ArrayList<String> strList = new ArrayList<String>(Arrays.asList(kar.split(",")));
                             karten = strList;
                             wilderKartenString = karten;
 
                             ObersteSpielkarte = top;
+                            wildeObersteSpielkarte = ObersteSpielkarte;
                             try {
                                 AnzahlSpieler = Integer.parseInt(count);
+                                wildeSpielerAnzahl = AnzahlSpieler;
                             }
                             catch (NumberFormatException e) {
                                 e.printStackTrace();
@@ -198,6 +206,7 @@ public class Client {
                             System.out.println(AnzahlSpieler);
                             System.out.println(Spieler);
 
+                            wildeSpielerListe = Spieler;
                         }
 
                     } catch (IOException e) {
@@ -252,6 +261,20 @@ public class Client {
         }
 
     }
+
+    public static BufferedWriter getBufferedWriter() {
+        return bufferedWriter;
+    }
+
+    public static BufferedReader getBufferedReader() {
+        return bufferedReader;
+    }
+
+    public static Socket getSocket() {
+        return socket;
+    }
+
+
     public void Play(){
         new Thread(new Runnable() {
             @Override
@@ -292,6 +315,7 @@ public class Client {
                     }
                 }
                 System.out.println("Der gewinner ist " + Gewinner);
+                winnerWinnerChickenDinner = Gewinner;
 
             }
         }).start();
@@ -314,6 +338,21 @@ public class Client {
     }
     public static ArrayList<String> receiveKarten() {
         return karten;
+    }
+    public static boolean receiveTurn() {
+        return wilderBool;
+    }
+    public static String receiveObersteSpielkarte() {
+        return wildeObersteSpielkarte;
+    }
+    public static int receiveAnzahlSpieler() {
+        return wildeSpielerAnzahl;
+    }
+    public static String receiveGewinner() {
+        return Gewinner;
+    }
+    public static ArrayList<ArrayList> receiveSpielerListe() {
+        return wildeSpielerListe;
     }
 }
 
