@@ -23,9 +23,16 @@ public class MenUI extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(300, 200);
         setLayout(new GridLayout(2, 1));
+        setResizable(false); // Nicht skalierbares Fenster
+
+        // Panel für Buttons
+        JPanel buttonPanel = new JPanel(new GridLayout(2, 1, 0, 10));
 
         // Button für "Host Server"
         JButton hostServerButton = new JButton("Host Server");
+        hostServerButton.setFont(new Font("Arial", Font.BOLD, 24));
+        hostServerButton.setPreferredSize(new Dimension(200, 100)); // Vergrößere die Höhe des Buttons
+        hostServerButton.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // Füge eine Border hinzu
         hostServerButton.addActionListener(e -> {
             showHostServerOptions();
             setVisible(false); // Minimiere das Hauptfenster
@@ -33,17 +40,24 @@ public class MenUI extends JFrame {
 
         // Button für "Spielen"
         JButton playButton = new JButton("Spielen");
+        playButton.setFont(new Font("Arial", Font.BOLD, 24));
+        playButton.setPreferredSize(new Dimension(200, 100)); // Vergrößere die Höhe des Buttons
+        playButton.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // Füge eine Border hinzu
         playButton.addActionListener(e -> {
             showLoginDialog();
             setVisible(false); // Minimiere das Hauptfenster
         });
 
+        buttonPanel.add(hostServerButton);
+        buttonPanel.add(playButton);
+
         // Buttons zum Hauptfenster hinzufügen
-        add(hostServerButton);
-        add(playButton);
+        add(buttonPanel);
 
         setVisible(true);
+        setLocationRelativeTo(null); // Zentriert das Fenster auf dem Bildschirm
     }
+
 
     public static void main(String[] args) {
         EventQueue.invokeLater(MenUI::new);
@@ -55,6 +69,8 @@ public class MenUI extends JFrame {
         hostServerFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         hostServerFrame.setSize(300, 200);
         hostServerFrame.setLayout(new GridLayout(3, 2));
+        hostServerFrame.setResizable(false); // Nicht skalierbares Fenster
+        hostServerFrame.setLocationRelativeTo(this); // Zentriert das Fenster relativ zum Hauptfenster
 
         // Label und Textfeld für maximale Spieleranzahl
         JLabel maxPlayersLabel = new JLabel("Max Spieler:");
@@ -94,6 +110,8 @@ public class MenUI extends JFrame {
         loginFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         loginFrame.setSize(300, 200);
         loginFrame.setLayout(new GridLayout(3, 2));
+        loginFrame.setResizable(false); // Nicht skalierbares Fenster
+        loginFrame.setLocationRelativeTo(this); // Zentriert das Fenster relativ zum Hauptfenster
 
         // Label und Textfeld für Benutzernamen
         JLabel usernameLabel = new JLabel("Username:");

@@ -86,7 +86,6 @@ public class Client {
                             if (choose.equals("M<:!ds5")) {
                                 newMessage += msgFromGroupChat.charAt(i);
                             }
-
                             if (choose.equals("C8->7G#")) {
                                 gameData += msgFromGroupChat.charAt(i);
                             }
