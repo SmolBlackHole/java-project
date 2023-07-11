@@ -27,7 +27,7 @@ public class Bot {
         this.isTurn = isTurn;
         this.playerCards = playerCards;
         this.topCard = topCard;
-
+        checkTurn(isTurn, playerCards, topCard);
 
     }
 
@@ -36,6 +36,7 @@ public class Bot {
         if(isTurn == true) {
             System.out.println("Der Bot ist dran");
             canPlay(playerCards, topCard);
+            Server.game.playerCard = spielerKarte;
         }
     }
 
@@ -60,12 +61,14 @@ public class Bot {
 
     // Checkt ob die topCard eine 7 oder 8 ist und ruft dann den Vergleich mit allen Handkarten auf
     public void canPlay(ArrayList<String> playerCards, String topCard) {
+        /*
         if (topCard.contains("7") || topCard.contains("8")) {
             if (topCard.contains("7")) {
                 for (String card : playerCards) {
                     if (isValidMoveSpecial(card, topCard)) {
                         spielerKarte = card;
-                    System.out.println("Karte "+spielerKarte+" kann gelegt werden");
+                        System.out.println("Karte "+spielerKarte+" kann gelegt werden");
+                        break;
                     }
                     spielerKarte = "";
                     System.out.println("keine Karte kann gelegt werden");
@@ -76,7 +79,8 @@ public class Bot {
                 for (String card : playerCards) {
                     if (isValidMoveSpecial(card, topCard)) {
                         spielerKarte = card;
-                    System.out.println("Karte "+spielerKarte+" kann gelegt werden");
+                        System.out.println("Karte "+spielerKarte+" kann gelegt werden");
+                        break;
                     }
                     spielerKarte = "";
                     System.out.println("keine Karte kann gelegt werden");
@@ -84,21 +88,30 @@ public class Bot {
                 }
             }
         } 
+        */
         // Normaler Zug
-        else {
+        if (topCard.contains("7")) {
             for (String card : playerCards) {
-                if (isValidMove(card, topCard)) {
+                if (isValidMoveSpecial(card, topCard)) {
                     spielerKarte = card;
                     System.out.println("Karte "+spielerKarte+" kann gelegt werden");
+                    break;
                 }
             }
+            Server.game.playerCard = spielerKarte; 
+        }
+        for (String cardelse : playerCards) {
+            if (isValidMove(cardelse, topCard)) {
+                spielerKarte = cardelse;
+                System.out.println("Karte "+spielerKarte+" kann gelegt werden");
+                break;
+            }
             spielerKarte = "";
-            System.out.println("keine Karte kann gelegt werden");
-            // Bot muss eine Karte ziehen
         }
         Server.game.playerCard = spielerKarte; 
     }
 
-    // Setter und Getter
-
+    public String getUsername (){
+        return username;
+    }
 }
