@@ -84,13 +84,13 @@ public class Server {
         do {
         // jeder Player soll die aktuellen infos kriegen
             game.special();
+            game.playerCard = null;
             for (ClientHandler clientHandler : clientHandlers) {
                 clientHandler.sendObject(createList(clientHandler));
                 System.out.println(clientHandler.getUsername() + " " + createList(clientHandler));
             }
 
             for(Bot bot : bots){
-                System.out.println("hallihallo ich bin ein bot " + bot);
                 boolean isTurn = false;
                 if (game.getCurrentPlayer() == game.getPlayerObject(bot)) {
                 isTurn = true;
@@ -142,6 +142,15 @@ public class Server {
                 data += false + "|";
             }
         }
+        for(Bot player : bots){
+            data += player.getUsername() + "|" + game.getPlayerObject(player).getPlayerCards().size() + "|";
+            if(game.getCurrentPlayer() == game.getPlayerObject(player)){
+                data += true + "|";
+            }
+            else{
+                data += false + "|";
+            }
+        }
         data = data + " ";
         return data;
 
@@ -181,7 +190,7 @@ public class Server {
         Scanner portscanner = new Scanner(System.in);
         System.out.println("Port Eingeben");
         int port = 25565;
-        maxPlayer = 2;
+        maxPlayer = 3;
         Scanner playerscanner = new Scanner(System.in);
         System.out.println("Max Spieler");
         // hier wird ein neuer Socket erstellt

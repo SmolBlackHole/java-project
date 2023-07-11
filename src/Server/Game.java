@@ -15,8 +15,10 @@ public class Game {
     static Card card = new Card();
     static ArrayList<String> cardDeck = card.getCardDeck();
     private String winner;
-    public boolean checked;
+    public boolean checked = true;
     static int drawCards = 0;
+    public boolean stackSeven;
+    //public ArrayList<String> playedCards;
 
 
     // Methode startet das Spiel -> wird in Server aufgerufen
@@ -67,9 +69,10 @@ public class Game {
      // gibt es einen Gewinner, wird das Spiel beendet
      public void special(){
         currentPlayer = currentPlayer.nextPlayer;
+        System.out.println("checked "+checked);
         if(!checked){ 
             specialCards(getTopCard());
-            checked = true;  
+             
         } 
      }
     public void play() {               
@@ -78,7 +81,6 @@ public class Game {
             System.out.println(currentPlayer.getPlayerCards());
 
             System.out.println("Lege eine deiner Karten");
-            playerCard = null;
             while(playerCard == null){
                 try {
                     TimeUnit.MILLISECONDS.sleep(1000);
@@ -87,12 +89,19 @@ public class Game {
                     e.printStackTrace();
                 }
             };
-            System.out.println("Grad dran: "+currentPlayer.getPlayerName() + " Dann: " + currentPlayer.nextPlayer.getPlayerName() + " Dann endlich: " + currentPlayer.nextPlayer.nextPlayer.getPlayerName());
-
+            
+            
             if(playerCard.isEmpty()) {
+                stackSeven = false;
                     drawCards();
                     // wenn Spieler eine Karte legen kann, so wird sie aus seinen Karten gestrichen und auf den Stapel gepackt
             
+            }
+            else if(stackSeven && !playerCard.contains("7")){
+                stackSeven = false;
+                System.out.println("\nhat geklappt\n");
+                putPlayerCardToCardDeck(playerCard);
+                drawCards();
             }
             else {
                 putPlayerCardToCardDeck(playerCard);
@@ -101,9 +110,6 @@ public class Game {
 
             // currentPlayer = currentPlayer.nextPlayer;
 
-
-            
-        
     }
     
 
@@ -130,12 +136,12 @@ public class Game {
             i++;
         }while(i < drawCards);
         drawCards = 0;
-        System.out.println("Ziehen ist abgeschlossen.");;
 
         if (getTopCard().contains("7")){
              play();
         }
         } 
+        
 
 
     // @Chris: muss aufgerufen werden, wenn Spieler eine Karte ablegt
@@ -146,19 +152,27 @@ public class Game {
         currentPlayer.getPlayerCards().remove(playerCard);
 
         System.out.println(currentPlayer.getPlayerCards());
+
+        // Wegwerfstapel
+        //playedCards.add(playerCard);
+        //System.out.println(playedCards);
+
     }
 
+    
      
 
     // Methode beschreibt was bei Sonderkarten passiert
     private void specialCards(String playerCard) {
         // 2 Karten ziehen
+        checked = true;
 
 //oder
         if (getTopCard().contains("7")) {
         // 7 legen       
          System.out.println("du musst 2 ziehen oder 7 legen " + currentPlayer.getPlayerName() + "\n");
             drawCards += 2;
+            stackSeven = true;
             
             // 4 Ziehen
         } else if (getTopCard().equals("PK")) {
@@ -168,7 +182,7 @@ public class Game {
                 getCardDeck().remove(getCardDeck().get(getCardDeck().size() - 1));
             }
             currentPlayer = currentPlayer.nextPlayer;
-            System.out.println("Jetzt ist " + currentPlayer.getPlayerName() + " an der Reihe.\n");
+            System.out.println("Jetzt ist " + currentPlayer.getPlayerName() + " an der Reihe.\n"); 
             // Aussetzer
         } else if (playerCard.contains("A")) {
             System.out.println("du musst aussetzen" + currentPlayer.getPlayerName() + "\n");
