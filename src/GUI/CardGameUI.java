@@ -75,7 +75,8 @@ public class CardGameUI {
                 // Erstellen der Karten-Labels und Hinzufügen zum Hauptpanel
                 int x = INITIAL_X;
 
-                for (String card : karten) {
+                for (int i = karten.size() - 1; i >= 0; i--) {
+                    String card = karten.get(i);
                     JLabel cardLabel = createCardLabel(card);
                     cardLabel.setBounds(x, INITIAL_Y, CARD_WIDTH, CARD_HEIGHT);
                     mainPanel.add(cardLabel);
@@ -83,7 +84,6 @@ public class CardGameUI {
 
                     x -= 30;
                 }
-
 
                 // Speichern der ursprünglichen Kartenpositionen
                 originalCardLocations = new Point[cardLabels.size()];
@@ -186,6 +186,7 @@ public class CardGameUI {
     }
 
     // Methode zum Ändern der Z-Reihenfolge einer Komponente
+// Methode zum Ändern der Z-Reihenfolge einer Komponente
     private void setComponentZOrder(JFrame frame, Component component, int position) {
         Container contentPane = frame.getContentPane();
         if (position < 0 || position >= contentPane.getComponentCount()) {
@@ -198,8 +199,28 @@ public class CardGameUI {
         }
 
         contentPane.setComponentZOrder(component, position);
+
+        // Aktualisiere die Z-Reihenfolge aller Karten-Labels
+        for (int i = 0; i < cardLabels.size(); i++) {
+            JLabel cardLabel = cardLabels.get(i);
+            int zIndex = i < position ? i : i + 1; // Erhöhe die Z-Reihenfolge um 1 für Karten vor der Zielposition
+            contentPane.setComponentZOrder(cardLabel, zIndex);
+        }
+
         contentPane.validate();
     }
+
+    // Methode zum Aktualisieren der Z-Reihenfolge der Karten
+    private void setCardZOrder() {
+        Container contentPane = frame.getContentPane();
+        for (int i = 0; i < cardLabels.size(); i++) {
+            JLabel cardLabel = cardLabels.get(i);
+            contentPane.setComponentZOrder(cardLabel, i);
+        }
+        contentPane.validate();
+    }
+
+
 
     // Methode zum Anzeigen der vergrößerten Karte
     private void showEnlargedCard(Icon cardIcon) {
@@ -230,6 +251,7 @@ public class CardGameUI {
     }
 
     // Methode zum Rendern der Handkarten
+    // Methode zum Rendern der Handkarten
     public void renderHandCards(ArrayList<String> karten) {
         // Leere die Liste der Karten-Labels
         cardLabels.clear();
@@ -257,7 +279,7 @@ public class CardGameUI {
             int x = startX + i * horizontalSpacing;
             cardLabel.setBounds(x, y, CARD_WIDTH, CARD_HEIGHT);
             mainPanel.add(cardLabel);
-            cardLabels.add(cardLabel);
+            cardLabels.add(0, cardLabel); // Füge die Karte am Anfang der Liste hinzu
         }
 
         // Speichern der ursprünglichen Kartenpositionen
@@ -266,15 +288,17 @@ public class CardGameUI {
             originalCardLocations[i] = cardLabels.get(i).getLocation();
         }
 
+        // Füge MouseListener hinzu
         frame.validate();
         frame.repaint();
 
-        // Füge MouseListener hinzu
+        setCardZOrder();
         addMouseListeners();
 
         frame.validate();
         frame.repaint();
     }
+
 
     private void listenForGameInfo() {
         new Thread(() -> {
