@@ -166,8 +166,6 @@ public class Server {
                     }
                     if (clientHandlers.size() < maxPlayer && wasFull) {
                         fullLobby = false;
-
-                        server.startServer();
                     }
                 }
             }
