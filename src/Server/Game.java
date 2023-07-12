@@ -139,7 +139,7 @@ public class Game {
 
         // Wegwerfstapel
 
-        System.out.println("Playedcards before" + playedCards);
+        System.out.println("Playedcards before" + playedCards + " Carddeck " + cardDeck);
         if(cardDeck.size() <= 8){
             cardDeck.addAll(playedCards);
             playedCards.clear();
