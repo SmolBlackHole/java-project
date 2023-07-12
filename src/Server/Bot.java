@@ -3,9 +3,9 @@ package Server;
 // Muss Handkkarten auswerten können -> darf legen oder nicht
 
 import java.util.ArrayList;
-import Server.Server.*;
+import java.util.concurrent.TimeUnit;
 
-import Server.Server.ClientHandler;
+import Server.Server.*;
 
 public class Bot {
 
@@ -34,6 +34,13 @@ public class Bot {
     // Checkt ob der Bot dran ist
     public void checkTurn(boolean isTurn, ArrayList<String> playerCards, String topCard) {
         if(isTurn == true) {
+            int sleep = 3 + (int)(Math.random() * ((7 - 3) + 1));
+            System.out.println("delay "+ sleep);
+            try {
+                TimeUnit.SECONDS.sleep(sleep);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             System.out.println("Der Bot ist dran");
             canPlay(playerCards, topCard);
             Server.game.playerCard = spielerKarte;
