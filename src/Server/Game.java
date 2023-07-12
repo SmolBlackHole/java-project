@@ -52,6 +52,8 @@ public class Game {
 
             currentPlayer = currentPlayer.getNextPlayer();
         }
+        playedCards.add(getCardDeck().get(0));
+        getCardDeck().remove(0);
     }
 
     // TEST FÜR CONSOLENSPIEL /////////////////
@@ -131,24 +133,24 @@ public class Game {
     // @Chris: muss aufgerufen werden, wenn Spieler eine Karte ablegt
     // Spieler legt eine Karte von seiner Hand auf den Stapel
     public void putPlayerCardToCardDeck(String playerCard) {
+
+        if(cardDeck.size() <= 8){
+            cardDeck.addAll(getPlayedCards());
+            playedCards.clear();
+            Collections.shuffle(cardDeck);
+            System.out.println("Carddeck" + cardDeck);
+        }
+        System.out.println("Before "+getPlayedCards());
+
         checked = false;
-        getCardDeck().add(0, playerCard);
+        getPlayedCards().add(0, playerCard);
         currentPlayer.getPlayerCards().remove(playerCard);
+        System.out.println("after "+getPlayedCards());
+
 
         System.out.println(currentPlayer.getPlayerCards());
 
-        // Wegwerfstapel
 
-        System.out.println("Playedcards before" + playedCards + " Carddeck " + cardDeck);
-        if(cardDeck.size() <= 8){
-            cardDeck.addAll(playedCards);
-            playedCards.clear();
-            Collections.shuffle(cardDeck);
-            System.out.println("Carddeck" + cardDeck + " Playedcards after clear " + playedCards);
-        }else if(!playedCards.contains(getTopCard())){
-            playedCards.add(getTopCard());
-
-        }
 
     }
 
@@ -190,7 +192,7 @@ public class Game {
 
     // Oberste Karte anzeigen lassen
     public String getTopCard() {
-        return getCardDeck().get(0);
+        return getPlayedCards().get(0);
     }
 
     // Gewinner anzeigen lassen
@@ -209,6 +211,10 @@ public class Game {
 
     public ArrayList < String > getCardDeck() {
         return cardDeck;
+    }
+
+    public ArrayList < String > getPlayedCards() {
+        return playedCards;
     }
 }
 
