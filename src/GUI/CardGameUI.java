@@ -11,7 +11,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
+import static Client.Client.Client.receiveAnzahlSpieler;
 import static Client.Client.Client.username;
 
 public class CardGameUI {
@@ -23,6 +25,8 @@ public class CardGameUI {
     // Anfangsposition der Karten
     private static final int INITIAL_X = 1000;
     private static final int INITIAL_Y = 800;
+    private static final int OTHERPLAYER_INITIAL_X = 1000;
+    private static final int OTHERPLAYER_INITIAL_Y = 50;
     // Pfad zum Hintergrundbild
     private static final String BACKGROUND_IMAGE_PATH = "src/GUI/Assets/Table.jpg";
     // Breite und Höhe des Fensters
@@ -33,6 +37,7 @@ public class CardGameUI {
     private static ArrayList<String> karten;
     private static JFrame frame = new JFrame();
     private final ArrayList<String> obersteKarten; // ArrayList für die obersten Karten
+    private final int numOtherPlayers = receiveAnzahlSpieler() - 1;
     // Liste zur Speicherung der Karten-Labels
     private List<JLabel> cardLabels = new ArrayList<>();
     // Array zur Speicherung der ursprünglichen Positionen der Karten
@@ -44,6 +49,8 @@ public class CardGameUI {
     private boolean istDrann;
     private JLabel ziehStapelLabel;
     private String ziehStapelBildPath;
+    private final List<JLabel> playerLabels = new ArrayList<>();
+
 
     public CardGameUI(String username, ArrayList<String> karten) {
         CardGameUI.karten = karten;
@@ -375,9 +382,9 @@ public class CardGameUI {
                 cardLabels.add(0, cardLabel); // Füge die Karte am Anfang der Liste hinzu
             }
 
-            if (obersteKarten.size() >= 1){
-                String lastCard = obersteKarten.get(obersteKarten.size() -1);
-                if (lastCard.equals("PK")){
+            if (obersteKarten.size() >= 1) {
+                String lastCard = obersteKarten.get(obersteKarten.size() - 1);
+                if (lastCard.equals("PK")) {
                     istDrann = false;
                     renderObersteKarte();
                 }
@@ -397,6 +404,70 @@ public class CardGameUI {
         }
     }
 
+    private void renderOtherPlayers() {
+        Container contentPane = frame.getContentPane();
+        int numPlayers = spieler.size();
+
+        // Entferne vorhandene Karten der anderen Spieler
+        Component[] components = contentPane.getComponents();
+        for (Component component : components) {
+            if (component instanceof JPanel && component.getName() != null && component.getName().startsWith("otherPlayer")) {
+                contentPane.remove(component);
+            }
+        }
+
+        // Berechne die Position der Karten der anderen Spieler basierend auf der Fensterbreite
+        int cardSpacing = (WindowWidth - OTHERPLAYER_INITIAL_X * 2 - CARD_WIDTH) / (numPlayers - 1);
+        int x = OTHERPLAYER_INITIAL_X;
+
+        for (ArrayList playerInfo : spieler) {
+            String playerName = (String) playerInfo.get(0);
+            int numCards = (int) playerInfo.get(1);
+            boolean isCurrentPlayer = (boolean) playerInfo.get(2);
+
+            int visibleHeight = WindowHeight - CARD_HEIGHT;
+
+            int horizontalSpacing;
+            if (numCards > 1) {
+                horizontalSpacing = Math.min(visibleHeight / (numCards - 1), 30);
+            } else {
+                horizontalSpacing = visibleHeight; // Falls nur eine Karte vorhanden ist, nimm die gesamte verfügbare Höhe
+            }
+
+            if (!playerName.equals(username)) {
+                JPanel playerPanel = new JPanel();
+                playerPanel.setName("otherPlayer_" + playerName); // Setze einen Namen für das Panel, um es später zu identifizieren
+                playerPanel.setOpaque(false);
+                playerPanel.setLayout(null);
+
+                // Wähle ein zufälliges Asset für den anderen Spieler aus
+                int assetIndex = (int) (Math.random() * 4) + 1; // Zufällige Zahl zwischen 1 und 4
+                String assetPath = "src/GUI/Assets/Back" + assetIndex + ".png";
+                ImageIcon assetIcon = new ImageIcon(assetPath);
+                Image assetImage = assetIcon.getImage();
+                Image scaledAssetImage = assetImage.getScaledInstance(CARD_WIDTH, CARD_HEIGHT, Image.SCALE_SMOOTH);
+                ImageIcon scaledAssetIcon = new ImageIcon(scaledAssetImage);
+
+                int y = OTHERPLAYER_INITIAL_Y;
+
+                for (int i = 0; i < numCards; i++) {
+                    JLabel cardLabel = new JLabel(scaledAssetIcon);
+                    cardLabel.setBounds(i * horizontalSpacing, 0, CARD_WIDTH, CARD_HEIGHT);
+                    playerPanel.add(cardLabel);
+                }
+
+                playerPanel.setBounds(x, y, CARD_WIDTH + (numCards - 1) * horizontalSpacing, CARD_HEIGHT);
+                contentPane.add(playerPanel);
+
+                x += cardSpacing;
+            }
+        }
+
+        setCardZOrder();
+
+        frame.validate();
+        frame.repaint();
+    }
 
     // Methode zum Rendern der obersten Karte und des Ziehstapels
     private void renderObersteKarte() {
@@ -505,6 +576,7 @@ public class CardGameUI {
                         vorherIstDrann = aktuellerIstDrann; // Aktuellen Wert von istDrann als vorherigen Wert speichern
                         renderHandCards(karten);
                         renderObersteKarte();
+                        renderOtherPlayers();
                     }
 
                     frame.validate();
@@ -513,7 +585,7 @@ public class CardGameUI {
                     if (!Objects.equals(obersteSpielKarte, Client.receiveObersteSpielkarte())) {
                         obersteSpielKarte = Client.receiveObersteSpielkarte();
                         obersteKarten.add(obersteSpielKarte); // Füge die neue oberste Karte zur ArrayList hinzu
-                        if (obersteKarten.size() > 5){
+                        if (obersteKarten.size() > 5) {
                             obersteKarten.remove(0);
                             System.out.println("Oberste Karte entfernt" + obersteKarten);
                         }
@@ -538,7 +610,11 @@ public class CardGameUI {
                         }
 
                         renderHandCards(karten);
+                        renderOtherPlayers();
                     }
+                    
+                    frame.validate();
+                    frame.repaint();
                 }
             }
         }).start();
