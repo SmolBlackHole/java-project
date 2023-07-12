@@ -115,6 +115,8 @@ public class Game {
 
     // @Chris: muss aufgerufen werden, wenn Spieler eine Karte ziehen muss (am besten extra button dafür, falls du es nicht schon hast)
     // Karten ziehen
+int zaehler = 0;
+
     private void drawCards() {
         int i = 0;
         System.out.println("Spieler " + currentPlayer.getPlayerName() + " muss " + drawCards + " Karten ziehen.");
@@ -125,9 +127,11 @@ public class Game {
         } while (i < drawCards);
         drawCards = 0;
 
-        if (getTopCard().contains("7")) {
+        if (getTopCard().contains("7") && zaehler<1) {
             playerCard = null;
             play();
+        } else{
+            zaehler = 0;
         }
     }
 
