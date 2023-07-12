@@ -142,6 +142,10 @@ public class ClientHandler implements Runnable {
             Bot temp = new Bot(this);
             Server.game.getPlayerObject(this).setPlayerID(temp);
             Server.bots.add(temp);
+            if(this.getUsername() == Server.game.getCurrentPlayer().getPlayerName()){
+                Server.createBotList(temp);
+            }
+
         }
         clientHandlers.remove(this);
         broadcast("M<:!ds5" + "|Server| " + username + " hat das Spiel verlassen!");

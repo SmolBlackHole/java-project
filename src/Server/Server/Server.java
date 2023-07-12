@@ -87,12 +87,7 @@ public class Server {
             }
 
             for (Bot bot: bots) {
-                boolean isTurn = false;
-                if (game.getCurrentPlayer() == game.getPlayerObject(bot)) {
-                    isTurn = true;
-                    bot.createList(isTurn, game.getPlayerObject(bot).getPlayerCards(), game.getTopCard());
-                    System.out.println("Der Bot hat die Karte: " + game.playerCard + " gewählt!!");
-                }
+                    createBotList(bot);
             }
             game.play();
         } while (!game.checkForWinner());
@@ -113,6 +108,14 @@ public class Server {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void createBotList(Bot bot){
+        boolean isTurn = false;
+                if (game.getCurrentPlayer() == game.getPlayerObject(bot)) {
+                    isTurn = true;
+                }
+        bot.createList(isTurn, game.getPlayerObject(bot).getPlayerCards(), game.getTopCard());
     }
 
     // C8->7G#ist-Drann|karten|ObersteSpielkarte|AnzahlSpieler|Spielername1|AnzahlKarten|Spielername2|AnzahlKarten|Spielername3|AnzahlKarten|.....
