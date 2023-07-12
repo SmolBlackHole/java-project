@@ -1,6 +1,7 @@
 package Server;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
@@ -18,7 +19,7 @@ public class Game {
     public boolean checked = true;
     static int drawCards = 0;
     public boolean stackSeven;
-    //public ArrayList<String> playedCards;
+    public ArrayList<String> playedCards = new ArrayList<String>();
 
 
     // Methode startet das Spiel -> wird in Server aufgerufen
@@ -154,8 +155,19 @@ public class Game {
         System.out.println(currentPlayer.getPlayerCards());
 
         // Wegwerfstapel
-        //playedCards.add(playerCard);
-        //System.out.println(playedCards);
+        System.out.println("Playedcards before" + playedCards);
+        if(cardDeck.size() <= 8){
+            cardDeck.addAll(playedCards);
+            playedCards.clear();
+            Collections.shuffle(cardDeck);
+            System.out.println("Carddeck" + cardDeck + " Playedcards after clear " + playedCards);
+        } 
+ 
+        if(!playedCards.contains(getTopCard())){
+            playedCards.add(getTopCard());
+        }
+        
+
 
     }
 

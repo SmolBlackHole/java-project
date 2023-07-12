@@ -190,7 +190,7 @@ public class Server {
         Scanner portscanner = new Scanner(System.in);
         System.out.println("Port Eingeben");
         int port = 25565;
-        maxPlayer = 3;
+        maxPlayer = 2;
         Scanner playerscanner = new Scanner(System.in);
         System.out.println("Max Spieler");
         // hier wird ein neuer Socket erstellt
