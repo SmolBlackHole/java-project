@@ -107,9 +107,6 @@ public class MenUI extends JFrame {
         hostServerFrame.add(new JLabel());
         hostServerFrame.add(startHostingButton);
 
-        MenUI newInstance = new MenUI();
-        newInstance.showLoginDialog();
-
         hostServerFrame.setVisible(true);
     }
 
@@ -154,10 +151,6 @@ public class MenUI extends JFrame {
             server = tempserver;
             CheckMaxPlayer();
             server.startServer();
-            if (MenUI.getServer() != null) {
-                MenUI.getServer().start(); // Spiel starten
-                showLoginDialog();
-            }
         } catch (IOException e) {
             e.printStackTrace();
         }
