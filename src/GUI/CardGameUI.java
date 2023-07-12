@@ -515,6 +515,7 @@ public class CardGameUI {
                         obersteKarten.add(obersteSpielKarte); // Füge die neue oberste Karte zur ArrayList hinzu
                         if (obersteKarten.size() > 5){
                             obersteKarten.remove(0);
+                            System.out.println("Oberste Karte entfernt" + obersteKarten);
                         }
                         renderObersteKarte(); // Rendere die oberste Karte
                     }
