@@ -126,6 +126,7 @@ public class Game {
         drawCards = 0;
 
         if (getTopCard().contains("7")) {
+            playerCard = null;
             play();
         }
     }
