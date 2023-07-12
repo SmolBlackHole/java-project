@@ -502,6 +502,9 @@ public class CardGameUI {
                     if (!Objects.equals(obersteSpielKarte, Client.receiveObersteSpielkarte())) {
                         obersteSpielKarte = Client.receiveObersteSpielkarte();
                         obersteKarten.add(obersteSpielKarte); // Füge die neue oberste Karte zur ArrayList hinzu
+                        if (obersteKarten.size() > 5){
+                            obersteKarten.remove(0);
+                        }
                         renderObersteKarte(); // Rendere die oberste Karte
                     }
 

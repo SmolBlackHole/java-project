@@ -34,7 +34,7 @@ public class Bot {
     // Checkt ob der Bot dran ist
     public void checkTurn(boolean isTurn, ArrayList<String> playerCards, String topCard) {
         if(isTurn) {
-            int sleep = 3 + (int)(Math.random() * ((7 - 3) + 1));
+            int sleep = 3 + (int)(Math.random() * ((7 - 5) + 1));
             System.out.println("delay "+ sleep);
             try {
                 TimeUnit.SECONDS.sleep(sleep);
