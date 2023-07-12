@@ -19,20 +19,19 @@ public class Client {
     public static String gameData;
     public static int port;
     public static boolean istDrann;
-    public static ArrayList<String> karten = new ArrayList<String>();
+    public static ArrayList < String > karten = new ArrayList < String > ();
     public static String ObersteSpielkarte;
-    public static ArrayList<ArrayList> Spieler = new ArrayList<ArrayList>();
+    public static ArrayList < ArrayList > Spieler = new ArrayList < ArrayList > ();
     public static int AnzahlSpieler;
     public static String Gewinner;
 
     public static String wilderChatString;
-    public static ArrayList<String> wilderKartenString;
+    public static ArrayList < String > wilderKartenString;
     public static boolean wilderBool;
     public static String wildeObersteSpielkarte;
     public static int wildeSpielerAnzahl;
     public static String winnerWinnerChickenDinner;
-    private static ArrayList<ArrayList> wildeSpielerListe;
-
+    private static ArrayList < ArrayList > wildeSpielerListe;
 
     public Client(Socket socket, String username) {
         try {
@@ -55,7 +54,7 @@ public class Client {
         try {
             // hier wird der Nachricht die aktuelle Uhrzeit beigefügt
             String time = new SimpleDateFormat("HH:mm").format(Calendar.getInstance().getTime());
-            bufferedWriter.write("M<:!ds5" + "|" + time + "|" + username + ": " + msg);
+            bufferedWriter.write("M<:!ds5" + "| " + time + " | " + username + ": " + msg);
             bufferedWriter.newLine();
             bufferedWriter.flush();
         } catch (IOException e) {
@@ -119,10 +118,10 @@ public class Client {
                             Spieler.clear();
 
                             for (int i = 0; i < gameData.length(); i++) {
-                                ArrayList<Object> Spielerdaten = new ArrayList<Object>();
+                                ArrayList < Object > Spielerdaten = new ArrayList < Object > ();
                                 b = "" + gameData.charAt(i);
-                                if(a == 7){
-                                    a=4;
+                                if (a == 7) {
+                                    a = 4;
                                     boolean pt = false;
                                     String pn = Pname;
                                     Spielerdaten.add(pn);
@@ -132,25 +131,24 @@ public class Client {
                                         Spielerdaten.add(nc);
                                         Pcount = "";
 
-                                    }
-                                    catch (NumberFormatException e) {
+                                    } catch (NumberFormatException e) {
                                         e.printStackTrace();
                                     }
 
-                                    if(Pturn.equals("true")){
+                                    if (Pturn.equals("true")) {
                                         pt = true;
                                     }
                                     Spielerdaten.add(pt);
                                     Spieler.add(Spielerdaten);
                                     Pturn = "";
                                 }
-                                if (a == 0 &&  !b.equals("|")) {
+                                if (a == 0 && !b.equals("|")) {
                                     turn = turn + b;
                                 }
 
                                 if (a == 1 && !b.equals("|")) {
-                                    if(!b.equals("[") && !b.equals("]") ){
-                                        if (!b.equals(" ")){
+                                    if (!b.equals("[") && !b.equals("]")) {
+                                        if (!b.equals(" ")) {
                                             kar = kar + b;
                                         }
                                     }
@@ -178,14 +176,15 @@ public class Client {
                                     a++;
                                 }
                             }
-                            if( turn.equals("true")){
+                            if (turn.equals("true")) {
                                 istDrann = true;
-                            }if (turn.equals("false")) {
+                            }
+                            if (turn.equals("false")) {
                                 istDrann = false;
                             }
                             wilderBool = istDrann;
 
-                            ArrayList<String> strList = new ArrayList<String>(Arrays.asList(kar.split(",")));
+                            ArrayList < String > strList = new ArrayList < String > (Arrays.asList(kar.split(",")));
                             karten = strList;
                             wilderKartenString = karten;
 
@@ -194,8 +193,7 @@ public class Client {
                             try {
                                 AnzahlSpieler = Integer.parseInt(count);
                                 wildeSpielerAnzahl = AnzahlSpieler;
-                            }
-                            catch (NumberFormatException e) {
+                            } catch (NumberFormatException e) {
                                 e.printStackTrace();
                             }
 
@@ -216,7 +214,6 @@ public class Client {
             // startet den Thread
         }).start();
     }
-
 
     // Methode, um bei Fehlern das Programm zu stoppen
     public static void close(Socket socket, BufferedWriter bufferedWriter, BufferedReader bufferedReader) {
@@ -273,37 +270,35 @@ public class Client {
         return socket;
     }
 
-
-    public void Play(){
+    public void Play() {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 while (socket.isConnected() || Gewinner == null) {
-                    if(istDrann){
+                    if (istDrann) {
                         boolean check = false;
                         Scanner myObj = new Scanner(System.in);
                         String play = myObj.nextLine();
 
-                        if(play.isEmpty()){
+                        if (play.isEmpty()) {
                             //Befehl zum senden das mann ziehen muss
                             dataToSend("Bh7.|+e");
                             check = true;
-                        }
-                        else{
-                            for(int i = 0; i < ObersteSpielkarte.length(); i++){
-                                for(int o = 0; o < play.length(); o++){
-                                    if(play.charAt(o) == ObersteSpielkarte.charAt(i)){
+                        } else {
+                            for (int i = 0; i < ObersteSpielkarte.length(); i++) {
+                                for (int o = 0; o < play.length(); o++) {
+                                    if (play.charAt(o) == ObersteSpielkarte.charAt(i)) {
                                         check = true;
                                     }
                                 }
                             }
                         }
 
-                        if(check && karten.contains(play)){
+                        if (check && karten.contains(play)) {
                             //befehlt zum senden der gelegten karte
                             dataToSend("F4->3GA" + play);
                         }
-                        if(!check){
+                        if (!check) {
                             System.out.println("Du kannst diese Karte nicht Legen");
                         }
                     }
@@ -320,10 +315,8 @@ public class Client {
         }).start();
     }
 
-
     // die Main Methode: sie startet die LoginGui
     public static void main(String[] args) throws IOException {
-
 
         Client.username = "PL3";
         Client.ip = "localhost";
@@ -335,7 +328,7 @@ public class Client {
     public static String receiveMessage() {
         return wilderChatString;
     }
-    public static ArrayList<String> receiveKarten() {
+    public static ArrayList < String > receiveKarten() {
         return karten;
     }
     public static boolean receiveTurn() {
@@ -350,11 +343,10 @@ public class Client {
     public static String receiveGewinner() {
         return Gewinner;
     }
-    public static ArrayList<ArrayList> receiveSpielerListe() {
+    public static ArrayList < ArrayList > receiveSpielerListe() {
         return wildeSpielerListe;
     }
 }
-
 
 // ToDo:
 // Benutz die Methode dataToSend(data) um deine Daten an den Server zu schicken.
@@ -393,7 +385,6 @@ public class Client {
 // jedesmal ersetzt oder so filterst, dass du nur die einfügst die du noch nicht
 // hast, damit sich keine Doppeln
 // wenn die Variable Gewinner mit dem Namen des Gewinners gefüllt ist, ist soll das Spiel vorbei sein
-
 
 // Done
 

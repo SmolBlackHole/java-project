@@ -12,9 +12,9 @@ import java.util.ArrayList;
 import static Server.Server.Server.CheckMaxPlayer;
 
 public class MenUI extends JFrame {
-    private ArrayList<String> karten; // Kartenliste
-    private CardGameUI cardGameUI; // Referenz auf das CardGameUI-Objekt
     private static Server server; // Referenz auf das Server-Objekt
+    private ArrayList < String > karten; // Kartenliste
+    private CardGameUI cardGameUI; // Referenz auf das CardGameUI-Objekt
     private ChatUI chatUI; // Referenz auf das ChatUI-Objekt
 
     public MenUI() {
@@ -58,9 +58,12 @@ public class MenUI extends JFrame {
         setLocationRelativeTo(null); // Zentriert das Fenster auf dem Bildschirm
     }
 
-
     public static void main(String[] args) {
         EventQueue.invokeLater(MenUI::new);
+    }
+
+    public static Server getServer() {
+        return server;
     }
 
     private void showHostServerOptions() {
@@ -74,23 +77,26 @@ public class MenUI extends JFrame {
 
         // Label und Textfeld für maximale Spieleranzahl
         JLabel maxPlayersLabel = new JLabel("Max Spieler:");
-        JTextField maxPlayersField = new JTextField();
+        JTextField maxPlayersField = new JTextField("2");
         maxPlayersField.setHorizontalAlignment(JTextField.CENTER);
 
         // Label und Textfeld für Port
         JLabel portLabel = new JLabel("Port:");
         JTextField portField = new JTextField("25565");
         portField.setHorizontalAlignment(JTextField.CENTER);
+        portField.setEditable(false);
+        portField.setBackground(UIManager.getColor("Panel.background"));
 
         // Button zum Starten des Servers
         JButton startHostingButton = new JButton("Start Server");
         startHostingButton.addActionListener(e -> {
             int maxPlayers = Integer.parseInt(maxPlayersField.getText());
             int port = Integer.parseInt(portField.getText());
-            startServer(maxPlayers, port);
             hostServerFrame.dispose();
-            showLoginDialog();
-            setVisible(false); // Minimiere das Hauptfenster
+
+            EventQueue.invokeLater(() -> {
+                startServer(maxPlayers, port);
+            });
         });
 
         // Komponenten zum Host-Server-Fenster hinzufügen
@@ -100,6 +106,9 @@ public class MenUI extends JFrame {
         hostServerFrame.add(portField);
         hostServerFrame.add(new JLabel());
         hostServerFrame.add(startHostingButton);
+
+        MenUI newInstance = new MenUI();
+        newInstance.showLoginDialog();
 
         hostServerFrame.setVisible(true);
     }
@@ -134,10 +143,6 @@ public class MenUI extends JFrame {
         loginFrame.add(joinServerButton);
 
         loginFrame.setVisible(true);
-    }
-
-    public static Server getServer() {
-        return server;
     }
 
     private void startServer(int maxPlayers, int port) {
@@ -185,7 +190,7 @@ public class MenUI extends JFrame {
     private void showCardGameUI() {
         // Überprüfen, ob das CardGameUI-Objekt bereits erstellt wurde
         if (cardGameUI == null) {
-            karten = new ArrayList<>();
+            karten = new ArrayList < > ();
             cardGameUI = new CardGameUI(Client.username, karten);
             cardGameUI.setTitel(Client.username);
         }

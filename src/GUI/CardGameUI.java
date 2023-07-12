@@ -16,27 +16,25 @@ import static Client.Client.Client.username;
 
 public class CardGameUI {
     // Breite und Höhe einer Karte
-    private static final int CARD_WIDTH = (int) (73 * 1.5);
-    private static final int CARD_HEIGHT = (int) (97 * 1.5);
+    private static final int CARD_WIDTH = (int)(73 * 1.5);
+    private static final int CARD_HEIGHT = (int)(97 * 1.5);
     //  Offset beim Karten verschieben (beim Hover)
     private static final int HOVER_OFFSET = -20 * 2;
     // Anfangsposition der Karten
     private static final int INITIAL_X = 1000;
     private static final int INITIAL_Y = 800;
-    //  Faktor, um die Karte beim Hover zu vergrößern
-    private static final double HOVER_SCALE_FACTOR = 1.5;
     // Pfad zum Hintergrundbild
     private static final String BACKGROUND_IMAGE_PATH = "src/GUI/Assets/Table.jpg";
     // Breite und Höhe des Fensters
     private static final int WindowWidth = 1440;
     private static final int WindowHeight = 900;
     private static final Object lock = new Object();
-    private static ArrayList<String> karten;
-    private static ArrayList<ArrayList> spieler;
+    private static ArrayList < String > karten;
+    private static ArrayList < ArrayList > spieler = new ArrayList < > ();
     private static JFrame frame = new JFrame();
-    private final ArrayList<String> obersteKarten; // ArrayList für die obersten Karten
+    private final ArrayList < String > obersteKarten; // ArrayList für die obersten Karten
     // Liste zur Speicherung der Karten-Labels
-    private List<JLabel> cardLabels = new ArrayList<>();
+    private List < JLabel > cardLabels = new ArrayList < > ();
     // Array zur Speicherung der ursprünglichen Positionen der Karten
     private Point[] originalCardLocations;
     // Label zur Darstellung der vergrößerten Karte in der Mitte
@@ -47,9 +45,9 @@ public class CardGameUI {
     private JLabel ziehStapelLabel;
     private String ziehStapelBildPath;
 
-    public CardGameUI(String username, ArrayList<String> karten) {
+    public CardGameUI(String username, ArrayList < String > karten) {
         CardGameUI.karten = karten;
-        obersteKarten = new ArrayList<>(); // Initialisierung der ArrayList für die obersten Karten
+        obersteKarten = new ArrayList < > (); // Initialisierung der ArrayList für die obersten Karten
         istDrann = false;
         EventQueue.invokeLater(new Runnable() {
             @Override
@@ -83,7 +81,7 @@ public class CardGameUI {
                 frame.setContentPane(mainPanel);
 
                 // Erstellen der Karten-Labels und Hinzufügen zum Haupt panel
-                cardLabels = new ArrayList<>();
+                cardLabels = new ArrayList < > ();
                 enlargedCardLabel = createEnlargedCardLabel();
                 // Erstellen des Labels für die oberste Spielkarte
                 obersteKartenLabel = new JLabel();
@@ -151,7 +149,7 @@ public class CardGameUI {
     }
 
     public static void dataToSend(String data) {
-        synchronized (lock) {
+        synchronized(lock) {
             try {
                 BufferedWriter writer = Client.getBufferedWriter();
                 writer.write(data);
@@ -336,33 +334,14 @@ public class CardGameUI {
         contentPane.validate();
     }
 
-    // Methode zum Anzeigen der vergrößerten Karte
-    private void showEnlargedCard(Icon cardIcon) {
-        enlargedCardLabel.setIcon(cardIcon);
-        int enlargedWidth = (int) (CARD_WIDTH * HOVER_SCALE_FACTOR);
-        int enlargedHeight = (int) (CARD_HEIGHT * HOVER_SCALE_FACTOR);
-        enlargedCardLabel.setBounds(
-                (WindowWidth - enlargedWidth) / 2,
-                (WindowHeight - enlargedHeight) / 2,
-                enlargedWidth,
-                enlargedHeight
-        );
-        enlargedCardLabel.setVisible(true);
-    }
-
-    // Methode zum Ausblenden der vergrößerten Karte
-    private void hideEnlargedCard() {
-        enlargedCardLabel.setVisible(false);
-    }
-
     // Methode zum Rendern der Handkarten
-    public void renderHandCards(ArrayList<String> karten) {
-        synchronized (lock) {
+    public void renderHandCards(ArrayList < String > karten) {
+        synchronized(lock) {
             // Holt sich das Haupt panel
             JPanel mainPanel = (JPanel) frame.getContentPane();
 
             // Entferne die alten Karten-Labels aus dem Haupt panel und dem cardLabels-Array
-            for (JLabel cardLabel : cardLabels) {
+            for (JLabel cardLabel: cardLabels) {
                 mainPanel.remove(cardLabel);
             }
             cardLabels.clear();
@@ -451,8 +430,13 @@ public class CardGameUI {
             return ziehStapelBildPath; // Rückgabe des zuvor ausgewählten Bildpfads
         }
 
-        String[] ziehStapelBilder = {"Back1.png", "Back2.png", "Back3.png", "Back4.png"};
-        String ziehStapelBild = ziehStapelBilder[(int) (Math.random() * ziehStapelBilder.length)];
+        String[] ziehStapelBilder = {
+                "Back1.png",
+                "Back2.png",
+                "Back3.png",
+                "Back4.png"
+        };
+        String ziehStapelBild = ziehStapelBilder[(int)(Math.random() * ziehStapelBilder.length)];
         ziehStapelBildPath = "src/GUI/Assets/" + ziehStapelBild;
         return ziehStapelBildPath;
     }
@@ -483,17 +467,14 @@ public class CardGameUI {
 
     private void listenForGameInfo() {
         new Thread(() -> {
-            ArrayList<String> placeholderString = new ArrayList<>();
-            boolean placeholderBoolean = false;
+            ArrayList < String > placeholderString = new ArrayList < > ();
             String obersteSpielKarte = "";
-            String vorherigerSpieler = "";
             int spielerAnzahl = 0;
             String gewinner = "";
             boolean vorherIstDrann = false; // Vorheriger Wert von istDrann speichern
-            ArrayList<String> placeholderSpieler = new ArrayList<>();
 
             while (true) {
-                synchronized (lock) {
+                synchronized(lock) {
                     karten = Client.receiveKarten();
                     boolean aktuellerIstDrann = Client.receiveTurn();
                     obersteSpielKarte = Client.receiveObersteSpielkarte();
@@ -535,10 +516,9 @@ public class CardGameUI {
                         spieler = Client.receiveSpielerListe();
                         System.out.println("Spieler empfangen " + spieler);
 
-                        List<Object> ownPlayerInfo = getOwnPlayerInfo(spieler, username);
+                        List < Object > ownPlayerInfo = getOwnPlayerInfo(spieler, username);
                         if (ownPlayerInfo != null) {
-                            boolean isCurrentPlayer = (boolean) ownPlayerInfo.get(2);
-                            istDrann = isCurrentPlayer;
+                            istDrann = (boolean) ownPlayerInfo.get(2);
                         }
 
                         renderHandCards(karten);
@@ -548,8 +528,8 @@ public class CardGameUI {
         }).start();
     }
 
-    private List<Object> getOwnPlayerInfo(ArrayList<ArrayList> spieler, String username) {
-        for (ArrayList playerInfo : spieler) {
+    private List < Object > getOwnPlayerInfo(ArrayList < ArrayList > spieler, String username) {
+        for (ArrayList playerInfo: spieler) {
             String playerName = (String) playerInfo.get(0);
             boolean isCurrentPlayer = (boolean) playerInfo.get(2);
             if (playerName.equals(username)) {
@@ -558,5 +538,4 @@ public class CardGameUI {
         }
         return null;
     }
-
 }
