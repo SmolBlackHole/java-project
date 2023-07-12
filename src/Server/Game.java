@@ -138,20 +138,17 @@ public class Game {
         System.out.println(currentPlayer.getPlayerCards());
 
         // Wegwerfstapel
+
         System.out.println("Playedcards before" + playedCards);
         if(cardDeck.size() <= 8){
             cardDeck.addAll(playedCards);
             playedCards.clear();
             Collections.shuffle(cardDeck);
             System.out.println("Carddeck" + cardDeck + " Playedcards after clear " + playedCards);
-        } 
- 
-        if(!playedCards.contains(getTopCard())){
+        }else if(!playedCards.contains(getTopCard())){
             playedCards.add(getTopCard());
 
         }
-        
-
 
     }
 
