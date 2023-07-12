@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class Card {
-
-    private static ArrayList<String> cardDeck = new ArrayList<String>();
+    private static ArrayList < String > cardDeck = new ArrayList < String > ();
 
     // Methode erzeugt alle Karten im Spiel und mischt diese
     public static void mixCards() {
@@ -49,8 +48,7 @@ public class Card {
     }
 
     // Getter & Setter
-    public static ArrayList<String> getCardDeck() {
+    public static ArrayList < String > getCardDeck() {
         return cardDeck;
     }
-
 }

@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import static Server.Server.Server.CheckMaxPlayer;
 
 public class MenUI extends JFrame {
-    private ArrayList < String > karten; // Kartenliste
+    private ArrayList<String> karten; // Kartenliste
     private CardGameUI cardGameUI; // Referenz auf das CardGameUI-Objekt
     private ChatUI chatUI; // Referenz auf das ChatUI-Objekt
 
@@ -176,7 +176,7 @@ public class MenUI extends JFrame {
     private void showCardGameUI() {
         // Überprüfen, ob das CardGameUI-Objekt bereits erstellt wurde
         if (cardGameUI == null) {
-            karten = new ArrayList < > ();
+            karten = new ArrayList<>();
             cardGameUI = new CardGameUI(Client.username, karten);
             cardGameUI.setTitel(Client.username);
         }
