@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import static Server.Server.Server.CheckMaxPlayer;
 
 public class MenUI extends JFrame {
-    private static Server server; // Referenz auf das Server-Objekt
     private ArrayList < String > karten; // Kartenliste
     private CardGameUI cardGameUI; // Referenz auf das CardGameUI-Objekt
     private ChatUI chatUI; // Referenz auf das ChatUI-Objekt
@@ -62,10 +61,6 @@ public class MenUI extends JFrame {
         EventQueue.invokeLater(MenUI::new);
     }
 
-    public static Server getServer() {
-        return server;
-    }
-
     private void showHostServerOptions() {
         // Fenster für Host-Server-Optionen
         JFrame hostServerFrame = new JFrame("Hosting Optionen");
@@ -94,9 +89,7 @@ public class MenUI extends JFrame {
             int port = Integer.parseInt(portField.getText());
             hostServerFrame.dispose();
 
-            EventQueue.invokeLater(() -> {
-                startServer(maxPlayers, port);
-            });
+            EventQueue.invokeLater(() -> startServer(maxPlayers, port));
         });
 
         // Komponenten zum Host-Server-Fenster hinzufügen
@@ -148,9 +141,9 @@ public class MenUI extends JFrame {
             ServerSocket serverSocket = new ServerSocket(port);
             Server tempserver = new Server(serverSocket);
             Server.maxPlayer = maxPlayers;
-            server = tempserver;
+            // Referenz auf das Server-Objekt
             CheckMaxPlayer();
-            server.startServer();
+            tempserver.startServer();
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -30,7 +30,7 @@ public class CardGameUI {
     private static final int WindowHeight = 900;
     private static final Object lock = new Object();
     private static ArrayList < String > karten;
-    private static ArrayList < ArrayList > spieler = new ArrayList < > ();
+    static ArrayList < ArrayList > spieler = new ArrayList < > ();
     private static JFrame frame = new JFrame();
     private final ArrayList < String > obersteKarten; // ArrayList für die obersten Karten
     // Liste zur Speicherung der Karten-Labels
@@ -235,10 +235,10 @@ public class CardGameUI {
         cardLabel.addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
-                int reversedIndex = cardLabels.size() - 1 - index; // Umkehren des Index
-                if (reversedIndex == cardLabels.size() - 1) {
-                    // Setze die Z-Reihenfolge der letzten Karte auf die Vorderseite
-                    setComponentZOrder(frame, cardLabel, reversedIndex + cardLabels.size());
+            int reversedIndex = cardLabels.size() - 1 - index; // Umkehren des Index
+            if (reversedIndex == cardLabels.size() - 1) {
+                // Setze die Z-Reihenfolge der letzten Karte auf die Vorderseite
+                setComponentZOrder(frame, cardLabel, reversedIndex + cardLabels.size());
                 } else if (reversedIndex == 0) {
                     // Setze die Z-Reihenfolge der ersten Karte auf die Rückseite
                     setComponentZOrder(frame, cardLabel, reversedIndex);
@@ -252,14 +252,14 @@ public class CardGameUI {
         ziehStapelLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (SwingUtilities.isLeftMouseButton(e)) {
-                    if (istDrann) {
-                        // Datenversand nur wenn der Spieler dran ist
-                        dataToSend("Bh7.|+e");
-                    } else {
-                        JOptionPane.showMessageDialog(frame, "Du bist nicht dran!");
-                    }
+            if (SwingUtilities.isLeftMouseButton(e)) {
+                if (istDrann) {
+                    // Datenversand, nur wenn der Spieler dran ist
+                    dataToSend("Bh7.|+e");
+                } else {
+                    JOptionPane.showMessageDialog(frame, "Du bist nicht dran!");
                 }
+            }
             }
         });
     }
