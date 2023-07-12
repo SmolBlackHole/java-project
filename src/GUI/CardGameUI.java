@@ -375,6 +375,14 @@ public class CardGameUI {
                 cardLabels.add(0, cardLabel); // Füge die Karte am Anfang der Liste hinzu
             }
 
+            if (obersteKarten.size() >= 1){
+                String lastCard = obersteKarten.get(obersteKarten.size() -1);
+                if (lastCard.equals("PK")){
+                    istDrann = false;
+                    renderObersteKarte();
+                }
+            }
+
             setCardZOrder();
             addMouseListeners();
 
@@ -389,10 +397,12 @@ public class CardGameUI {
         }
     }
 
+
     // Methode zum Rendern der obersten Karte und des Ziehstapels
     private void renderObersteKarte() {
         if (!obersteKarten.isEmpty()) {
             String obersteKarte = obersteKarten.get(obersteKarten.size() - 1);
+
             obersteKartenLabel.setIcon(createCardIcon(obersteKarte));
             obersteKartenLabel.setBounds(
                     (WindowWidth - CARD_WIDTH) / 2,
@@ -401,6 +411,7 @@ public class CardGameUI {
                     CARD_HEIGHT
             );
             obersteKartenLabel.setVisible(true);
+            frame.getContentPane().add(obersteKartenLabel);
         } else {
             obersteKartenLabel.setVisible(false);
         }
@@ -485,7 +496,7 @@ public class CardGameUI {
                     if (!Objects.equals(karten, placeholderString)) {
                         renderHandCards(karten);
                         placeholderString = karten;
-                        System.out.println("Karten empfangen " + karten);
+                        //System.out.println("Karten empfangen " + karten);
                         addMouseListeners();
                     }
 
