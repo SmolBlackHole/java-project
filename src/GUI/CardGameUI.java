@@ -495,6 +495,7 @@ public class CardGameUI {
                         renderHandCards(karten);
                         renderObersteKarte();
                     }
+
                     frame.validate();
                     frame.repaint();
 

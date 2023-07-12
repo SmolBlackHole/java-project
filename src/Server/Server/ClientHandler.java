@@ -17,7 +17,7 @@ public class ClientHandler implements Runnable {
     private String newMessage;
     private String choose;
     private String spielerKarte;
-    public static ArrayList<ClientHandler> clientHandlers = new ArrayList<>();
+    public static ArrayList < ClientHandler > clientHandlers = new ArrayList < > ();
     public boolean gameRunning = false;
 
     // hier werden die BufferedReader und BufferedWriter erstellt; diese benutzen
@@ -97,7 +97,6 @@ public class ClientHandler implements Runnable {
                     Server.game.playerCard = spielerKarte;
                     System.out.println("Gelegte Karte " + Server.game.playerCard);
 
-
                 }
 
                 spielerKarte = null;
@@ -113,7 +112,7 @@ public class ClientHandler implements Runnable {
     // benutzt, damit jeder Client die Nachricht des jeweils anderen lesen kann
     public void broadcast(String messageToSend) {
 
-        for (ClientHandler clientHandler : clientHandlers) {
+        for (ClientHandler clientHandler: clientHandlers) {
             try {
                 clientHandler.bufferedWriter.write(messageToSend);
                 clientHandler.bufferedWriter.newLine();
@@ -123,7 +122,6 @@ public class ClientHandler implements Runnable {
                 close(socket, bufferedWriter, bufferedReader);
             }
         }
-
     }
 
     public void sendObject(String messageToSend) {
@@ -138,16 +136,15 @@ public class ClientHandler implements Runnable {
         }
     }
 
-
     // sobald ein Client seine Verbindung trennt, wird dies allen Clients mitgeteilt
     public void removeClientHandler() {
-        if(gameRunning){
+        if (gameRunning) {
             Bot temp = new Bot(this);
             Server.game.getPlayerObject(this).setPlayerID(temp);
             Server.bots.add(temp);
         }
         clientHandlers.remove(this);
-        broadcast("M<:!ds5"+"|Server| " + username + " hat das Spiel verlassen!");
+        broadcast("M<:!ds5" + "|Server| " + username + " hat das Spiel verlassen!");
         Server.clientHandlers.remove(this);
     }
 
@@ -164,21 +161,18 @@ public class ClientHandler implements Runnable {
             if (socket != null) {
                 socket.close();
             }
-
-        } catch (IOException e) {
-        }
+        } catch (IOException e) {}
         removeClientHandler();
-
     }
 
-    public String requestCard(){
-        while(spielerKarte == null){
+    public String requestCard() {
+        while (spielerKarte == null) {
             //  delay?
         }
         return spielerKarte;
     }
 
-    public void startGameRunning(){
+    public void startGameRunning() {
         gameRunning = true;
     }
 }

@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
-
-
 public class Game {
     static int numberOfPlayers;
     static int cardsPerPlayer = 5;
@@ -13,19 +11,17 @@ public class Game {
     static Player currentPlayer;
     static Turn reihenfolge = new Turn();
     static Card card = new Card();
-    static ArrayList<String> cardDeck = card.getCardDeck();
+    static ArrayList < String > cardDeck = card.getCardDeck();
     private String winner;
     public boolean checked = true;
     static int drawCards = 0;
     public boolean stackSeven;
     //public ArrayList<String> playedCards;
 
-
     // Methode startet das Spiel -> wird in Server aufgerufen
-    // Spieleranzahl muss mit übergeben werden 
+    // Spieleranzahl muss mit übergeben werden
     public void startGame(int size) {
         numberOfPlayers = size;
-        
 
         // Methode aus "Card" wird aufgerufen, um Karten zu mischen
         Card.mixCards();
@@ -39,14 +35,13 @@ public class Game {
         dealCards();
     }
 
-
     // je 5 Karten werden an jeden Spieler ausgeteilt
     private void dealCards() {
         currentPlayer = firstPlayer;
 
         for (int i = 0; i < numberOfPlayers; i++) {
 
-            for(int cards = 0; cards < cardsPerPlayer; cards++) {
+            for (int cards = 0; cards < cardsPerPlayer; cards++) {
                 currentPlayer.getPlayerCards().add(getCardDeck().get(0));
                 getCardDeck().remove(0);
             }
@@ -58,91 +53,79 @@ public class Game {
         }
     }
 
+    // TEST FÜR CONSOLENSPIEL /////////////////
+    static Scanner scanner = new Scanner(System.in);
+    public static String playerCard;
+    //////////////////////////////////////////
 
-     // TEST FÜR CONSOLENSPIEL /////////////////
-     static Scanner scanner = new Scanner(System.in);
-     public static String playerCard;
-     //////////////////////////////////////////
- 
-     
-     // Methode regelt Spielablauf, solange es keinen Gewinner gibt
-     // gibt es einen Gewinner, wird das Spiel beendet
-     public void special(){
+    // Methode regelt Spielablauf, solange es keinen Gewinner gibt
+    // gibt es einen Gewinner, wird das Spiel beendet
+    public void special() {
         currentPlayer = currentPlayer.nextPlayer;
-        System.out.println("checked "+checked);
-        if(!checked){ 
+        System.out.println("checked " + checked);
+        if (!checked) {
             specialCards(getTopCard());
-             
-        } 
-     }
-    public void play() {               
-            // wenn Spieler keine Karte legen kann, so muss er ziehen
-            System.out.println(currentPlayer.getPlayerName());
-            System.out.println(currentPlayer.getPlayerCards());
-
-            System.out.println("Lege eine deiner Karten");
-            while(playerCard == null){
-                try {
-                    TimeUnit.MILLISECONDS.sleep(1000);
-                } catch (InterruptedException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            };
-            
-            
-            if(playerCard.isEmpty()) {
-                stackSeven = false;
-                    drawCards();
-                    // wenn Spieler eine Karte legen kann, so wird sie aus seinen Karten gestrichen und auf den Stapel gepackt
-            
-            }
-            else if(stackSeven && !playerCard.contains("7")){
-                stackSeven = false;
-                System.out.println("\nhat geklappt\n");
-                putPlayerCardToCardDeck(playerCard);
-                drawCards();
-            }
-            else {
-                putPlayerCardToCardDeck(playerCard);
-            }
-            System.out.println("\n");
-
-            // currentPlayer = currentPlayer.nextPlayer;
-
+        }
     }
-    
+    public void play() {
+        // wenn Spieler keine Karte legen kann, so muss er ziehen
+        System.out.println(currentPlayer.getPlayerName());
+        System.out.println(currentPlayer.getPlayerCards());
 
+        System.out.println("Lege eine deiner Karten");
+        while (playerCard == null) {
+            try {
+                TimeUnit.MILLISECONDS.sleep(1000);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        };
 
-        // Methode um zu kontrollieren, ob es bereits einen Gewinner gibt
-        public boolean checkForWinner() {
-           if (currentPlayer.getPlayerCards().isEmpty()) {
-              winner = currentPlayer.getPlayerName();
-              getWinner();
-              return true;
-           }
+        if (playerCard.isEmpty()) {
+            stackSeven = false;
+            drawCards();
+            // wenn Spieler eine Karte legen kann, so wird sie aus seinen Karten gestrichen und auf den Stapel gepackt
+
+        } else if (stackSeven && !playerCard.contains("7")) {
+            stackSeven = false;
+            System.out.println("\nhat geklappt\n");
+            putPlayerCardToCardDeck(playerCard);
+            drawCards();
+        } else {
+            putPlayerCardToCardDeck(playerCard);
+        }
+        System.out.println("\n");
+
+        // currentPlayer = currentPlayer.nextPlayer;
+    }
+
+    // Methode um zu kontrollieren, ob es bereits einen Gewinner gibt
+    public boolean checkForWinner() {
+        if (currentPlayer.getPlayerCards().isEmpty()) {
+            winner = currentPlayer.getPlayerName();
+            getWinner();
+            return true;
+        }
         return false;
-     }
+    }
 
-
-     // @Chris: muss aufgerufen werden, wenn Spieler eine Karte ziehen muss (am besten extra button dafür, falls du es nicht schon hast)
-     // Karten ziehen
+    // @Chris: muss aufgerufen werden, wenn Spieler eine Karte ziehen muss (am besten extra button dafür, falls du es nicht schon hast)
+    // Karten ziehen
     private void drawCards() {
         int i = 0;
         System.out.println("Spieler " + currentPlayer.getPlayerName() + " muss " + drawCards + " Karten ziehen.");
-        do{
+        do {
             currentPlayer.playerCards.add(getCardDeck().get(getCardDeck().size() - 1));
             getCardDeck().remove(getCardDeck().get(getCardDeck().size() - 1));
             i++;
-        }while(i < drawCards);
+        } while (i < drawCards);
         drawCards = 0;
 
-        if (getTopCard().contains("7")){
-             play();
+        if (getTopCard().contains("7")) {
+            play();
         }
-        } 
-        
-
+    }
 
     // @Chris: muss aufgerufen werden, wenn Spieler eine Karte ablegt
     // Spieler legt eine Karte von seiner Hand auf den Stapel
@@ -156,24 +139,20 @@ public class Game {
         // Wegwerfstapel
         //playedCards.add(playerCard);
         //System.out.println(playedCards);
-
     }
-
-    
-     
 
     // Methode beschreibt was bei Sonderkarten passiert
     private void specialCards(String playerCard) {
         // 2 Karten ziehen
         checked = true;
 
-//oder
+        //oder
         if (getTopCard().contains("7")) {
-        // 7 legen       
-         System.out.println("du musst 2 ziehen oder 7 legen " + currentPlayer.getPlayerName() + "\n");
+            // 7 legen
+            System.out.println("du musst 2 ziehen oder 7 legen " + currentPlayer.getPlayerName() + "\n");
             drawCards += 2;
             stackSeven = true;
-            
+
             // 4 Ziehen
         } else if (getTopCard().equals("PK")) {
             System.out.println("du musst 4 ziehen" + currentPlayer.getPlayerName() + "\n");
@@ -182,7 +161,7 @@ public class Game {
                 getCardDeck().remove(getCardDeck().get(getCardDeck().size() - 1));
             }
             currentPlayer = currentPlayer.nextPlayer;
-            System.out.println("Jetzt ist " + currentPlayer.getPlayerName() + " an der Reihe.\n"); 
+            System.out.println("Jetzt ist " + currentPlayer.getPlayerName() + " an der Reihe.\n");
             // Aussetzer
         } else if (playerCard.contains("A")) {
             System.out.println("du musst aussetzen" + currentPlayer.getPlayerName() + "\n");
@@ -191,15 +170,12 @@ public class Game {
         }
     }
 
-
     // Methode erzeugt Spieler
-     public static void createPlayer(String playerName, Server.Server.ClientHandler playerID) {
+    public static void createPlayer(String playerName, Server.Server.ClientHandler playerID) {
         reihenfolge.createPlayer(playerName, playerID);
     }
 
-
-
-//      Getter
+    //      Getter
 
     // Oberste Karte anzeigen lassen
     public String getTopCard() {
@@ -207,7 +183,7 @@ public class Game {
     }
 
     // Gewinner anzeigen lassen
-    public String getWinner(){
+    public String getWinner() {
         return winner;
     }
 
@@ -220,10 +196,9 @@ public class Game {
         return reihenfolge.getPlayerObject(clientHandler);
     }
 
-    public ArrayList<String> getCardDeck(){
+    public ArrayList < String > getCardDeck() {
         return cardDeck;
     }
-
 }
 
 // [ist-Drann , [karten] , [Spielername , AnzahlKarten von Spieler] , Oberste

@@ -1,6 +1,6 @@
 package Server;
 
-// Muss Handkkarten auswerten können -> darf legen oder nicht
+// Muss Handkarten auswerten können -> darf legen oder nicht
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
@@ -33,7 +33,7 @@ public class Bot {
 
     // Checkt ob der Bot dran ist
     public void checkTurn(boolean isTurn, ArrayList<String> playerCards, String topCard) {
-        if(isTurn == true) {
+        if(isTurn) {
             int sleep = 3 + (int)(Math.random() * ((7 - 3) + 1));
             System.out.println("delay "+ sleep);
             try {
@@ -47,7 +47,7 @@ public class Bot {
         }
     }
 
-    // Vergleicht ob der Bot eine Karte legen kann
+    // Vergleicht, ob der Bot eine Karte legen kann
     public boolean isValidMove(String playerCard, String topCard) {
         if (topCard.charAt(0) == playerCard.charAt(0)) {
             return true;
@@ -66,7 +66,7 @@ public class Bot {
         return false;
     }
 
-    // Checkt ob die topCard eine 7 oder 8 ist und ruft dann den Vergleich mit allen Handkarten auf
+    // Checkt, ob die topCard eine 7 oder 8 ist und ruft dann den Vergleich mit allen Handkarten auf
     public void canPlay(ArrayList<String> playerCards, String topCard) {
         /*
         if (topCard.contains("7") || topCard.contains("8")) {

@@ -255,7 +255,6 @@ public class Client {
         } catch (IOException e) {
             close(socket, bufferedWriter, bufferedReader);
         }
-
     }
 
     public static BufferedWriter getBufferedWriter() {
@@ -310,7 +309,6 @@ public class Client {
                 }
                 System.out.println("Der gewinner ist " + Gewinner);
                 winnerWinnerChickenDinner = Gewinner;
-
             }
         }).start();
     }

@@ -3,8 +3,7 @@ package Server;
 import java.util.ArrayList;
 
 public class Player {
-    ArrayList<String> playerCards;
-
+    ArrayList < String > playerCards;
     String playerName;
     Player nextPlayer;
     public static Player lastPlayer;
@@ -16,7 +15,7 @@ public class Player {
         this.playerID = playerID;
 
         // Array der eigenen Karten
-        this.playerCards = new ArrayList<String>();
+        this.playerCards = new ArrayList < String > ();
 
         // nextPlayer
         this.nextPlayer = null;
@@ -24,13 +23,12 @@ public class Player {
         if (lastPlayer != null) {
             lastPlayer.setNextPlayer(this);
         }
-
         lastPlayer = this;
     }
 
     // Getter & Setter
 
-    public ArrayList<String> getPlayerCards() {
+    public ArrayList < String > getPlayerCards() {
         return playerCards;
     }
 
@@ -57,5 +55,4 @@ public class Player {
     public void setPlayerID(Object playerID) {
         this.playerID = playerID;
     }
-
 }

@@ -8,9 +8,6 @@ import java.util.Scanner;
 
 import Server.Bot;
 import Server.Game;
-//gh hkjkjbjkbjbjk
-
-
 
 public class Server {
     private static ServerSocket serverSocket;
@@ -19,8 +16,8 @@ public class Server {
     public static int maxPlayer;
     private static boolean fullLobby;
     public static String data;
-    public static ArrayList<ClientHandler> clientHandlers = new ArrayList<>();
-    public static ArrayList<Bot> bots = new ArrayList<>();
+    public static ArrayList < ClientHandler > clientHandlers = new ArrayList < > ();
+    public static ArrayList < Bot > bots = new ArrayList < > ();
 
     public Server(ServerSocket serverSocket) {
         Server.serverSocket = serverSocket;
@@ -29,8 +26,8 @@ public class Server {
     // Methode, die, solange der Socket nicht geschlossen ist, ständig auf
     // Verbindungsanfragen wartet
     public void startServer() {
-        System.out.println("Der Server startet jetzt mit Port: " + serverSocket.getLocalPort() + " und " + maxPlayer
-                + " maximalen Spielern");
+        System.out.println("Der Server startet jetzt mit Port: " + serverSocket.getLocalPort() + " und " + maxPlayer +
+                " maximalen Spielern");
         try {
             while (!serverSocket.isClosed() && !fullLobby) {
                 // hier werden die Verbindungsanfragen von Clients akzeptiert25566
@@ -42,15 +39,15 @@ public class Server {
                 Thread thread = new Thread(clientHandler);
                 thread.start();
                 boolean nametaken = false;
-                for(ClientHandler p : clientHandlers){
-                    if(p.getUsername().equals((clientHandler.getUsername()))){
-                        clientHandler.sendObject("M<:!ds5"+"Username schon vergeben\n");
+                for (ClientHandler p: clientHandlers) {
+                    if (p.getUsername().equals((clientHandler.getUsername()))) {
+                        clientHandler.sendObject("M<:!ds5" + "Username schon vergeben\n");
                         clientHandler.socket.close();
                         nametaken = true;
                         break;
                     }
                 }
-                if(!nametaken){
+                if (!nametaken) {
                     clientHandlers.add(clientHandler);
                 }
 
@@ -72,7 +69,7 @@ public class Server {
     }
 
     public void start() {
-        for(ClientHandler clientHandler : clientHandlers){
+        for (ClientHandler clientHandler: clientHandlers) {
             clientHandler.gameRunning = true;
             game.createPlayer(clientHandler.getUsername(), clientHandler);
         }
@@ -80,33 +77,31 @@ public class Server {
         game = new Game();
         game.startGame((int) clientHandlers.size());
 
-
         do {
-        // jeder Player soll die aktuellen infos kriegen
+            // jeder Player soll die aktuellen infos kriegen
             game.special();
             game.playerCard = null;
-            for (ClientHandler clientHandler : clientHandlers) {
+            for (ClientHandler clientHandler: clientHandlers) {
                 clientHandler.sendObject(createList(clientHandler));
                 System.out.println(clientHandler.getUsername() + " " + createList(clientHandler));
             }
 
-            for(Bot bot : bots){
+            for (Bot bot: bots) {
                 boolean isTurn = false;
                 if (game.getCurrentPlayer() == game.getPlayerObject(bot)) {
-                isTurn = true;
-                bot.createList(isTurn, game.getPlayerObject(bot).getPlayerCards(), game.getTopCard());
-                System.out.println("Der Bot hat die Karte: " + game.playerCard + " gewählt!!");
+                    isTurn = true;
+                    bot.createList(isTurn, game.getPlayerObject(bot).getPlayerCards(), game.getTopCard());
+                    System.out.println("Der Bot hat die Karte: " + game.playerCard + " gewählt!!");
+                }
             }
-        }
             game.play();
-        } while(!game.checkForWinner());
+        } while (!game.checkForWinner());
 
         System.out.println("Gewinner ist: " + game.getWinner());
-        for (ClientHandler clientHandler : clientHandlers) {
-            clientHandler.sendObject(createList(clientHandler)+game.getWinner());
+        for (ClientHandler clientHandler: clientHandlers) {
+            clientHandler.sendObject(createList(clientHandler) + game.getWinner());
             System.out.println(clientHandler.getUsername() + " " + createList(clientHandler) + " " + game.getWinner());
         }
-
 
     }
 
@@ -128,26 +123,22 @@ public class Server {
             isTurn = true;
         }
 
-        data = "C8->7G#" + isTurn + "|" + game.getPlayerObject(clientHandler).getPlayerCards() + "|"
-                + game.getTopCard() + "|" + maxPlayer + "|";
+        data = "C8->7G#" + isTurn + "|" + game.getPlayerObject(clientHandler).getPlayerCards() + "|" +
+                game.getTopCard() + "|" + maxPlayer + "|";
 
-
-
-        for(ClientHandler player : clientHandlers){
+        for (ClientHandler player: clientHandlers) {
             data += player.getUsername() + "|" + game.getPlayerObject(player).getPlayerCards().size() + "|";
-            if(game.getCurrentPlayer() == game.getPlayerObject(player)){
+            if (game.getCurrentPlayer() == game.getPlayerObject(player)) {
                 data += true + "|";
-            }
-            else{
+            } else {
                 data += false + "|";
             }
         }
-        for(Bot player : bots){
+        for (Bot player: bots) {
             data += player.getUsername() + "|" + game.getPlayerObject(player).getPlayerCards().size() + "|";
-            if(game.getCurrentPlayer() == game.getPlayerObject(player)){
+            if (game.getCurrentPlayer() == game.getPlayerObject(player)) {
                 data += true + "|";
-            }
-            else{
+            } else {
                 data += false + "|";
             }
         }
@@ -201,5 +192,5 @@ public class Server {
 
         System.out.println("Testnachricht");
         server.startServer();
-    }//    K<;?dHs0
+    } //    K<;?dHs0
 }
