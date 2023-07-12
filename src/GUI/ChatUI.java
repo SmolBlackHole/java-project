@@ -4,8 +4,6 @@ import Client.Client.Client;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Objects;
 
 public class ChatUI extends JFrame {
@@ -34,12 +32,7 @@ public class ChatUI extends JFrame {
         messageField.setFont(new Font("Arial", Font.PLAIN, 14));
         JButton sendButton = new JButton("Senden");
         sendButton.setFont(new Font("Arial", Font.BOLD, 14));
-        sendButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                sendMessage();
-            }
-        });
+        sendButton.addActionListener(e -> sendMessage());
         inputPanel.add(messageField, BorderLayout.CENTER);
         inputPanel.add(sendButton, BorderLayout.EAST);
         add(inputPanel, BorderLayout.SOUTH);
@@ -64,17 +57,14 @@ public class ChatUI extends JFrame {
     }
 
     private void listenForMessages() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                String placeholderMessage = "";
-                while (true) {
-                    String receivedMessage = Client.receiveMessage();
+        new Thread(() -> {
+            String placeholderMessage = "";
+            while (true) {
+                String receivedMessage = Client.receiveMessage();
 
-                    if (!Objects.equals(receivedMessage, placeholderMessage)) {
-                        addMessage(receivedMessage); // Empfangene Nachricht zum Chat
-                        placeholderMessage = receivedMessage;
-                    }
+                if (!Objects.equals(receivedMessage, placeholderMessage)) {
+                    addMessage(receivedMessage); // Empfangene Nachricht zum Chat
+                    placeholderMessage = receivedMessage;
                 }
             }
         }).start();
