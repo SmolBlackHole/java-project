@@ -51,7 +51,7 @@ public class CardGameUI {
     public CardGameUI(String username, ArrayList<String> karten) {
         CardGameUI.karten = karten;
         obersteKarten = new ArrayList<>(); // Initialisierung der ArrayList für die obersten Karten
-        istDrann = false;
+
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -85,7 +85,6 @@ public class CardGameUI {
 
                 // Erstellen der Karten-Labels und Hinzufügen zum Haupt panel
                 cardLabels = new ArrayList<>();
-                enlargedCardLabel = createEnlargedCardLabel();
                 // Erstellen des Labels für die oberste Spielkarte
                 obersteKartenLabel = new JLabel();
                 obersteKartenLabel.setVisible(false);
@@ -132,8 +131,6 @@ public class CardGameUI {
                     originalCardLocations[i] = cardLabels.get(i).getLocation();
                 }
 
-                // Hinzufügen des Labels für die vergrößerte Karte
-                mainPanel.add(enlargedCardLabel);
                 // Hinzufügen des Labels für die oberste Karte
                 mainPanel.add(obersteKartenLabel);
 
@@ -142,6 +139,8 @@ public class CardGameUI {
 
                 // Karten rendern
                 renderHandCards(karten);
+                renderObersteKarte();
+                renderOtherPlayers(spieler);
 
                 frame.setLocationRelativeTo(null);
                 frame.setVisible(true);
@@ -215,6 +214,8 @@ public class CardGameUI {
                             frame.validate();
                             frame.repaint();
                             renderHandCards(karten); // Karten erneut rendern
+                            renderObersteKarte();
+                            renderOtherPlayers(spieler);
                         } else {
                             JOptionPane.showMessageDialog(frame, "Diese Karte darf nicht gelegt werden!");
                         }
@@ -378,14 +379,6 @@ public class CardGameUI {
                 cardLabels.add(0, cardLabel); // Füge die Karte am Anfang der Liste hinzu
             }
 
-            if (obersteKarten.size() >= 1) {
-                String lastCard = obersteKarten.get(obersteKarten.size() - 1);
-                if (lastCard.equals("PK")) {
-                    istDrann = false;
-                    renderObersteKarte();
-                }
-            }
-
             setCardZOrder();
             addMouseListeners();
 
@@ -399,20 +392,10 @@ public class CardGameUI {
             }
 
             // Benutzername anzeigen
-            JLabel usernameLabel = new JLabel("Benutzername: " + username);
-            usernameLabel.setBounds(INITIAL_X - 200, y, 200, 20);
+            JLabel usernameLabel = new JLabel(username);
+            usernameLabel.setBounds(INITIAL_X - 100, INITIAL_Y, 200, 20);
             usernameLabel.setForeground(Color.WHITE);
             mainPanel.add(usernameLabel);
-
-            // Eigene Informationen anzeigen
-            String ownInfoText = "Karten: ";
-            for (String card : karten) {
-                ownInfoText += card + " ";
-            }
-            JLabel ownInfoLabel = new JLabel(ownInfoText);
-            ownInfoLabel.setBounds(INITIAL_X - 200, y + 30, 400, 20);
-            ownInfoLabel.setForeground(Color.WHITE);
-            mainPanel.add(ownInfoLabel);
         }
     }
 
@@ -607,8 +590,8 @@ public class CardGameUI {
                     if (aktuellerIstDrann != vorherIstDrann) { // Prüfen, ob sich der Wert von istDrann geändert hat
                         istDrann = aktuellerIstDrann; // Aktuellen Wert von istDrann zuweisen
                         vorherIstDrann = aktuellerIstDrann; // Aktuellen Wert von istDrann als vorherigen Wert speichern
-                        renderHandCards(karten);
                         renderObersteKarte();
+                        renderHandCards(karten);
                         renderOtherPlayers(spieler);
                     }
 
@@ -618,9 +601,10 @@ public class CardGameUI {
                     if (!Objects.equals(obersteSpielKarte, Client.receiveObersteSpielkarte())) {
                         obersteSpielKarte = Client.receiveObersteSpielkarte();
                         obersteKarten.add(obersteSpielKarte); // Füge die neue oberste Karte zur ArrayList hinzu
+                        System.out.println("Oberste Karte erhalten: " + obersteSpielKarte);
                         if (obersteKarten.size() > 5) {
                             obersteKarten.remove(0);
-                            System.out.println("Oberste Karte entfernt" + obersteKarten);
+                            System.out.println("ObersteKarten zwischenspeicher: "+obersteKarten);
                         }
                         renderObersteKarte(); // Rendere die oberste Karte
                     }
@@ -631,6 +615,7 @@ public class CardGameUI {
 
                     if (!Objects.equals(gewinner, Client.receiveGewinner())) {
                         gewinner = Client.receiveGewinner();
+                        System.out.println("Gewinner empfangen " + gewinner);
                     }
 
                     if (!Objects.equals(spieler, Client.receiveSpielerListe())) {
@@ -644,6 +629,7 @@ public class CardGameUI {
 
                         renderHandCards(karten);
                         renderOtherPlayers(spieler);
+                        renderObersteKarte();
                     }
 
                     frame.validate();
