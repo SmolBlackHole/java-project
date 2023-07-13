@@ -294,16 +294,36 @@ public class Client {
             @Override
             public void run() {
                 while (socket.isConnected() || Gewinner == null) {
-                    if (istDrann) {
-                        boolean check = false;
-                        Scanner myObj = new Scanner(System.in);
-                        String play = myObj.nextLine();
 
+                    Scanner myObj = new Scanner(System.in);
+                    String play = myObj.nextLine();
+                    boolean chat = false;
+
+
+                    if(play != "" && !istDrann){
+                        if(play.charAt(0) == ('/')){
+                            String newstr = play.substring(0, 0) + play.substring(0 + 1);
+                            sendMessage(newstr);
+                        }else if(!istDrann){
+                            System.out.println("Falsche Eingabe: Benutze / um eine Nachricht in den Chat zu schicken, oder warte bis du Dran bist!");
+                        }
+
+                    }
+                    
+                    else if (istDrann) {
+                        boolean check = false;
                         if (play.isEmpty()) {
                             //Befehl zum senden das mann ziehen muss
                             dataToSend("Bh7.|+e");
                             check = true;
-                        } else {
+                        }
+                        else if(play.charAt(0) == ('/')){
+                            String newstr = play.substring(0, 0) + play.substring(0 + 1);
+                            sendMessage(newstr);
+                            chat = true;
+                        }
+
+                        else {
                             for (int i = 0; i < ObersteSpielkarte.length(); i++) {
                                 for (int o = 0; o < play.length(); o++) {
                                     if (play.charAt(o) == ObersteSpielkarte.charAt(i)) {
@@ -317,10 +337,14 @@ public class Client {
                             //befehlt zum senden der gelegten karte
                             dataToSend("F4->3GA" + play);
                         }
-                        if (!check) {
-                            System.out.println("Du kannst diese Karte nicht Legen");
+                        if (!check && !chat) {
+                            System.out.println("Du kannst diese Karte nicht Legen, wähle eine andere Karte oder benutze / um eine Nachricht in den Chat zu schicken");
                         }
                     }
+                    else{
+                        System.out.println("Falsche Eingabe: Benutze / um eine Nachricht in den Chat zu schicken, oder warte bis du Dran bist!");
+                    }
+
                     try {
                         Thread.sleep(2000);
                     } catch (InterruptedException e) {
