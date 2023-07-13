@@ -23,6 +23,8 @@ public class CardGameUI {
     // Anfangsposition der Karten
     private static final int INITIAL_X = 1000;
     private static final int INITIAL_Y = 800;
+    private static final int OTHERPLAYER_INITIAL_X = 1000;
+    private static final int OTHERPLAYER_INITIAL_Y = 50;
     // Pfad zum Hintergrundbild
     private static final String BACKGROUND_IMAGE_PATH = "src/GUI/Assets/Table.jpg";
     // Breite und Höhe des Fensters
@@ -45,10 +47,11 @@ public class CardGameUI {
     private JLabel ziehStapelLabel;
     private String ziehStapelBildPath;
 
+
     public CardGameUI(String username, ArrayList<String> karten) {
         CardGameUI.karten = karten;
         obersteKarten = new ArrayList<>(); // Initialisierung der ArrayList für die obersten Karten
-        istDrann = false;
+
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -82,12 +85,11 @@ public class CardGameUI {
 
                 // Erstellen der Karten-Labels und Hinzufügen zum Haupt panel
                 cardLabels = new ArrayList<>();
-                enlargedCardLabel = createEnlargedCardLabel();
                 // Erstellen des Labels für die oberste Spielkarte
                 obersteKartenLabel = new JLabel();
                 obersteKartenLabel.setVisible(false);
                 mainPanel.add(obersteKartenLabel);
-                // Erstellen des Labels für den Ziehstapel
+                // Erstellen des Labels für den Zieh stapel
                 ziehStapelLabel = createZiehStapelLabel();
                 mainPanel.add(ziehStapelLabel);
 
@@ -95,7 +97,7 @@ public class CardGameUI {
                     ziehStapelBildPath = getZiehStapelBildPath();
                 }
 
-                // ImageIcon für den Ziehstapel erstellen
+                // ImageIcon für den Zieh stapel erstellen
                 ImageIcon ziehStapelIcon = new ImageIcon(ziehStapelBildPath);
                 Image ziehStapelImage = ziehStapelIcon.getImage();
                 Image scaledZiehStapelImage = ziehStapelImage.getScaledInstance(CARD_WIDTH, CARD_HEIGHT, Image.SCALE_SMOOTH);
@@ -103,7 +105,7 @@ public class CardGameUI {
 
                 ziehStapelLabel.setIcon(scaledZiehStapelIcon);
                 ziehStapelLabel.setBounds(
-                        (WindowWidth - CARD_WIDTH) / 2 - 200, // Anpassen der Position des Ziehstapels
+                        (WindowWidth - CARD_WIDTH) / 2 - 200, // Anpassen der Position des Zieh stapels
                         (WindowHeight - CARD_HEIGHT) / 2,
                         CARD_WIDTH,
                         CARD_HEIGHT
@@ -129,8 +131,6 @@ public class CardGameUI {
                     originalCardLocations[i] = cardLabels.get(i).getLocation();
                 }
 
-                // Hinzufügen des Labels für die vergrößerte Karte
-                mainPanel.add(enlargedCardLabel);
                 // Hinzufügen des Labels für die oberste Karte
                 mainPanel.add(obersteKartenLabel);
 
@@ -139,6 +139,8 @@ public class CardGameUI {
 
                 // Karten rendern
                 renderHandCards(karten);
+                renderObersteKarte();
+                renderOtherPlayers(spieler);
 
                 frame.setLocationRelativeTo(null);
                 frame.setVisible(true);
@@ -212,6 +214,8 @@ public class CardGameUI {
                             frame.validate();
                             frame.repaint();
                             renderHandCards(karten); // Karten erneut rendern
+                            renderObersteKarte();
+                            renderOtherPlayers(spieler);
                         } else {
                             JOptionPane.showMessageDialog(frame, "Diese Karte darf nicht gelegt werden!");
                         }
@@ -247,7 +251,7 @@ public class CardGameUI {
         });
     }
 
-    // Methode zum Hinzufügen des MouseListeners zum Ziehstapel-Label
+    // Methode zum Hinzufügen des MouseListeners zum Zieh stapel-Label
     private void addMouseListenerToZiehStapelLabel(JLabel ziehStapelLabel) {
         ziehStapelLabel.addMouseListener(new MouseAdapter() {
             @Override
@@ -375,14 +379,6 @@ public class CardGameUI {
                 cardLabels.add(0, cardLabel); // Füge die Karte am Anfang der Liste hinzu
             }
 
-            if (obersteKarten.size() >= 1){
-                String lastCard = obersteKarten.get(obersteKarten.size() -1);
-                if (lastCard.equals("PK")){
-                    istDrann = false;
-                    renderObersteKarte();
-                }
-            }
-
             setCardZOrder();
             addMouseListeners();
 
@@ -394,11 +390,102 @@ public class CardGameUI {
             for (int i = 0; i < cardLabels.size(); i++) {
                 originalCardLocations[i] = cardLabels.get(i).getLocation();
             }
+
+            // Benutzername anzeigen
+            JLabel usernameLabel = new JLabel(username);
+            usernameLabel.setBounds(INITIAL_X - 100, INITIAL_Y, 200, 20);
+            usernameLabel.setForeground(Color.WHITE);
+            mainPanel.add(usernameLabel);
         }
     }
 
+    private void renderOtherPlayers(ArrayList<ArrayList> spieler) {
+        synchronized (lock) {
+            Container contentPane = frame.getContentPane();
+            int numPlayers = spieler.size();
 
-    // Methode zum Rendern der obersten Karte und des Ziehstapels
+            // Entferne vorhandene Karten der anderen Spieler
+            Component[] components = contentPane.getComponents();
+            for (Component component : components) {
+                if (component instanceof JPanel && component.getName() != null && component.getName().startsWith("otherPlayer")) {
+                    contentPane.remove(component);
+                }
+            }
+
+            // Berechne die Position der Karten der anderen Spieler basierend auf der Fensterbreite
+            int cardSpacing = (WindowWidth - OTHERPLAYER_INITIAL_X * 2 - CARD_WIDTH) / (numPlayers - 1);
+            int x = OTHERPLAYER_INITIAL_X;
+
+            ArrayList<ArrayList> otherPlayers = filterOtherPlayers(spieler);
+
+            for (ArrayList playerInfo : otherPlayers) {
+                String playerName = (String) playerInfo.get(0);
+                int numCards = (int) playerInfo.get(1);
+                boolean isCurrentPlayer = (boolean) playerInfo.get(2);
+
+                int visibleHeight = WindowHeight - CARD_HEIGHT;
+
+                int horizontalSpacing;
+                if (numCards > 1) {
+                    horizontalSpacing = Math.min(visibleHeight / (numCards - 1), 30);
+                } else {
+                    horizontalSpacing = visibleHeight; // Falls nur eine Karte vorhanden ist, nimm die gesamte verfügbare Höhe
+                }
+
+                JPanel playerPanel = new JPanel();
+                playerPanel.setName("otherPlayer_" + playerName); // Setze einen Namen für das Panel, um es später zu identifizieren
+                playerPanel.setOpaque(false);
+                playerPanel.setLayout(null);
+
+                // Wähle das passende Asset-Bild basierend auf dem Index
+                int assetIndex = otherPlayers.indexOf(playerInfo) % 4 + 1; // Modulo-Operator, um den Index im Bereich von 1 bis 4 zu halten
+                String assetPath = "src/GUI/Assets/Back" + assetIndex + ".png";
+                ImageIcon assetIcon = new ImageIcon(assetPath);
+                Image assetImage = assetIcon.getImage();
+                Image scaledAssetImage = assetImage.getScaledInstance(CARD_WIDTH, CARD_HEIGHT, Image.SCALE_SMOOTH);
+                ImageIcon scaledAssetIcon = new ImageIcon(scaledAssetImage);
+
+                for (int i = 0; i < numCards; i++) {
+                    JLabel cardLabel = new JLabel(scaledAssetIcon);
+                    cardLabel.setBounds(i * horizontalSpacing, 0, CARD_WIDTH, CARD_HEIGHT);
+                    playerPanel.add(cardLabel);
+                }
+
+                // Füge den Text für den Benutzer hinzu
+                JLabel playerNameLabel = new JLabel(playerName + " (" + numCards + ")");
+                playerNameLabel.setBounds(0, CARD_HEIGHT, CARD_WIDTH + (numCards - 1) * horizontalSpacing, 20);
+                playerNameLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                playerNameLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+                playerNameLabel.setForeground(Color.WHITE); // Textfarbe auf Weiß setzen
+                playerPanel.add(playerNameLabel);
+
+                playerPanel.setBounds(x, OTHERPLAYER_INITIAL_Y, CARD_WIDTH + (numCards - 1) * horizontalSpacing, CARD_HEIGHT + 20); // Höhe um 20 erhöhen, um Platz für den Text zu schaffen
+                contentPane.add(playerPanel);
+
+                x += cardSpacing;
+            }
+
+            setCardZOrder();
+
+            frame.validate();
+            frame.repaint();
+        }
+    }
+
+    private ArrayList<ArrayList> filterOtherPlayers(ArrayList<ArrayList> spieler) {
+        ArrayList<ArrayList> otherPlayers = new ArrayList<>();
+
+        for (ArrayList playerInfo : spieler) {
+            String playerName = (String) playerInfo.get(0);
+            if (!playerName.equals(username)) {
+                otherPlayers.add(playerInfo);
+            }
+        }
+
+        return otherPlayers;
+    }
+
+    // Methode zum Rendern der obersten Karte und des Zieh stapels
     private void renderObersteKarte() {
         if (!obersteKarten.isEmpty()) {
             String obersteKarte = obersteKarten.get(obersteKarten.size() - 1);
@@ -416,10 +503,10 @@ public class CardGameUI {
             obersteKartenLabel.setVisible(false);
         }
 
-        // Pfad zum Ziehstapel-Bild erhalten
+        // Pfad zum Zieh stapel-Bild erhalten
         String ziehStapelBildPath = getZiehStapelBildPath();
 
-        // ImageIcon für den Ziehstapel erstellen
+        // ImageIcon für den Zieh stapel erstellen
         ImageIcon ziehStapelIcon = new ImageIcon(ziehStapelBildPath);
         Image ziehStapelImage = ziehStapelIcon.getImage();
         Image scaledZiehStapelImage = ziehStapelImage.getScaledInstance(CARD_WIDTH, CARD_HEIGHT, Image.SCALE_SMOOTH);
@@ -427,7 +514,7 @@ public class CardGameUI {
 
         ziehStapelLabel.setIcon(scaledZiehStapelIcon);
         ziehStapelLabel.setBounds(
-                (WindowWidth - CARD_WIDTH) / 2 - 200, // Anpassen der Position des Ziehstapels
+                (WindowWidth - CARD_WIDTH) / 2 - 200, // Anpassen der Position des Zieh stapels
                 (WindowHeight - CARD_HEIGHT) / 2,
                 CARD_WIDTH,
                 CARD_HEIGHT
@@ -435,7 +522,7 @@ public class CardGameUI {
         ziehStapelLabel.setVisible(true);
     }
 
-    // Methode zum Abrufen des Pfads zum Ziehstapel-Bild
+    // Methode zum Abrufen des Pfads zum Zieh stapel-Bild
     private String getZiehStapelBildPath() {
         if (ziehStapelBildPath != null) {
             return ziehStapelBildPath; // Rückgabe des zuvor ausgewählten Bildpfads
@@ -468,7 +555,7 @@ public class CardGameUI {
         }
     }
 
-    // Methode zum Erstellen des Labels für den Ziehstapel
+    // Methode zum Erstellen des Labels für den Zieh stapel
     private JLabel createZiehStapelLabel() {
         JLabel ziehStapelLabel = new JLabel();
         ziehStapelLabel.setVisible(false);
@@ -503,8 +590,9 @@ public class CardGameUI {
                     if (aktuellerIstDrann != vorherIstDrann) { // Prüfen, ob sich der Wert von istDrann geändert hat
                         istDrann = aktuellerIstDrann; // Aktuellen Wert von istDrann zuweisen
                         vorherIstDrann = aktuellerIstDrann; // Aktuellen Wert von istDrann als vorherigen Wert speichern
-                        renderHandCards(karten);
                         renderObersteKarte();
+                        renderHandCards(karten);
+                        renderOtherPlayers(spieler);
                     }
 
                     frame.validate();
@@ -513,9 +601,10 @@ public class CardGameUI {
                     if (!Objects.equals(obersteSpielKarte, Client.receiveObersteSpielkarte())) {
                         obersteSpielKarte = Client.receiveObersteSpielkarte();
                         obersteKarten.add(obersteSpielKarte); // Füge die neue oberste Karte zur ArrayList hinzu
-                        if (obersteKarten.size() > 5){
+                        System.out.println("Oberste Karte erhalten: " + obersteSpielKarte);
+                        if (obersteKarten.size() > 5) {
                             obersteKarten.remove(0);
-                            System.out.println("Oberste Karte entfernt" + obersteKarten);
+                            System.out.println("ObersteKarten zwischenspeicher: "+obersteKarten);
                         }
                         renderObersteKarte(); // Rendere die oberste Karte
                     }
@@ -526,6 +615,7 @@ public class CardGameUI {
 
                     if (!Objects.equals(gewinner, Client.receiveGewinner())) {
                         gewinner = Client.receiveGewinner();
+                        System.out.println("Gewinner empfangen " + gewinner);
                     }
 
                     if (!Objects.equals(spieler, Client.receiveSpielerListe())) {
@@ -538,7 +628,12 @@ public class CardGameUI {
                         }
 
                         renderHandCards(karten);
+                        renderOtherPlayers(spieler);
+                        renderObersteKarte();
                     }
+
+                    frame.validate();
+                    frame.repaint();
                 }
             }
         }).start();
