@@ -9,7 +9,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -262,16 +261,6 @@ public class MenUI extends JFrame {
             updateCardGameUI(); // Aktualisiere das CardGameUI
         } catch (IOException e) {
             e.printStackTrace();
-        }
-    }
-
-    private boolean checkServerAvailability(String ip, int port) {
-        try (Socket socket = new Socket(ip, port)) {
-            // Verbindung erfolgreich hergestellt
-            return true;
-        } catch (IOException e) {
-            // Verbindung konnte nicht hergestellt werden
-            return false;
         }
     }
 
