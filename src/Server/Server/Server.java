@@ -77,7 +77,7 @@ public class Server {
         game = new Game();
         game.startGame((int) clientHandlers.size());
 
-        do {
+        while (!game.checkForWinner()) {
             // jeder Player soll die aktuellen infos kriegen
             game.special();
             game.playerCard = null;
@@ -85,19 +85,23 @@ public class Server {
                 clientHandler.sendObject(createList(clientHandler));
                 System.out.println(clientHandler.getUsername() + " " + createList(clientHandler));
             }
-
             for (Bot bot: bots) {
-                    createBotList(bot);
+                createBotList(bot);
             }
             game.play();
-        } while (!game.checkForWinner());
+            game.currentPlayer = game.currentPlayer.getNextPlayer();
+        } ;
 
         System.out.println("Gewinner ist: " + game.getWinner());
         for (ClientHandler clientHandler: clientHandlers) {
-            clientHandler.sendObject(createList(clientHandler) + game.getWinner());
-            System.out.println(clientHandler.getUsername() + " " + createList(clientHandler) + " " + game.getWinner());
+            clientHandler.sendObject("K<;?dHs" + game.getWinner());
+            clientHandler.sendObject("M<:!ds5"+"Vielen dank fürs Spielen, der Server wird jejtzt Geschlossen!");
+            try {
+                clientHandler.socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-
     }
 
     public void closeServerSocket() {
@@ -112,13 +116,12 @@ public class Server {
 
     public static void createBotList(Bot bot){
         boolean isTurn = false;
-                if (game.getCurrentPlayer() == game.getPlayerObject(bot)) {
+                if (game.getCurrentPlayer() == bot.player) {
                     isTurn = true;
                 }
         bot.createList(isTurn, game.getPlayerObject(bot).getPlayerCards(), game.getTopCard());
     }
 
-    // C8->7G#ist-Drann|karten|ObersteSpielkarte|AnzahlSpieler|Spielername1|AnzahlKarten|Spielername2|AnzahlKarten|Spielername3|AnzahlKarten|.....
     public String createList(ClientHandler clientHandler) {
         data = "";
         boolean isTurn = false;
@@ -155,8 +158,7 @@ public class Server {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                boolean wasFull = false;
-                while (serverSocket != null) {
+                while (fullLobby == false) {
 
                     try {
                         Thread.sleep(500);
@@ -165,10 +167,6 @@ public class Server {
                     }
                     if (maxPlayer == (int) clientHandlers.size()) {
                         fullLobby = true;
-                        wasFull = true;
-                    }
-                    if (clientHandlers.size() < maxPlayer && wasFull) {
-                        fullLobby = false;
                     }
                 }
             }
@@ -179,19 +177,19 @@ public class Server {
     public static void main(String[] args) throws IOException {
 
         // hier wird vor dem Starten um eine Porteingabe gebeten
-        Scanner portscanner = new Scanner(System.in);
-        System.out.println("Port Eingeben");
-        int port = 25565;
-        maxPlayer = 3;
-        Scanner playerscanner = new Scanner(System.in);
-        System.out.println("Max Spieler");
+        Scanner Abfrage = new Scanner(System.in);
+
+        System.out.println("Enter Port");
+        int port = Abfrage.nextInt();
+
+        System.out.println("Enter Max Player");
+        maxPlayer = Abfrage.nextInt();
         // hier wird ein neuer Socket erstellt
         ServerSocket serverSocket = new ServerSocket(port);
         Server tempserver = new Server(serverSocket);
         server = tempserver;
         CheckMaxPlayer();
 
-        System.out.println("Testnachricht");
         server.startServer();
-    } //    K<;?dHs0
+    }
 }

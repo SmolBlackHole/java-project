@@ -15,12 +15,16 @@ public class Bot {
     private String spielerKarte;
     public ArrayList<String> playerCards = new ArrayList<>();
     public String topCard;
-    public boolean isTurn;
+    public boolean isTurn = false;
+    public Player player;
 
     public Bot(ClientHandler clientHandler){
-        Player player = Server.game.getPlayerObject(clientHandler);
+        this.player = Server.game.getPlayerObject(clientHandler);
         this.username = player.getPlayerName();
         this.playerCards = player.getPlayerCards();
+        if(Server.game.currentPlayer == player){
+            Server.game.playerCard = "";
+        }
     }
 
     public void createList(boolean isTurn, ArrayList<String> playerCards, String topCard){

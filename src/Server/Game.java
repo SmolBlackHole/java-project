@@ -9,7 +9,7 @@ public class Game {
     static int numberOfPlayers;
     static int cardsPerPlayer = 5;
     static Player firstPlayer;
-    static Player currentPlayer;
+    public static Player currentPlayer;
     static Turn reihenfolge = new Turn();
     static Card card = new Card();
     static ArrayList < String > cardDeck = card.getCardDeck();
@@ -64,7 +64,6 @@ public class Game {
     // Methode regelt Spielablauf, solange es keinen Gewinner gibt
     // gibt es einen Gewinner, wird das Spiel beendet
     public void special() {
-        currentPlayer = currentPlayer.nextPlayer;
         System.out.println("checked " + checked);
         if (!checked) {
             specialCards(getTopCard());
@@ -84,18 +83,21 @@ public class Game {
                 e.printStackTrace();
             }
         };
+               
 
         if (playerCard.isEmpty()) {
+            System.out.println("Der Spieler " + currentPlayer.getPlayerName() + " zieht.");
             stackSeven = false;
             drawCards();
             // wenn Spieler eine Karte legen kann, so wird sie aus seinen Karten gestrichen und auf den Stapel gepackt
 
         } else if (stackSeven && !playerCard.contains("7")) {
             stackSeven = false;
-            System.out.println("\nhat geklappt\n");
+            System.out.println("Der Spieler " + currentPlayer.getPlayerName() + " hat die Karte " + playerCard + " gelegt."); 
             putPlayerCardToCardDeck(playerCard);
             drawCards();
         } else {
+            System.out.println("Der Spieler " + currentPlayer.getPlayerName() + " hat die Karte " + playerCard + " gelegt."); 
             putPlayerCardToCardDeck(playerCard);
         }
         System.out.println("\n");
@@ -165,7 +167,7 @@ public class Game {
 
             // 4 Ziehen
         } else if (getTopCard().equals("PK")) {
-            System.out.println("du musst 4 ziehen" + currentPlayer.getPlayerName() + "\n");
+            System.out.println("du musst 4 ziehen " + currentPlayer.getPlayerName() + "\n");
             for (int i = 0; i <= 4; i++) {
                 currentPlayer.playerCards.add(getCardDeck().get(getCardDeck().size() - 1));
                 getCardDeck().remove(getCardDeck().get(getCardDeck().size() - 1));
@@ -174,7 +176,7 @@ public class Game {
             System.out.println("Jetzt ist " + currentPlayer.getPlayerName() + " an der Reihe.\n");
             // Aussetzer
         } else if (playerCard.contains("A")) {
-            System.out.println("du musst aussetzen" + currentPlayer.getPlayerName() + "\n");
+            System.out.println("du musst aussetzen " + currentPlayer.getPlayerName() + "\n");
             currentPlayer = currentPlayer.nextPlayer;
             System.out.println("Jetzt ist " + currentPlayer.getPlayerName() + " an der Reihe.\n");
         }

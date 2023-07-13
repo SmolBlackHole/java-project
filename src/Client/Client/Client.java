@@ -88,7 +88,7 @@ public class Client {
                             if (choose.equals("C8->7G#")) {
                                 gameData += msgFromGroupChat.charAt(i);
                             }
-                            if (choose.equals("K<;?dHs0")) {
+                            if (choose.equals("K<;?dHs")) {
                                 winner += msgFromGroupChat.charAt(i);
                             }
                             if (i <= 6) {
@@ -100,9 +100,10 @@ public class Client {
                             wilderChatString = newMessage;
                             System.out.println(newMessage);
                         }
-                        if (choose.equals("K<;?dHs0")) {
+                        if (choose.equals("K<;?dHs")) {
                             // Wenn diese String befüllt ist, bekommst du den Namen des Gewinners und das Spiel soll zuende sein.
                             Gewinner = winner;
+                            System.out.println("Der Gewinnder ist: " + Gewinner);
                         }
 
                         if (choose.equals("C8->7G#")) {
@@ -197,11 +198,30 @@ public class Client {
                                 e.printStackTrace();
                             }
 
-                            System.out.println(istDrann);
-                            System.out.println(karten);
-                            System.out.println(ObersteSpielkarte);
-                            System.out.println(AnzahlSpieler);
-                            System.out.println(Spieler);
+
+                            //Prints
+
+                            if(istDrann){
+                                System.out.println("Sie sind dran!");
+                            }
+                            else{
+                                for(int i = 0; i<Spieler.size() ; i++){
+                                    if(Spieler.get(i).contains(true)){
+                                        System.out.println("Spieler " + Spieler.get(i).get(0) + " ist dran!");
+                                    }
+                                    if(!Spieler.get(i).contains(username)){
+                                        System.out.println("Spieler " + Spieler.get(i).get(0) + " hat noch " + Spieler.get(i).get(1) + " Karten");
+
+                                    }
+                                }
+                            }
+                            System.out.println("\n");
+                            if(istDrann){
+                                System.out.println("Deine Karten sind: " + karten);
+                            }
+                            System.out.println("Gelegte Karte ist: " + ObersteSpielkarte);
+                            System.out.println("\n");
+
 
                             wildeSpielerListe = Spieler;
                         }
@@ -307,7 +327,6 @@ public class Client {
                         e.printStackTrace();
                     }
                 }
-                System.out.println("Der gewinner ist " + Gewinner);
                 winnerWinnerChickenDinner = Gewinner;
             }
         }).start();
@@ -316,9 +335,13 @@ public class Client {
     // die Main Methode: sie startet die LoginGui
     public static void main(String[] args) throws IOException {
 
-        Client.username = "pl3";
-        Client.ip = "localhost";
-        Client.port = 25565;
+        Scanner Abfrage = new Scanner(System.in);
+        System.out.println("Enter Username");
+        Client.username = Abfrage.nextLine();
+        System.out.println("Enter Ip");
+        Client.ip = Abfrage.nextLine();
+        System.out.println("Enter Port");
+        Client.port = Abfrage.nextInt();
         Client.start();
 
     }
