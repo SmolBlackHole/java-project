@@ -605,6 +605,7 @@ public class CardGameUI {
                         if (obersteKarten.size() > 5) {
                             obersteKarten.remove(0);
                             System.out.println("ObersteKarten zwischenspeicher: "+obersteKarten);
+                            renderObersteKarte();
                         }
                         renderObersteKarte(); // Rendere die oberste Karte
                     }
