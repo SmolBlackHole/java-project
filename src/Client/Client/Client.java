@@ -308,9 +308,7 @@ public class Client {
                             System.out.println("Falsche Eingabe: Benutze / um eine Nachricht in den Chat zu schicken, oder warte bis du Dran bist!");
                         }
 
-                    }
-                    
-                    else if (istDrann) {
+                    } else if (istDrann) {
                         boolean check = false;
                         if (play.isEmpty()) {
                             //Befehl zum senden das mann ziehen muss
@@ -322,22 +320,16 @@ public class Client {
                             sendMessage(newstr);
                             chat = true;
                         }
+                        else if(play.length() == 2 && (ObersteSpielkarte.charAt(0) == play.charAt(0) || ObersteSpielkarte.charAt(1) == play.charAt(1))){
+                            check = true;
 
-                        else {
-                            for (int i = 0; i < ObersteSpielkarte.length(); i++) {
-                                for (int o = 0; o < play.length(); o++) {
-                                    if (play.charAt(o) == ObersteSpielkarte.charAt(i)) {
-                                        check = true;
-                                    }
-                                }
-                            }
                         }
 
                         if (check && karten.contains(play)) {
                             //befehlt zum senden der gelegten karte
                             dataToSend("F4->3GA" + play);
                         }
-                        if (!check && !chat) {
+                        else if (!chat) {
                             System.out.println("Du kannst diese Karte nicht Legen, wähle eine andere Karte oder benutze / um eine Nachricht in den Chat zu schicken");
                         }
                     }

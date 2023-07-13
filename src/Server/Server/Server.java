@@ -174,6 +174,13 @@ public class Server {
             // startet den Thread
         }).start();
     }
+    public static void addToCardDeck(){
+        game.addToCardDeck();
+        for(ClientHandler clientHandler : clientHandlers){
+            clientHandler.sendObject("M<:!ds5" + "|Server| " + " Nicht genug Karten im CardDeck, es wurde ein Frisches Deck hinzugefügt!");
+
+        }
+    }
 
     public static void main(String[] args) throws IOException {
 

@@ -25,7 +25,12 @@ public class Game {
         numberOfPlayers = size;
 
         // Methode aus "Card" wird aufgerufen, um Karten zu mischen
-        Card.mixCards();
+        int multp = (int) Math.ceil((double)numberOfPlayers / 4);
+        System.out.println(multp);
+        for(int i = 1; i <= multp; i++){
+            Card.mixCards();
+
+        }
         System.out.println("Gemischtes cardDeck: \n" + getCardDeck() + "\n");
         // Methode aus "Turn" wird aufgerufen, um Spielerreihenfolge festzulegen
         reihenfolge.connectFirstAndLast();
@@ -119,6 +124,13 @@ public class Game {
     // Karten ziehen
 
     private void drawCards() {
+
+        if(cardDeck.size() <= drawCards || cardDeck.size()<2){
+            Server.Server.Server.addToCardDeck();
+
+        }
+
+
         int i = 0;
         System.out.println("Spieler " + currentPlayer.getPlayerName() + " muss " + drawCards + " Karten ziehen.");
         do {
@@ -133,24 +145,30 @@ public class Game {
     // Spieler legt eine Karte von seiner Hand auf den Stapel
     public void putPlayerCardToCardDeck(String playerCard) {
 
-        if(cardDeck.size() <= 8){
-            cardDeck.addAll(getPlayedCards());
-            playedCards.clear();
-            Collections.shuffle(cardDeck);
-            System.out.println("Carddeck" + cardDeck);
-        }
-        System.out.println("Before "+getPlayedCards());
 
         checked = false;
         getPlayedCards().add(0, playerCard);
         currentPlayer.getPlayerCards().remove(playerCard);
-        System.out.println("after "+getPlayedCards());
 
 
-        System.out.println(currentPlayer.getPlayerCards());
+    }
 
+    public void addToCardDeck(){
+        if(cardDeck.size() <= drawCards){
+            String save = playedCards.get(0);
+            playedCards.remove(0);
 
+            cardDeck.addAll(getPlayedCards());
+            playedCards.clear();
 
+            playedCards.add(0, save);
+
+            Collections.shuffle(cardDeck);
+            System.out.println("Carddeck" + cardDeck);
+        }
+        if(cardDeck.size() <= drawCards || cardDeck.size()<2){
+            Card.mixCards();
+        }
     }
 
     // Methode beschreibt was bei Sonderkarten passiert
