@@ -76,8 +76,10 @@ public class Server {
 
         game = new Game();
         game.startGame((int) clientHandlers.size());
-
+        game.currentPlayer = game.getFirstPlayer().lastPlayer;
+        
         while (!game.checkForWinner()) {
+            game.currentPlayer = game.currentPlayer.getNextPlayer();
             // jeder Player soll die aktuellen infos kriegen
             game.special();
             game.playerCard = null;
@@ -89,7 +91,6 @@ public class Server {
                 createBotList(bot);
             }
             game.play();
-            game.currentPlayer = game.currentPlayer.getNextPlayer();
         } ;
 
         System.out.println("Gewinner ist: " + game.getWinner());

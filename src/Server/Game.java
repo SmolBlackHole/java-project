@@ -204,6 +204,10 @@ public class Game {
         return currentPlayer;
     }
 
+    public Player getFirstPlayer(){
+        return firstPlayer;
+    }
+
     public Player getPlayerObject(Object clientHandler) {
         return reihenfolge.getPlayerObject(clientHandler);
     }
