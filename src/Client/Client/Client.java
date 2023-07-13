@@ -329,7 +329,7 @@ public class Client {
                             //befehlt zum senden der gelegten karte
                             dataToSend("F4->3GA" + play);
                         }
-                        else if (!chat) {
+                        else if (!chat && !play.isEmpty()) {
                             System.out.println("Du kannst diese Karte nicht Legen, wähle eine andere Karte oder benutze / um eine Nachricht in den Chat zu schicken");
                         }
                     }
