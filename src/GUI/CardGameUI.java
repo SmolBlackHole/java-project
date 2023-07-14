@@ -11,7 +11,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CountDownLatch;
 
+import static Client.Client.Client.*;
 import static Client.Client.Client.username;
 
 public class CardGameUI {
@@ -102,40 +104,68 @@ public class CardGameUI {
                 );
                 ziehStapelLabel.setVisible(true);
 
-                // Erstellen der Karten-Labels und Hinzufügen zum Haupt panel
-                int x = INITIAL_X;
-
-                for (int i = karten.size() - 1; i >= 0; i--) {
-                    String card = karten.get(i);
-                    JLabel cardLabel = createCardLabel(card);
-                    cardLabel.setBounds(x, INITIAL_Y, CARD_WIDTH, CARD_HEIGHT);
-                    mainPanel.add(cardLabel);
-                    cardLabels.add(cardLabel);
-
-                    x -= 30;
-                }
-
-                // Speichern der ursprünglichen Kartenpositionen
-                originalCardLocations = new Point[cardLabels.size()];
-                for (int i = 0; i < cardLabels.size(); i++) {
-                    originalCardLocations[i] = cardLabels.get(i).getLocation();
-                }
-
-                // Hinzufügen des Labels für die oberste Karte
-                mainPanel.add(obersteKartenLabel);
-
-                // Hinzufügen der MouseListener zu den Karten-Labels
-                addMouseListeners();
-
-                // Karten rendern
-                renderHandCards(karten);
-                renderObersteKarte();
-                renderOtherPlayers(spieler);
-
                 frame.setLocationRelativeTo(null);
                 frame.setVisible(true);
 
+                // Starte die Initialisierung von Hintergrund und setTitel nach dem Laden des Fensters
+                CountDownLatch latch = new CountDownLatch(1);
+                SwingUtilities.invokeLater(() -> {
+                    // Hintergrund initialisieren
+                    ImageIcon backgroundIcon = new ImageIcon(BACKGROUND_IMAGE_PATH);
+                    Image background = backgroundIcon.getImage();
+                    mainPanel.getGraphics().drawImage(background, 0, 0, mainPanel.getWidth(), mainPanel.getHeight(), mainPanel);
+
+                    frame.validate();
+                    frame.repaint();
+
+                    // Erstellen der Karten-Labels und Hinzufügen zum Haupt panel
+                    int x = INITIAL_X;
+
+                    for (int i = karten.size() - 1; i >= 0; i--) {
+                        String card = karten.get(i);
+                        JLabel cardLabel = createCardLabel(card);
+                        cardLabel.setBounds(x, INITIAL_Y, CARD_WIDTH, CARD_HEIGHT);
+                        mainPanel.add(cardLabel);
+                        cardLabels.add(cardLabel);
+
+                        x -= 30;
+                    }
+
+                    // Speichern der ursprünglichen Kartenpositionen
+                    originalCardLocations = new Point[cardLabels.size()];
+                    for (int i = 0; i < cardLabels.size(); i++) {
+                        originalCardLocations[i] = cardLabels.get(i).getLocation();
+                    }
+
+                    // Hinzufügen des Labels für die oberste Karte
+                    mainPanel.add(obersteKartenLabel);
+
+                    // Hinzufügen der MouseListener zu den Karten-Labels
+                    addMouseListeners();
+
+                    frame.setLocationRelativeTo(null);
+                    frame.setVisible(true);
+
+                    frame.validate();
+                    frame.repaint();
+
+                    latch.countDown(); // Initialisierung beendet
+                });
                 listenForGameInfo();
+
+                EventQueue.invokeLater(() -> {
+                    if (obersteKarten.isEmpty()) {
+                        obersteKarten.add(Client.receiveObersteSpielkarte());
+                    }
+                    renderObersteKarte();
+
+                    renderHandCards(karten);
+
+                    if (spieler.isEmpty()) {
+                        spieler = Client.receiveSpielerListe();
+                    }
+                    renderOtherPlayers(spieler);
+                });
             }
         });
     }
@@ -343,6 +373,15 @@ public class CardGameUI {
         return ziehStapelLabel;
     }
 
+    // Methode zum Anzeigen des Gewinners
+    private void showWinnerPopup(String gewinner) {
+        if (gewinner.equals(username)) {
+            JOptionPane.showMessageDialog(frame, "Du hast gewonnen!");
+        } else {
+            JOptionPane.showMessageDialog(frame, gewinner + " hat gewonnen!");
+        }
+    }
+
     /* RENDERING */
 
     // Methode zum Rendern der Handkarten
@@ -522,7 +561,7 @@ public class CardGameUI {
     public static void dataToSend(String data) {
         synchronized (lock) {
             try {
-                BufferedWriter writer = Client.getBufferedWriter();
+                BufferedWriter writer = getBufferedWriter();
                 writer.write(data);
                 writer.newLine();
                 writer.flush();
@@ -545,12 +584,12 @@ public class CardGameUI {
 
             while (true) {
                 synchronized (lock) {
-                    karten = Client.receiveKarten();
-                    boolean aktuellerIstDrann = Client.receiveTurn();
-                    obersteSpielKarte = Client.receiveObersteSpielkarte();
-                    spielerAnzahl = Client.receiveAnzahlSpieler();
-                    gewinner = Client.receiveGewinner();
-                    spieler = Client.receiveSpielerListe();
+                    karten = receiveKarten();
+                    boolean aktuellerIstDrann = receiveTurn();
+                    obersteSpielKarte = receiveObersteSpielkarte();
+                    spielerAnzahl = receiveAnzahlSpieler();
+                    gewinner = receiveGewinner();
+                    spieler = receiveSpielerListe();
 
                     if (!Objects.equals(karten, placeholderString)) {
                         renderHandCards(karten);
@@ -562,47 +601,53 @@ public class CardGameUI {
                     if (aktuellerIstDrann != vorherIstDrann) { // Prüfen, ob sich der Wert von istDrann geändert hat
                         istDrann = aktuellerIstDrann; // Aktuellen Wert von istDrann zuweisen
                         vorherIstDrann = aktuellerIstDrann; // Aktuellen Wert von istDrann als vorherigen Wert speichern
-                        renderObersteKarte();
-                        renderHandCards(karten);
-                        renderOtherPlayers(spieler);
+
+                        EventQueue.invokeLater(() -> {
+                                renderObersteKarte();
+                                renderHandCards(karten);
+                                renderOtherPlayers(spieler);
+                        });
                     }
 
                     frame.validate();
                     frame.repaint();
 
-                    if (!Objects.equals(obersteSpielKarte, Client.receiveObersteSpielkarte())) {
-                        obersteSpielKarte = Client.receiveObersteSpielkarte();
+                    if (!Objects.equals(obersteSpielKarte, receiveObersteSpielkarte())) {
+                        obersteSpielKarte = receiveObersteSpielkarte();
                         obersteKarten.add(obersteSpielKarte); // Füge die neue oberste Karte zur ArrayList hinzu
                         System.out.println("Oberste Karte erhalten: " + obersteSpielKarte);
                         if (obersteKarten.size() > 5) {
                             obersteKarten.remove(0);
-                            System.out.println("ObersteKarten zwischenspeicher: " + obersteKarten);
+                            //System.out.println("ObersteKarten zwischenspeicher: " + obersteKarten);
                             renderObersteKarte();
                         }
                         renderObersteKarte(); // Rendere die oberste Karte
                     }
 
-                    if (spielerAnzahl != Client.receiveAnzahlSpieler()) {
-                        spielerAnzahl = Client.receiveAnzahlSpieler();
+                    if (spielerAnzahl != receiveAnzahlSpieler()) {
+                        spielerAnzahl = receiveAnzahlSpieler();
                     }
 
-                    if (!Objects.equals(gewinner, Client.receiveGewinner())) {
-                        gewinner = Client.receiveGewinner();
-                        System.out.println("Gewinner empfangen " + gewinner);
+                    if (!gewinner.isEmpty() && !Objects.equals(gewinner, receiveGewinner())) {
+                        gewinner = receiveGewinner();
+                        //System.out.println("Gewinner empfangen " + gewinner);
+                        showWinnerPopup(gewinner);
                     }
 
-                    if (!Objects.equals(spieler, Client.receiveSpielerListe())) {
-                        spieler = Client.receiveSpielerListe();
-                        System.out.println("Spieler empfangen " + spieler);
+                    if (!Objects.equals(spieler, receiveSpielerListe())) {
+                        spieler = receiveSpielerListe();
+                        //System.out.println("Spieler empfangen " + spieler);
 
                         List<Object> ownPlayerInfo = getOwnPlayerInfo(spieler, username);
                         if (ownPlayerInfo != null) {
                             istDrann = (boolean) ownPlayerInfo.get(2);
                         }
 
+                        EventQueue.invokeLater(() -> {
+                            renderObersteKarte();
+                            renderOtherPlayers(spieler);
+                        });
                         renderHandCards(karten);
-                        renderOtherPlayers(spieler);
-                        renderObersteKarte();
                     }
 
                     frame.validate();
@@ -652,7 +697,12 @@ public class CardGameUI {
         if (frame != null) {
             frame.setTitle(s);
         } else {
-            System.out.println("WAS IST DEN HIER LOS?!?!");
+            showErrorMessage();
         }
+    }
+
+    private void showErrorMessage() {
+        String errorMessage = "Hi, ich bin eine Fehlermeldung. Wenn ich erscheine, läuft irgendetwas gewaltig schief und das Spielefenster, dass du geöffnet hast, ist komplett nutzlos. Am besten startest du es neu und versuchst erneut, einem Server beizutreten.";
+        JOptionPane.showMessageDialog(frame, errorMessage, "Fehlermeldung", JOptionPane.ERROR_MESSAGE);
     }
 }
