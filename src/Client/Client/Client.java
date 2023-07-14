@@ -8,6 +8,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Scanner;
 
+import Server.Player;
+
 public class Client {
     private static Socket socket;
     private static BufferedWriter bufferedWriter;
@@ -204,17 +206,7 @@ public class Client {
                             if(istDrann){
                                 System.out.println("Sie sind dran!");
                             }
-                            else{
-                                for(int i = 0; i<Spieler.size() ; i++){
-                                    if(Spieler.get(i).contains(true)){
-                                        System.out.println("Spieler " + Spieler.get(i).get(0) + " ist dran!");
-                                    }
-                                    if(!Spieler.get(i).contains(username)){
-                                        System.out.println("Spieler " + Spieler.get(i).get(0) + " hat noch " + Spieler.get(i).get(1) + " Karten");
-
-                                    }
-                                }
-                            }
+                            System.out.println(Spieler);
                             System.out.println("\n");
                             if(istDrann){
                                 System.out.println("Deine Karten sind: " + karten);
