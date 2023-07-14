@@ -15,38 +15,28 @@ import java.util.Objects;
 import static Client.Client.Client.username;
 
 public class CardGameUI {
-    // Breite und Höhe einer Karte
     private static final int CARD_WIDTH = (int) (73 * 1.5);
     private static final int CARD_HEIGHT = (int) (97 * 1.5);
-    //  Offset beim Karten verschieben (beim Hover)
     private static final int HOVER_OFFSET = -20 * 2;
-    // Anfangsposition der Karten
     private static final int INITIAL_X = 1000;
     private static final int INITIAL_Y = 800;
     private static final int OTHERPLAYER_INITIAL_X = 1000;
     private static final int OTHERPLAYER_INITIAL_Y = 50;
-    // Pfad zum Hintergrundbild
     private static final String BACKGROUND_IMAGE_PATH = "src/GUI/Assets/Table.jpg";
-    // Breite und Höhe des Fensters
     private static final int WindowWidth = 1440;
     private static final int WindowHeight = 900;
     private static final Object lock = new Object();
-    static ArrayList<ArrayList> spieler = new ArrayList<>();
+    private static ArrayList<ArrayList> spieler = new ArrayList<>();
     private static ArrayList<String> karten;
     private static JFrame frame = new JFrame();
-    private final ArrayList<String> obersteKarten; // ArrayList für die obersten Karten
-    // Liste zur Speicherung der Karten-Labels
+    private final ArrayList<String> obersteKarten;
     private List<JLabel> cardLabels = new ArrayList<>();
-    // Array zur Speicherung der ursprünglichen Positionen der Karten
     private Point[] originalCardLocations;
-    // Label zur Darstellung der vergrößerten Karte in der Mitte
     private JLabel enlargedCardLabel;
-    // Label zur Darstellung der obersten Karte
     private JLabel obersteKartenLabel;
     private boolean istDrann;
     private JLabel ziehStapelLabel;
     private String ziehStapelBildPath;
-
 
     public CardGameUI(String username, ArrayList<String> karten) {
         CardGameUI.karten = karten;
@@ -150,20 +140,7 @@ public class CardGameUI {
         });
     }
 
-    public static void dataToSend(String data) {
-        synchronized (lock) {
-            try {
-                BufferedWriter writer = Client.getBufferedWriter();
-                writer.write(data);
-                writer.newLine();
-                writer.flush();
-                frame.validate();
-                frame.repaint();
-            } catch (IOException e) {
-                // Handle IOException
-            }
-        }
-    }
+    /* GUI KOMPONENTEN */
 
     // Methode zur Erstellung eines Karten-Labels
     private JLabel createCardLabel(String cardName) {
@@ -176,11 +153,11 @@ public class CardGameUI {
         return cardLabel;
     }
 
-    // Methode zur Erstellung des Labels für die vergrößerte Karte
-    private JLabel createEnlargedCardLabel() {
-        JLabel enlargedCardLabel = new JLabel();
-        enlargedCardLabel.setVisible(false);
-        return enlargedCardLabel;
+    private void removeCardLabel(JLabel cardLabel) {
+        cardLabels.remove(cardLabel);
+        frame.getContentPane().remove(cardLabel);
+        frame.validate();
+        frame.repaint();
     }
 
     // Methode zum Hinzufügen des MouseListeners zu den Karten-Labels
@@ -268,13 +245,6 @@ public class CardGameUI {
         });
     }
 
-    private void removeCardLabel(JLabel cardLabel) {
-        cardLabels.remove(cardLabel);
-        frame.getContentPane().remove(cardLabel);
-        frame.validate();
-        frame.repaint();
-    }
-
     // Methode zum Hinzufügen der MouseListener zu den Karten-Labels
     private void addMouseListeners() {
         for (int i = cardLabels.size() - 1; i >= 0; i--) {
@@ -282,6 +252,8 @@ public class CardGameUI {
             addMouseListenerToCardLabel(cardLabel, i);
         }
     }
+
+    /* GUI AKTUALISIERUNG */
 
     // Methode zum Verschieben einer Karte
     private void moveCard(JLabel cardLabel, int yOffset) {
@@ -337,6 +309,41 @@ public class CardGameUI {
         }
         contentPane.validate();
     }
+
+    // Methode zum Abrufen des Pfads zum Zieh stapel-Bild
+    private String getZiehStapelBildPath() {
+        if (ziehStapelBildPath != null) {
+            return ziehStapelBildPath; // Rückgabe des zuvor ausgewählten Bildpfads
+        }
+
+        String[] ziehStapelBilder = {
+                "Back1.png",
+                "Back2.png",
+                "Back3.png",
+                "Back4.png"
+        };
+        String ziehStapelBild = ziehStapelBilder[(int) (Math.random() * ziehStapelBilder.length)];
+        ziehStapelBildPath = "src/GUI/Assets/" + ziehStapelBild;
+        return ziehStapelBildPath;
+    }
+
+    // Methode zum Erstellen eines ImageIcon für eine Karte
+    private ImageIcon createCardIcon(String cardName) {
+        ImageIcon imageIcon = new ImageIcon("src/GUI/Assets/" + cardName + ".png");
+        Image image = imageIcon.getImage();
+        Image scaledImage = image.getScaledInstance(CARD_WIDTH, CARD_HEIGHT, Image.SCALE_SMOOTH);
+        return new ImageIcon(scaledImage);
+    }
+
+    // Methode zum Erstellen des Labels für den Zieh stapel
+    private JLabel createZiehStapelLabel() {
+        JLabel ziehStapelLabel = new JLabel();
+        ziehStapelLabel.setVisible(false);
+        addMouseListenerToZiehStapelLabel(ziehStapelLabel); // Füge den MouseListener hinzu
+        return ziehStapelLabel;
+    }
+
+    /* RENDERING */
 
     // Methode zum Rendern der Handkarten
     public void renderHandCards(ArrayList<String> karten) {
@@ -472,19 +479,6 @@ public class CardGameUI {
         }
     }
 
-    private ArrayList<ArrayList> filterOtherPlayers(ArrayList<ArrayList> spieler) {
-        ArrayList<ArrayList> otherPlayers = new ArrayList<>();
-
-        for (ArrayList playerInfo : spieler) {
-            String playerName = (String) playerInfo.get(0);
-            if (!playerName.equals(username)) {
-                otherPlayers.add(playerInfo);
-            }
-        }
-
-        return otherPlayers;
-    }
-
     // Methode zum Rendern der obersten Karte und des Zieh stapels
     private void renderObersteKarte() {
         if (!obersteKarten.isEmpty()) {
@@ -522,47 +516,25 @@ public class CardGameUI {
         ziehStapelLabel.setVisible(true);
     }
 
-    // Methode zum Abrufen des Pfads zum Zieh stapel-Bild
-    private String getZiehStapelBildPath() {
-        if (ziehStapelBildPath != null) {
-            return ziehStapelBildPath; // Rückgabe des zuvor ausgewählten Bildpfads
-        }
+    /* SERVER-CLIENT KOMMUNIKATION */
 
-        String[] ziehStapelBilder = {
-                "Back1.png",
-                "Back2.png",
-                "Back3.png",
-                "Back4.png"
-        };
-        String ziehStapelBild = ziehStapelBilder[(int) (Math.random() * ziehStapelBilder.length)];
-        ziehStapelBildPath = "src/GUI/Assets/" + ziehStapelBild;
-        return ziehStapelBildPath;
-    }
-
-    // Methode zum Erstellen eines ImageIcon für eine Karte
-    private ImageIcon createCardIcon(String cardName) {
-        ImageIcon imageIcon = new ImageIcon("src/GUI/Assets/" + cardName + ".png");
-        Image image = imageIcon.getImage();
-        Image scaledImage = image.getScaledInstance(CARD_WIDTH, CARD_HEIGHT, Image.SCALE_SMOOTH);
-        return new ImageIcon(scaledImage);
-    }
-
-    public void setTitel(String s) {
-        if (frame != null) {
-            frame.setTitle(s);
-        } else {
-            System.out.println("WAS IST DEN HIER LOS?!?!");
+    // Senden von Daten an den Server
+    public static void dataToSend(String data) {
+        synchronized (lock) {
+            try {
+                BufferedWriter writer = Client.getBufferedWriter();
+                writer.write(data);
+                writer.newLine();
+                writer.flush();
+                frame.validate();
+                frame.repaint();
+            } catch (IOException e) {
+                // Handle IOException
+            }
         }
     }
 
-    // Methode zum Erstellen des Labels für den Zieh stapel
-    private JLabel createZiehStapelLabel() {
-        JLabel ziehStapelLabel = new JLabel();
-        ziehStapelLabel.setVisible(false);
-        addMouseListenerToZiehStapelLabel(ziehStapelLabel); // Füge den MouseListener hinzu
-        return ziehStapelLabel;
-    }
-
+    // Methode zum Empfangen von Daten vom Server
     private void listenForGameInfo() {
         new Thread(() -> {
             ArrayList<String> placeholderString = new ArrayList<>();
@@ -604,7 +576,7 @@ public class CardGameUI {
                         System.out.println("Oberste Karte erhalten: " + obersteSpielKarte);
                         if (obersteKarten.size() > 5) {
                             obersteKarten.remove(0);
-                            System.out.println("ObersteKarten zwischenspeicher: "+obersteKarten);
+                            System.out.println("ObersteKarten zwischenspeicher: " + obersteKarten);
                             renderObersteKarte();
                         }
                         renderObersteKarte(); // Rendere die oberste Karte
@@ -640,6 +612,9 @@ public class CardGameUI {
         }).start();
     }
 
+    /* HILFSMETHODEN */
+
+    // Methode zum Filtern der eigenen Spielerinformationen
     private List<Object> getOwnPlayerInfo(ArrayList<ArrayList> spieler, String username) {
         for (ArrayList playerInfo : spieler) {
             String playerName = (String) playerInfo.get(0);
@@ -648,6 +623,36 @@ public class CardGameUI {
                 return isCurrentPlayer ? playerInfo : null;
             }
         }
+        renderHandCards(karten);
+        renderObersteKarte();
+        renderOtherPlayers(spieler);
+
+        frame.validate();
+        frame.repaint();
+
         return null;
+    }
+
+    // Methode zum Filtern von Informationen anderer Spieler
+    private ArrayList<ArrayList> filterOtherPlayers(ArrayList<ArrayList> spieler) {
+        ArrayList<ArrayList> otherPlayers = new ArrayList<>();
+
+        for (ArrayList playerInfo : spieler) {
+            String playerName = (String) playerInfo.get(0);
+            if (!playerName.equals(username)) {
+                otherPlayers.add(playerInfo);
+            }
+        }
+
+        return otherPlayers;
+    }
+
+    // Methode um dem Fenster einen Titel zu geben (Wichtig für Server-Client Kommunikation)
+    public void setTitel(String s) {
+        if (frame != null) {
+            frame.setTitle(s);
+        } else {
+            System.out.println("WAS IST DEN HIER LOS?!?!");
+        }
     }
 }

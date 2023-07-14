@@ -15,7 +15,7 @@ import java.util.Random;
 import static Server.Server.Server.CheckMaxPlayer;
 
 public class MenUI extends JFrame {
-    private ArrayList < String > karten; // Kartenliste
+    private ArrayList<String> karten; // Kartenliste
     private CardGameUI cardGameUI; // Referenz auf das CardGameUI-Objekt
     private ChatUI chatUI; // Referenz auf das ChatUI-Objekt
 
@@ -64,6 +64,10 @@ public class MenUI extends JFrame {
         });
     }
 
+    public static void main(String[] args) {
+        EventQueue.invokeLater(MenUI::new);
+    }
+
     private void showHostServerOptions() {
         // Fenster für Host-Server-Optionen
         JFrame hostServerFrame = new JFrame("Hosting Optionen");
@@ -78,12 +82,16 @@ public class MenUI extends JFrame {
         JTextField maxPlayersField = new JTextField("2");
         maxPlayersField.setHorizontalAlignment(JTextField.CENTER);
 
+        /*
+
         // Label und Textfeld für Anzahl der Bots
         JLabel botCountLabel = new JLabel("Anzahl der Bots:");
         JTextField botCountField = new JTextField("0");
         botCountField.setHorizontalAlignment(JTextField.CENTER);
         botCountField.setEditable(false);
         botCountField.setBackground(UIManager.getColor("Panel.background"));
+
+         */
 
         // Label und Textfeld für Port
         JLabel portLabel = new JLabel("Port:");
@@ -97,10 +105,12 @@ public class MenUI extends JFrame {
 
         startHostingButton.addActionListener(e -> {
             int maxPlayers = Integer.parseInt(maxPlayersField.getText());
+            /*
             int botCount = Integer.parseInt(botCountField.getText());
+
             int totalPlayers = maxPlayers + botCount;
 
-            /*
+
             if (totalPlayers <= Server.maxPlayer) {
  +               // Validierung der maximalen Spieleranzahl und Bots
                 hostServerFrame.dispose();
@@ -186,7 +196,7 @@ public class MenUI extends JFrame {
     }
 
     private String getRandomName(JTextField usernameField) {
-        ArrayList < String > names = new ArrayList < > ();
+        ArrayList<String> names = new ArrayList<>();
         names.add("SpongeBob Schwammkopf");
         names.add("SpongeGa (Urzeit Spongebob)");
         names.add("Patta (Urzeit Patrik)");
@@ -273,7 +283,7 @@ public class MenUI extends JFrame {
     private void showCardGameUI() {
         // Überprüfen, ob das CardGameUI-Objekt bereits erstellt wurde
         if (cardGameUI == null) {
-            karten = new ArrayList < > ();
+            karten = new ArrayList<>();
             cardGameUI = new CardGameUI(Client.username, karten);
             cardGameUI.setTitel(Client.username);
         }
@@ -288,9 +298,5 @@ public class MenUI extends JFrame {
         } else {
             chatUI.setVisible(true); // Stelle sicher, dass das ChatUI-Fenster sichtbar ist
         }
-    }
-
-    public static void main(String[] args) {
-        EventQueue.invokeLater(MenUI::new);
     }
 }
